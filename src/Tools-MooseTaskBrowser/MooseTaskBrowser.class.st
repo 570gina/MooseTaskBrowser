@@ -24,12 +24,12 @@ Class {
 	#name : #MooseTaskBrowser,
 	#superclass : #ComposablePresenter,
 	#instVars : [
-		'list',
+		'listPresenter',
 		'saveButton',
 		'loadButton',
 		'addButton',
-		'sortUpButton',
-		'sortDownButton',
+		'upButton',
+		'downButton',
 		'runButton',
 		'selectedTask'
 	],
@@ -47,11 +47,11 @@ MooseTaskBrowser class >> defaultSpec [
 			height: self toolbarHeight;
 		newRow: [ :row | 
 			row
-				add: #list;
+				add: #listPresenter;
 				newColumn: [ :col | 
 					col
-						add: #sortUpButton;
-						add: #sortDownButton ]
+						add: #upButton;
+						add: #downButton ]
 					width: self defaultFont height + 6 ];
 		newRow: [ :row | row add: #runButton ] height: self toolbarHeight;
 		yourself
@@ -62,6 +62,11 @@ MooseTaskBrowser >> addButton [
 	^ addButton
 ]
 
+{ #category : #accessing }
+MooseTaskBrowser >> downButton [
+	^ downButton
+]
+
 { #category : #api }
 MooseTaskBrowser >> extent [
 	^ 300 @ 400
@@ -69,29 +74,29 @@ MooseTaskBrowser >> extent [
 
 { #category : #initialization }
 MooseTaskBrowser >> initializePresenter [
-	list
+	listPresenter
 		whenSelectedItemChanged: [ :item | 
 			| size |
-			size := list listSize.
+			size := listPresenter listSize.
 			item
 				ifNil: [ runButton disable.
-					sortUpButton disable.
-					sortDownButton disable ]
+					upButton disable.
+					downButton disable ]
 				ifNotNil: [ runButton enable.
 					size > 1
-						ifTrue: [ sortUpButton enable.
-							sortDownButton enable.
-							list getIndex = 1
-								ifTrue: [ sortUpButton disable ].
-							list getIndex = size
-								ifTrue: [ sortDownButton disable ] ] ] ].
-	sortUpButton action: [ list setSelectedIndex: list selectedIndex - 1 ].
-	sortDownButton action: [  ]
+						ifTrue: [ upButton enable.
+						downButton enable.
+							listPresenter getIndex = 1
+								ifTrue: [ upButton disable ].
+							listPresenter getIndex = size
+								ifTrue: [ downButton disable ] ] ] ].
+	upButton action: [ self swapItems: -2 ].
+	downButton action: [ self swapItems: 0 ]
 ]
 
 { #category : #initialization }
 MooseTaskBrowser >> initializeWidgets [
-	list := self newList.
+	listPresenter := self newList.
 	loadButton := self newButton
 		label: 'Load';
 		icon: (self iconNamed: #smallOpen).
@@ -101,9 +106,8 @@ MooseTaskBrowser >> initializeWidgets [
 	addButton := self newButton
 		label: 'Add';
 		icon: (self iconNamed: #smallAdd).
-	sortUpButton := self newButton icon: (self iconNamed: #up).
-	sortDownButton := self newButton
-		icon: (self iconNamed: #down).
+	upButton := self newButton icon: (self iconNamed: #up).
+	downButton := self newButton icon: (self iconNamed: #down).
 	runButton := self newButton
 		label: 'Run';
 		icon: (self iconNamed: #smallDoIt).
@@ -111,15 +115,15 @@ MooseTaskBrowser >> initializeWidgets [
 		add: loadButton;
 		add: saveButton;
 		add: addButton;
-		add: sortUpButton;
-		add: sortDownButton;
-		add: list;
+		add: upButton;
+		add: downButton;
+		add: listPresenter;
 		add: runButton
 ]
 
 { #category : #accessing }
-MooseTaskBrowser >> list [
-	^ list
+MooseTaskBrowser >> listPresenter [
+	^ listPresenter
 ]
 
 { #category : #accessing }
@@ -139,27 +143,34 @@ MooseTaskBrowser >> saveButton [
 
 { #category : #accessing }
 MooseTaskBrowser >> selectedTask [
-	^ list selectedItem
+	^ listPresenter selectedItem
 ]
 
-{ #category : #accessing }
-MooseTaskBrowser >> sortDownButton [
-	^ sortDownButton
-]
-
-{ #category : #accessing }
-MooseTaskBrowser >> sortUpButton [
-	^ sortUpButton
+{ #category : #'list control' }
+MooseTaskBrowser >> swapItems: aNumber [
+	| list selectedIndex tempItem |
+	list := listPresenter listItems.
+	selectedIndex := listPresenter getIndex.
+	tempItem := list at: selectedIndex.
+	list removeAt: selectedIndex.
+	list add: tempItem afterIndex: selectedIndex + aNumber.
+	listPresenter items: list.
+	listPresenter setSelectedItem: tempItem.
 ]
 
 { #category : #accessing }
 MooseTaskBrowser >> tasks: aCollection [
-	list
+	listPresenter
 		items: aCollection;
-		displayBlock: [:task | task description] 
+		displayBlock: [ :task | task description ]
 ]
 
 { #category : #api }
 MooseTaskBrowser >> title [ 
 	^'Moose Tasks'
+]
+
+{ #category : #accessing }
+MooseTaskBrowser >> upButton [
+	^ upButton
 ]
