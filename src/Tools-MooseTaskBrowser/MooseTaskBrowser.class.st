@@ -2,28 +2,34 @@
 |task tasks test|
 tasks := OrderedCollection new.
 task := MooseCustomTask new
-		with: [ :v | true ]
-		description: 'a description'
-		length: 0.
+        with: [ :v | (1 to: 60000000) do: [ :i | true ] displayingProgress: 'running task: ', v description. true ]
+        description: 'a description 1'
+        length: 0.
 tasks add: task.
 task := MooseCustomTask new
-		with: [ :v | true ]
-		description: 'a description 2'
-		length: 0.
+        with: [ :v | (1 to: 60000000) do: [ :i | true ] displayingProgress: 'running task: ', v description. true ]
+        description: 'a description 2'
+        length: 0.
 tasks add: task.
 task := MooseCustomTask new
-		with: [ :v | true ]
-		description: 'a description 3'
-		length: 0.
+        with: [ :v | (1 to: 60000000) do: [ :i | true ] displayingProgress: 'running task: ', v description. true ]
+        description: 'a description 3'
+        length: 0.
+tasks add: task.
+task := MooseCustomTask new
+        with: [ :v | (1 to: 60000000) do: [ :i | true ] displayingProgress: 'running task: ', v description. true ]
+        description: 'a description 4'
+        length: 0.
 tasks add: task.
 test := self new.
-test tasks: tasks.
+test setTasks: tasks.
 test openWithSpec.
 "
 Class {
 	#name : #MooseTaskBrowser,
 	#superclass : #ComposablePresenter,
 	#instVars : [
+		'list',
 		'listPresenter',
 		'saveButton',
 		'loadButton',
@@ -31,7 +37,7 @@ Class {
 		'upButton',
 		'downButton',
 		'runButton',
-		'selectedTask'
+		'state'
 	],
 	#category : #'Tools-MooseTaskBrowser'
 }
@@ -78,20 +84,26 @@ MooseTaskBrowser >> initializePresenter [
 		whenSelectedItemChanged: [ :item | 
 			| size |
 			size := listPresenter listSize.
-			item
-				ifNil: [ runButton disable.
-					upButton disable.
-					downButton disable ]
-				ifNotNil: [ runButton enable.
-					size > 1
-						ifTrue: [ upButton enable.
-						downButton enable.
-							listPresenter getIndex = 1
-								ifTrue: [ upButton disable ].
-							listPresenter getIndex = size
-								ifTrue: [ downButton disable ] ] ] ].
+			self isRunning
+				ifTrue: [ runButton disable.upButton disable. downButton disable];
+				ifFalse: [ item
+							ifNil: [ runButton disable.
+								upButton disable.
+								downButton disable ]
+							ifNotNil: [ runButton enable.
+								size > 1
+									ifTrue: [ upButton enable.
+										downButton enable.
+										listPresenter getIndex = 1
+											ifTrue: [ upButton disable ].
+										listPresenter getIndex = size
+											ifTrue: [ downButton disable ] ] ] ] ].
 	upButton action: [ self swapItems: -2 ].
-	downButton action: [ self swapItems: 0 ]
+	downButton action: [ self swapItems: 0 ].
+	runButton
+		action: [ state := true.
+			runButton disable.
+			self run ]
 ]
 
 { #category : #initialization }
@@ -111,6 +123,7 @@ MooseTaskBrowser >> initializeWidgets [
 	runButton := self newButton
 		label: 'Run';
 		icon: (self iconNamed: #smallDoIt).
+		state := false.
 	self focusOrder
 		add: loadButton;
 		add: saveButton;
@@ -121,6 +134,16 @@ MooseTaskBrowser >> initializeWidgets [
 		add: runButton
 ]
 
+{ #category : #actions }
+MooseTaskBrowser >> isRunning [
+	^state 
+]
+
+{ #category : #accessing }
+MooseTaskBrowser >> list [
+	^ list
+]
+
 { #category : #accessing }
 MooseTaskBrowser >> listPresenter [
 	^ listPresenter
@@ -129,6 +152,20 @@ MooseTaskBrowser >> listPresenter [
 { #category : #accessing }
 MooseTaskBrowser >> loadButton [
 	^ loadButton
+]
+
+{ #category : #actions }
+MooseTaskBrowser >> run [
+	| index |
+	index := listPresenter getIndex.
+	index to: listPresenter listSize do: [ :i | 
+		listPresenter setIndex: i.
+		self selectedTask run.
+		Transcript
+			show: self selectedTask description , ' start';
+			cr ].
+	state := false.
+	listPresenter setSelectedItem: self selectedTask.
 ]
 
 { #category : #accessing }
@@ -146,23 +183,29 @@ MooseTaskBrowser >> selectedTask [
 	^ listPresenter selectedItem
 ]
 
+{ #category : #initialization }
+MooseTaskBrowser >> setTasks: aCollection [
+	list := aCollection.
+	list ifNotNil: [  
+	listPresenter
+		items: list;
+		displayBlock: [ :task | task description ]]
+]
+
+{ #category : #accessing }
+MooseTaskBrowser >> state [
+	^ state
+]
+
 { #category : #'list control' }
 MooseTaskBrowser >> swapItems: aNumber [
-	| list selectedIndex tempItem |
-	list := listPresenter listItems.
+	| selectedIndex tempItem |
 	selectedIndex := listPresenter getIndex.
 	tempItem := list at: selectedIndex.
 	list removeAt: selectedIndex.
 	list add: tempItem afterIndex: selectedIndex + aNumber.
 	listPresenter items: list.
-	listPresenter setSelectedItem: tempItem.
-]
-
-{ #category : #accessing }
-MooseTaskBrowser >> tasks: aCollection [
-	listPresenter
-		items: aCollection;
-		displayBlock: [ :task | task description ]
+	listPresenter setSelectedItem: tempItem
 ]
 
 { #category : #api }
