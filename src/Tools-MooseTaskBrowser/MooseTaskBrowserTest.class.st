@@ -24,19 +24,19 @@ task := MooseCustomTask new
 		length: 0.
 tasks add: task.
 ui := MooseTaskBrowser new.
-ui tasks: tasks
+ui setTasks: tasks
 ]
 
 { #category : #tests }
 MooseTaskBrowserTest >> testRunButtonEnabledWhenSelectedTask [
-	ui list setIndex: 1.
+	ui listPresenter setIndex: 1.
 	self assert: ui runButton enabled.
-	ui list setIndex: 2.
+	ui listPresenter setIndex: 2.
 	self assert: ui runButton enabled
 ]
 
 { #category : #tests }
 MooseTaskBrowserTest >> testRunButtonNotEnabledWhenNoSelectedTask [
-	ui list resetSelection.
+	ui listPresenter resetSelection.
 	self deny: ui runButton enabled
 ]
