@@ -20,8 +20,8 @@ BaselineOfMooseTaskBrowser >> baseline: spec [
 BaselineOfMooseTaskBrowser >> mooseTaskBrowser: spec [
 	spec
 		baseline: 'MooseTaskBrowser'
-		with: [ spec
-				repository: 'github://570gina/MooseTaskBrowser/tree/master/src' ]
+		with:
+			[ spec repository: 'github://570gina/MooseTaskBrowser/src' ]
 ]
 
 { #category : #accessing }
