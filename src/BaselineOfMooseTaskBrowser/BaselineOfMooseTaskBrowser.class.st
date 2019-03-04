@@ -9,8 +9,10 @@ BaselineOfMooseTaskBrowser >> baseline: spec [
 	<baseline>
 	spec
 		for: #common
-		do:
-			[ "Dependency""self mooseTaskBrowser: spec.""Package"spec package: 'Tools-MooseTaskBrowser' ]
+		do: [
+			"Packages"
+			spec package: 'Tools-MooseTaskBrowser' 
+			 ]
 ]
 
 { #category : #accessing }
