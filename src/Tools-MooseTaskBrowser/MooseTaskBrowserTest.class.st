@@ -30,7 +30,8 @@ MooseTaskBrowserTest >> setUp [
 			true ]
 		description: 'a description 2'
 		length: 0.
-	tasks add: task.
+
+  tasks add: task.
 	task := MooseCustomTask new
 		with: [ :v | 
 			(1 to: 60000000)
