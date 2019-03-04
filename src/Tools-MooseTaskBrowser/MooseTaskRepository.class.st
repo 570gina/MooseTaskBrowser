@@ -10,7 +10,7 @@ Class {
 	#category : #'Tools-MooseTaskBrowser'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #action }
 MooseTaskRepository >> addTask: aMooseCustomTask [ 
 	tasks ifNil: [tasks := OrderedCollection new].
 	tasks add: aMooseCustomTask.

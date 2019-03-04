@@ -22,6 +22,7 @@ task := MooseCustomTask new
         length: 0.
 taskRepo addTask: task.
 test := self new.
+test setTasks: task.
 test setTaskRepo: taskRepo.
 test openWithSpec.
 "
@@ -86,7 +87,9 @@ MooseTaskBrowser >> initializePresenter [
 			| size |
 			size := listPresenter listSize.
 			self isRunning
-				ifTrue: [ runButton disable.upButton disable. downButton disable];
+				ifTrue: [ runButton disable.
+						upButton disable.
+						downButton disable ];
 				ifFalse: [ item
 							ifNil: [ runButton disable.
 								upButton disable.
@@ -104,7 +107,12 @@ MooseTaskBrowser >> initializePresenter [
 	runButton
 		action: [ state := true.
 			runButton disable.
-			self run ]
+			self run ].
+	addButton
+		action: [ | open |
+			open := MooseTaskRepositoryList new.
+			open openWithSpec.
+			"open window modalRelativeTo: World" ]
 ]
 
 { #category : #initialization }

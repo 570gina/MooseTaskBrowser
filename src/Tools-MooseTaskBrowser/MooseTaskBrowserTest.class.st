@@ -30,8 +30,7 @@ MooseTaskBrowserTest >> setUp [
 			true ]
 		description: 'a description 2'
 		length: 0.
-
-  tasks add: task.
+	tasks add: task.
 	task := MooseCustomTask new
 		with: [ :v | 
 			(1 to: 60000000)
@@ -50,8 +49,9 @@ MooseTaskBrowserTest >> setUp [
 		description: 'a description 4'
 		length: 0.
 	tasks add: task.
-		ui := MooseTaskBrowser new.
-	ui setTasks: tasks
+	ui := MooseTaskBrowser new.
+	ui setTasks: tasks.
+	ui openWithSpec
 ]
 
 { #category : #tests }
@@ -69,7 +69,15 @@ MooseTaskBrowserTest >> testRunButtonNotEnabledWhenNoSelectedTask [
 ]
 
 { #category : #tests }
-MooseTaskBrowserTest >> testselectedTaskMoveDownWhenDownButtonClicked [
+MooseTaskBrowserTest >> testUpButtonNotEnabledWhenTopItemIsSelected [
+	| size |
+	size := ui listPresenter listSize.
+	ui listPresenter setIndex: size.
+	self deny: ui downButton enabled
+]
+
+{ #category : #tests }
+MooseTaskBrowserTest >> testselectedTaskMoveDownWhenDownButtonIsClicked [
 	| task |
 	ui listPresenter setIndex: 1.
 	task := ui selectedTask.
@@ -79,7 +87,7 @@ MooseTaskBrowserTest >> testselectedTaskMoveDownWhenDownButtonClicked [
 ]
 
 { #category : #tests }
-MooseTaskBrowserTest >> testselectedTaskMoveUpWhenUpButtonClicked [
+MooseTaskBrowserTest >> testselectedTaskMoveUpWhenUpButtonIsClicked [
 	| task |
 	ui listPresenter setIndex: 2.
 	task := ui selectedTask.
