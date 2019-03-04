@@ -1,28 +1,28 @@
 "
-|task tasks test|
-tasks := OrderedCollection new.
+|task taskRepo test|
+taskRepo := MooseTaskRepository new.
 task := MooseCustomTask new
         with: [ :v | (1 to: 60000000) do: [ :i | true ] displayingProgress: 'running task: ', v description. true ]
         description: 'a description 1'
         length: 0.
-tasks add: task.
+taskRepo addTask: task.
 task := MooseCustomTask new
         with: [ :v | (1 to: 60000000) do: [ :i | true ] displayingProgress: 'running task: ', v description. true ]
         description: 'a description 2'
         length: 0.
-tasks add: task.
+taskRepo addTask: task.
 task := MooseCustomTask new
         with: [ :v | (1 to: 60000000) do: [ :i | true ] displayingProgress: 'running task: ', v description. true ]
         description: 'a description 3'
         length: 0.
-tasks add: task.
+taskRepo addTask: task.
 task := MooseCustomTask new
         with: [ :v | (1 to: 60000000) do: [ :i | true ] displayingProgress: 'running task: ', v description. true ]
         description: 'a description 4'
         length: 0.
-tasks add: task.
+taskRepo addTask: task.
 test := self new.
-test setTasks: tasks.
+test setTaskRepo: taskRepo.
 test openWithSpec.
 "
 Class {
@@ -37,7 +37,8 @@ Class {
 		'upButton',
 		'downButton',
 		'runButton',
-		'state'
+		'state',
+		'taskRepo'
 	],
 	#category : #'Tools-MooseTaskBrowser'
 }
@@ -181,6 +182,11 @@ MooseTaskBrowser >> saveButton [
 { #category : #accessing }
 MooseTaskBrowser >> selectedTask [
 	^ listPresenter selectedItem
+]
+
+{ #category : #accessing }
+MooseTaskBrowser >> setTaskRepo: aMooseTaskRepository [ 
+	taskRepo := aMooseTaskRepository.
 ]
 
 { #category : #initialization }
