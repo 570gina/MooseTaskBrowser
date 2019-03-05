@@ -81,7 +81,7 @@ MooseTaskBrowserTest >> testUpButtonNotEnabledWhenTopItemIsSelected [
 MooseTaskBrowserTest >> testselectedTaskMoveDownWhenDownButtonIsClicked [
 	| task |
 	ui listPresenter setIndex: 1.
-	task := ui selectedTask.
+	task := ui listPresenter selectedItem.
 	ui downButton performAction.
 	self assert: 2 equals: ui listPresenter getIndex.
 	self assert: task equals: ui listPresenter selectedItem
@@ -91,7 +91,7 @@ MooseTaskBrowserTest >> testselectedTaskMoveDownWhenDownButtonIsClicked [
 MooseTaskBrowserTest >> testselectedTaskMoveUpWhenUpButtonIsClicked [
 	| task |
 	ui listPresenter setIndex: 2.
-	task := ui selectedTask.
+	task := ui listPresenter selectedItem.
 	ui upButton performAction.
 	self assert: 1 equals: ui listPresenter getIndex.
 	self assert: task equals: ui listPresenter selectedItem

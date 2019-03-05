@@ -66,14 +66,40 @@ MooseTaskBrowser class >> defaultSpec [
 		yourself
 ]
 
+{ #category : #menu }
+MooseTaskBrowser class >> menuMooseTask: aBuilder [
+	<contextMenu>
+	<mooseTaskListMenu>
+	(aBuilder item: #Inspect)
+		icon: (self iconNamed: #smallInspectIt);
+		keyText: 'i';
+		selector: #inspectTask.
+	(aBuilder item: #Delete)
+		icon: (self iconNamed: #delete);
+		keyText: 'd';
+		selector: #deleteTask
+]
+
 { #category : #accessing }
 MooseTaskBrowser >> addButton [
 	^ addButton
 ]
 
+{ #category : #'list control' }
+MooseTaskBrowser >> deleteTask [
+	list removeAt: listPresenter selectedIndex.
+	listPresenter items: list.
+]
+
 { #category : #accessing }
 MooseTaskBrowser >> downButton [
 	^ downButton
+]
+
+{ #category : #shortcuts }
+MooseTaskBrowser >> ensureKeyBindingsFor: aWidget [
+	super ensureKeyBindingsFor: aWidget.
+	self registerMooseTaskListShortcuts: listPresenter
 ]
 
 { #category : #api }
@@ -111,14 +137,16 @@ MooseTaskBrowser >> initializePresenter [
 			self run ].
 	addButton
 		action: [ repositoryView openDialogWithSpec
-				okAction:
-					[ self setTasks: repositoryView listPresenter selectedItems asOrderedCollection ].
+				okAction: [ self
+						setTasks: repositoryView listPresenter selectedItems asOrderedCollection ].
 			repositoryView listPresenter resetSelection ]
 ]
 
 { #category : #initialization }
 MooseTaskBrowser >> initializeWidgets [
 	listPresenter := self newList.
+	listPresenter
+		menu: [ :menu :shifted | self mooseTaskListMenu: menu shifted: shifted ].
 	loadButton := self newButton
 		label: 'Load';
 		icon: (self iconNamed: #smallOpen).
@@ -145,7 +173,12 @@ MooseTaskBrowser >> initializeWidgets [
 		add: runButton
 ]
 
-{ #category : #actions }
+{ #category : #'list control' }
+MooseTaskBrowser >> inspectTask [
+	listPresenter selectedItem inspect
+]
+
+{ #category : #accessing }
 MooseTaskBrowser >> isRunning [
 	^state 
 ]
@@ -165,6 +198,23 @@ MooseTaskBrowser >> loadButton [
 	^ loadButton
 ]
 
+{ #category : #menu }
+MooseTaskBrowser >> mooseTaskListMenu: aMenu shifted: shifted [
+	listPresenter selectedItem ifNil: [ ^ nil ].
+	aMenu addAllFromPragma: 'mooseTaskListMenu' target: self.
+	^ aMenu
+]
+
+{ #category : #shortcuts }
+MooseTaskBrowser >> registerMooseTaskListShortcuts: aWidget [
+		aWidget
+		bindKeyCombination: $i meta
+		toAction: [ listPresenter selectedItem ifNotNil: [ self inspectTask] ].
+	aWidget
+		bindKeyCombination: $d meta
+		toAction: [ listPresenter selectedItem ifNotNil: [ self deleteTask  ] ].
+]
+
 { #category : #accessing }
 MooseTaskBrowser >> repositoryView [
 ^repositoryView
@@ -176,12 +226,12 @@ MooseTaskBrowser >> run [
 	index := listPresenter getIndex.
 	index to: listPresenter listSize do: [ :i | 
 		listPresenter setIndex: i.
-		self selectedTask run.
+		listPresenter selectedItem run.
 		Transcript
-			show: self selectedTask description , ' start';
+			show: listPresenter selectedItem description , ' start';
 			cr ].
 	state := false.
-	listPresenter setSelectedItem: self selectedTask.
+	
 ]
 
 { #category : #accessing }
@@ -192,11 +242,6 @@ MooseTaskBrowser >> runButton [
 { #category : #accessing }
 MooseTaskBrowser >> saveButton [
 	^ saveButton
-]
-
-{ #category : #accessing }
-MooseTaskBrowser >> selectedTask [
-	^ listPresenter selectedItem
 ]
 
 { #category : #accessing }
