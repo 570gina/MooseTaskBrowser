@@ -11,8 +11,8 @@ Class {
 MooseTaskBrowserTest >> setUp [
 	"Hooks that subclasses may override to define the fixture of test."
 
-	| task tasks |
-	tasks := OrderedCollection new.
+	| task taskRepo |
+	taskRepo := MooseTaskRepository new.
 	task := MooseCustomTask new
 		with: [ :v | 
 			(1 to: 60000000)
@@ -21,7 +21,7 @@ MooseTaskBrowserTest >> setUp [
 			true ]
 		description: 'a description 1'
 		length: 0.
-	tasks add: task.
+	taskRepo addTask: task.
 	task := MooseCustomTask new
 		with: [ :v | 
 			(1 to: 60000000)
@@ -30,7 +30,7 @@ MooseTaskBrowserTest >> setUp [
 			true ]
 		description: 'a description 2'
 		length: 0.
-	tasks add: task.
+	taskRepo addTask: task.
 	task := MooseCustomTask new
 		with: [ :v | 
 			(1 to: 60000000)
@@ -39,7 +39,7 @@ MooseTaskBrowserTest >> setUp [
 			true ]
 		description: 'a description 3'
 		length: 0.
-	tasks add: task.
+	taskRepo addTask: task.
 	task := MooseCustomTask new
 		with: [ :v | 
 			(1 to: 60000000)
@@ -48,10 +48,11 @@ MooseTaskBrowserTest >> setUp [
 			true ]
 		description: 'a description 4'
 		length: 0.
-	tasks add: task.
 	ui := MooseTaskBrowser new.
-	ui setTasks: tasks.
-	ui openWithSpec
+	taskRepo addTask: task.
+	ui setTasks: taskRepo tasks.	"For testing"
+	"ui repositoryView setList: taskRepo tasks."
+	"ui openWithSpec"
 ]
 
 { #category : #tests }
