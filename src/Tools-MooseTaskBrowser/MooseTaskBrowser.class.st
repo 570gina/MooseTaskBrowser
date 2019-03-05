@@ -22,8 +22,8 @@ task := MooseCustomTask new
         length: 0.
 taskRepo addTask: task.
 test := self new.
-test setTasks: task.
-test setTaskRepo: taskRepo.
+test repositoryView setList: taskRepo tasks.
+
 test openWithSpec.
 "
 Class {
@@ -39,7 +39,8 @@ Class {
 		'downButton',
 		'runButton',
 		'state',
-		'taskRepo'
+		'taskRepo',
+		'repositoryView'
 	],
 	#category : #'Tools-MooseTaskBrowser'
 }
@@ -109,10 +110,10 @@ MooseTaskBrowser >> initializePresenter [
 			runButton disable.
 			self run ].
 	addButton
-		action: [ | open |
-			open := MooseTaskRepositoryList new.
-			open openWithSpec.
-			"open window modalRelativeTo: World" ]
+		action: [ repositoryView openDialogWithSpec
+				okAction:
+					[ self setTasks: repositoryView listPresenter selectedItems asOrderedCollection ].
+			repositoryView listPresenter resetSelection ]
 ]
 
 { #category : #initialization }
@@ -132,7 +133,8 @@ MooseTaskBrowser >> initializeWidgets [
 	runButton := self newButton
 		label: 'Run';
 		icon: (self iconNamed: #smallDoIt).
-		state := false.
+	repositoryView := MooseTaskRepositoryView new.
+	state := false.
 	self focusOrder
 		add: loadButton;
 		add: saveButton;
@@ -161,6 +163,11 @@ MooseTaskBrowser >> listPresenter [
 { #category : #accessing }
 MooseTaskBrowser >> loadButton [
 	^ loadButton
+]
+
+{ #category : #accessing }
+MooseTaskBrowser >> repositoryView [
+^repositoryView
 ]
 
 { #category : #actions }
@@ -197,13 +204,16 @@ MooseTaskBrowser >> setTaskRepo: aMooseTaskRepository [
 	taskRepo := aMooseTaskRepository.
 ]
 
-{ #category : #initialization }
+{ #category : #actions }
 MooseTaskBrowser >> setTasks: aCollection [
-	list := aCollection.
-	list ifNotNil: [  
-	listPresenter
-		items: list;
-		displayBlock: [ :task | task description ]]
+	list
+		ifNil: [ list := aCollection ]
+		ifNotNil: [ aCollection do: [ :i | (list includes: i) ifFalse:[ list add: i ] ]].
+	list
+		ifNotNil: [ listPresenter
+				items: list;
+				displayBlock: [ :task | task description ];
+				setIndex: listPresenter listSize ]
 ]
 
 { #category : #accessing }
@@ -220,6 +230,11 @@ MooseTaskBrowser >> swapItems: aNumber [
 	list add: tempItem afterIndex: selectedIndex + aNumber.
 	listPresenter items: list.
 	listPresenter setSelectedItem: tempItem
+]
+
+{ #category : #accessing }
+MooseTaskBrowser >> taskRepo [
+	^ taskRepo
 ]
 
 { #category : #api }
