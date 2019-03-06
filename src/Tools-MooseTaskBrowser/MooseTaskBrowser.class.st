@@ -226,12 +226,10 @@ MooseTaskBrowser >> run [
 	index := listPresenter getIndex.
 	index to: listPresenter listSize do: [ :i | 
 		listPresenter setIndex: i.
-		listPresenter selectedItem run.
-		Transcript
-			show: listPresenter selectedItem description , ' start';
-			cr ].
+		listPresenter selectedItem run ].
 	state := false.
-	
+	self inform: 'Tasks finish.'.
+	listPresenter resetSelection
 ]
 
 { #category : #accessing }
