@@ -1,23 +1,23 @@
 "
 |task taskRepo test|
 taskRepo := MooseTaskRepository new.
-task := MooseCustomTask new
-        with: [ :v | (1 to: 60000000) do: [ :i | true ] displayingProgress: 'running task: ', v description. true ]
+task := MooseCustomTaskWithContext new 
+        with: [ :v | v context: 100 atRandom. (1 to: 30000000) do: [ :i | true ] displayingProgress: 'running task: ', v description, ' with context ' , v context asString. v context +1  ]
         description: 'a description 1'
         length: 0.
 taskRepo addTask: task.
-task := MooseCustomTask new
-        with: [ :v | (1 to: 60000000) do: [ :i | true ] displayingProgress: 'running task: ', v description. true ]
+task := MooseCustomTaskWithContext new
+        with: [ :v | (1 to: 30000000) do: [ :i | true ] displayingProgress: 'running task: ', v description, ' with context ' , v context asString. v context + 1 ]
         description: 'a description 2'
         length: 0.
 taskRepo addTask: task.
-task := MooseCustomTask new
-        with: [ :v | (1 to: 60000000) do: [ :i | true ] displayingProgress: 'running task: ', v description. true ]
+task := MooseCustomTaskWithContext new
+        with: [ :v | (1 to: 30000000) do: [ :i | true ] displayingProgress: 'running task: ', v description, ' with context ' , v context asString. v context + 1  ]
         description: 'a description 3'
         length: 0.
 taskRepo addTask: task.
-task := MooseCustomTask new
-        with: [ :v | (1 to: 60000000) do: [ :i | true ] displayingProgress: 'running task: ', v description. true ]
+task := MooseCustomTaskWithContext new
+        with: [ :v | (1 to: 30000000) do: [ :i | true ] displayingProgress: 'running task: ', v description, ' with context ' , v context asString. v context + 1  ]
         description: 'a description 4'
         length: 0.
 taskRepo addTask: task.
@@ -222,11 +222,13 @@ MooseTaskBrowser >> repositoryView [
 
 { #category : #actions }
 MooseTaskBrowser >> run [
-	| index |
+	| index nextInput |
 	index := listPresenter getIndex.
 	index to: listPresenter listSize do: [ :i | 
 		listPresenter setIndex: i.
-		listPresenter selectedItem run ].
+		nextInput
+			ifNotNil: [ listPresenter selectedItem context: nextInput ].
+		nextInput := listPresenter selectedItem run ].
 	state := false.
 	self inform: 'Tasks finish.'.
 	listPresenter resetSelection
@@ -240,11 +242,6 @@ MooseTaskBrowser >> runButton [
 { #category : #accessing }
 MooseTaskBrowser >> saveButton [
 	^ saveButton
-]
-
-{ #category : #accessing }
-MooseTaskBrowser >> setTaskRepo: aMooseTaskRepository [ 
-	taskRepo := aMooseTaskRepository.
 ]
 
 { #category : #actions }
