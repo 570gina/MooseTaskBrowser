@@ -104,7 +104,7 @@ MooseTaskBrowser >> ensureKeyBindingsFor: aWidget [
 
 { #category : #api }
 MooseTaskBrowser >> extent [
-	^ 300 @ 400
+	^ 350 @ 450
 ]
 
 { #category : #initialization }
@@ -134,7 +134,11 @@ MooseTaskBrowser >> initializePresenter [
 	runButton
 		action: [ state := true.
 			runButton disable.
-			self run ].
+			self run
+				ifFalse: [ self inform: 'Tasks stop.' ]
+				ifTrue: [ self inform: 'Tasks finish.' ].
+			state := false.
+			listPresenter resetSelection ].
 	addButton
 		action: [ repositoryView openDialogWithSpec
 				okAction: [ self
@@ -228,10 +232,18 @@ MooseTaskBrowser >> run [
 		listPresenter setIndex: i.
 		nextInput
 			ifNotNil: [ listPresenter selectedItem context: nextInput ].
-		nextInput := listPresenter selectedItem run ].
-	state := false.
-	self inform: 'Tasks finish.'.
-	listPresenter resetSelection
+		nextInput := [ listPresenter selectedItem run ]
+			on: Exception
+			do: [ :e | 
+				| view |
+				view := ExceptionDialog new.
+				view
+					messageText:
+						('Task: ' , listPresenter selectedItem description , '\'
+							, e description) withCRs.
+				view openDialogWithSpec cancelAction: [ view window close.^ false ].
+				view window modalRelativeTo: World ] ].
+	^ true
 ]
 
 { #category : #accessing }
