@@ -20,43 +20,52 @@ MooseTaskBrowserTest >> setUp [
 
 	| task taskRepo |
 	taskRepo := MooseTaskRepository new.
-	task := MooseCustomTask new
+	task := MooseCustomTaskWithContext new
 		with: [ :v | 
-			(1 to: 60000000)
+			v context: 100 atRandom.
+			(1 to: 20000000)
 				do: [ :i | true ]
-				displayingProgress: 'running task: ' , v description.
-			true ]
+				displayingProgress:
+					'running task: ' , v description , ' with context '
+						, v context asString.
+			v context + 1 ]
 		description: 'a description 1'
 		length: 0.
 	taskRepo addTask: task.
-	task := MooseCustomTask new
+	task := MooseCustomTaskWithContext new
 		with: [ :v | 
-			(1 to: 60000000)
+			(1 to: 20000000)
 				do: [ :i | true ]
-				displayingProgress: 'running task: ' , v description.
-			true ]
+				displayingProgress:
+					'running task: ' , v description , ' with context '
+						, v context asString.
+			v context + 1 ]
 		description: 'a description 2'
 		length: 0.
 	taskRepo addTask: task.
-	task := MooseCustomTask new
+	task := MooseCustomTaskWithContext new
 		with: [ :v | 
-			(1 to: 60000000)
+			(1 to: 20000000)
 				do: [ :i | true ]
-				displayingProgress: 'running task: ' , v description.
-			true ]
+				displayingProgress:
+					'running task: ' , v description , ' with context '
+						, v context asString.
+			v context + 1 ]
 		description: 'a description 3'
 		length: 0.
 	taskRepo addTask: task.
-	task := MooseCustomTask new
+	task := MooseCustomTaskWithContext new
 		with: [ :v | 
-			(1 to: 60000000)
+			(1 to: 20000000)
 				do: [ :i | true ]
-				displayingProgress: 'running task: ' , v description.
-			true ]
+				displayingProgress:
+					'running task: ' , v description , ' with context '
+						, v context asString.
+			v context + 1 ]
 		description: 'a description 4'
 		length: 0.
-	ui := MooseTaskBrowser new.
 	taskRepo addTask: task.
+	ui := MooseTaskBrowser new.
 	ui repositoryView setList: taskRepo tasks
 	"ui openWithSpec"
 ]

@@ -1,30 +1,74 @@
 "
-|task taskRepo test|
-taskRepo := MooseTaskRepository new.
-task := MooseCustomTaskWithContext new 
-        with: [ :v | v context: 100 atRandom. (1 to: 30000000) do: [ :i | true ] displayingProgress: 'running task: ', v description, ' with context ' , v context asString. v context +1  ]
-        description: 'a description 1'
-        length: 0.
-taskRepo addTask: task.
-task := MooseCustomTaskWithContext new
-        with: [ :v | (1 to: 30000000) do: [ :i | true ] displayingProgress: 'running task: ', v description, ' with context ' , v context asString. v context + 1 ]
-        description: 'a description 2'
-        length: 0.
-taskRepo addTask: task.
-task := MooseCustomTaskWithContext new
-        with: [ :v | (1 to: 30000000) do: [ :i | true ] displayingProgress: 'running task: ', v description, ' with context ' , v context asString. v context + 1  ]
-        description: 'a description 3'
-        length: 0.
-taskRepo addTask: task.
-task := MooseCustomTaskWithContext new
-        with: [ :v | (1 to: 30000000) do: [ :i | true ] displayingProgress: 'running task: ', v description, ' with context ' , v context asString. v context + 1  ]
-        description: 'a description 4'
-        length: 0.
-taskRepo addTask: task.
-test := self new.
-test repositoryView setList: taskRepo tasks.
-
-test openWithSpec.
+| task taskRepo test gitName urlString startOIDString endOIDString |
+	gitName := 'FactoryVariants'.
+	urlString := 'https://github.com/fuhrmanator/FactoryVariants'.
+	startOIDString := 'HEAD'.
+	endOIDString := ''.
+	taskRepo := MooseTaskRepository new.
+	task := MooseCustomTaskWithContext new
+		with: [ :v | 
+			| loc |
+			loc := GMUtility cloneRepo: urlString ]
+		description: 'Task 1'
+		length: 0.
+	taskRepo addTask: task.
+	task := MooseCustomTaskWithContext new
+		with: [ :v | 
+			| output |
+			output := GMUtility
+				filterCommitsOnRepoLeftBranchOnly: v context
+				from: startOIDString
+				to: endOIDString.
+			Array with: v context with: output ]
+		description: 'Task 2'
+		length: 0.
+	taskRepo addTask: task.
+	task := MooseCustomTaskWithContext new
+		with: [ :v | 
+			| output |
+			output := GMUtility generateSelectedCommits: v context second.
+			Array with: v context first with: output ]
+		description: 'Task 3'
+		length: 0.
+	taskRepo addTask: task.
+	task := MooseCustomTaskWithContext new
+		with: [ :v | 
+			| output |
+			output := GMUtility generatePairsAndTransactions: v context second.
+			Array with: v context first with: output ]
+		description: 'Task 4'
+		length: 0.
+	taskRepo addTask: task.
+	task := MooseCustomTaskWithContext new
+		with: [ :v | 
+			| output |
+			output := GMUtility
+				generateMSEFileFor: startOIDString
+				reponame: v context first basename.
+			Array with: v context second with: output ]
+		description: 'Task 5'
+		length: 0.
+	taskRepo addTask: task.
+	task := MooseCustomTaskWithContext new
+		with: [ :v | 
+			GMUtility generateClientImplementationPairs: v context second.
+			v context first ]
+		description: '6 Generate ClientImplementation Pairs'
+		length: 0.
+	taskRepo addTask: task.
+	task := MooseCustomTaskWithContext new
+		with: [ :v | 
+			GMUtility
+				calculateCouplingIntersectionsFor: gitName
+				withPairsFile: v context first
+				from: startOIDString
+				to: endOIDString ]
+		description: 'Task 7 '
+		length: 0.
+	taskRepo addTask: task.
+	test := MooseTaskBrowser new.
+	test repositoryView setList: taskRepo tasks.
+	test openWithSpec
 "
 Class {
 	#name : #MooseTaskBrowser,
@@ -135,14 +179,16 @@ MooseTaskBrowser >> initializePresenter [
 		action: [ state := true.
 			runButton disable.
 			self run
-				ifFalse: [ self inform: 'Tasks stop.' ]
+				ifFalse: [ self inform: 'Tasks stop.'.
+					runButton enable ]
 				ifTrue: [ self inform: 'Tasks finish.' ].
-			state := false.
-			listPresenter resetSelection ].
+			state := false ].
 	addButton
 		action: [ repositoryView openDialogWithSpec
 				okAction: [ self
-						setTasks: repositoryView listPresenter selectedItems asOrderedCollection ].
+						setTasks:
+							(repositoryView listPresenter selectedItems asOrderedCollection
+								sort: [ :a :b | a description <= b description ]) ].
 			repositoryView listPresenter resetSelection ]
 ]
 
@@ -235,14 +281,15 @@ MooseTaskBrowser >> run [
 		nextInput := [ listPresenter selectedItem run ]
 			on: Exception
 			do: [ :e | 
-				| view |
-				view := ExceptionDialog new.
-				view
-					messageText:
+				|view| view := ExceptionDialog new.
+					view messageText:
 						('Task: ' , listPresenter selectedItem description , '\'
 							, e description) withCRs.
-				view openDialogWithSpec cancelAction: [ view window close.^ false ].
+				view openDialogWithSpec
+					cancelAction: [ view window close.
+						^ false ].
 				view window modalRelativeTo: World ] ].
+	listPresenter resetSelection.
 	^ true
 ]
 
@@ -260,7 +307,10 @@ MooseTaskBrowser >> saveButton [
 MooseTaskBrowser >> setTasks: aCollection [
 	list
 		ifNil: [ list := aCollection ]
-		ifNotNil: [ aCollection do: [ :i | (list includes: i) ifFalse:[ list add: i ] ]].
+		ifNotNil: [ aCollection
+				do: [ :i | 
+					(list includes: i)
+						ifFalse: [ list add: i ] ] ].
 	list
 		ifNotNil: [ listPresenter
 				items: list;

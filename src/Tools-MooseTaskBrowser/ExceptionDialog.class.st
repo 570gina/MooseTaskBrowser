@@ -5,8 +5,7 @@ Class {
 	#name : #ExceptionDialog,
 	#superclass : #ComposablePresenter,
 	#instVars : [
-		'messageText',
-		'label'
+		'messageText'
 	],
 	#category : #'Tools-MooseTaskBrowser'
 }
@@ -15,7 +14,6 @@ Class {
 ExceptionDialog class >> defaultSpec [
 	^ SpecColumnLayout composed
 		add: #messageText;
-		add: #label height: self defaultFont height;
 		yourself
 ]
 
@@ -25,14 +23,15 @@ ExceptionDialog >> extent [
 ]
 
 { #category : #initialization }
-ExceptionDialog >> initializeWidgets [
-	messageText := self newText disable.
-	label := self newLabel label: 'Do you want to continue running?'
+ExceptionDialog >> initializeDialogWindow: aWindow [
+	super initializeDialogWindow: aWindow.
+	aWindow toolbar okButton label: 'Process'.
+	aWindow toolbar cancelButton label: 'Stop'
 ]
 
-{ #category : #accessing }
-ExceptionDialog >> label [
-	^ label
+{ #category : #initialization }
+ExceptionDialog >> initializeWidgets [
+	messageText := self newText disable.
 ]
 
 { #category : #accessing }
