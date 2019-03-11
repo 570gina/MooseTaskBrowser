@@ -9,7 +9,7 @@
 		with: [ :v | 
 			| loc |
 			loc := GMUtility cloneRepo: urlString ]
-		description: 'Task 1'
+		description: '1 Clone Repository'
 		length: 0.
 	taskRepo addTask: task.
 	task := MooseCustomTaskWithContext new
@@ -20,7 +20,7 @@
 				from: startOIDString
 				to: endOIDString.
 			Array with: v context with: output ]
-		description: 'Task 2'
+		description: '2 Filter Commits On Repository Left Branch'
 		length: 0.
 	taskRepo addTask: task.
 	task := MooseCustomTaskWithContext new
@@ -28,7 +28,7 @@
 			| output |
 			output := GMUtility generateSelectedCommits: v context second.
 			Array with: v context first with: output ]
-		description: 'Task 3'
+		description: '3 Generate Selected Commits'
 		length: 0.
 	taskRepo addTask: task.
 	task := MooseCustomTaskWithContext new
@@ -36,7 +36,7 @@
 			| output |
 			output := GMUtility generatePairsAndTransactions: v context second.
 			Array with: v context first with: output ]
-		description: 'Task 4'
+		description: '4 Generate Pairs And Transactions'
 		length: 0.
 	taskRepo addTask: task.
 	task := MooseCustomTaskWithContext new
@@ -46,7 +46,7 @@
 				generateMSEFileFor: startOIDString
 				reponame: v context first basename.
 			Array with: v context second with: output ]
-		description: 'Task 5'
+		description: '5 Generate MSE File For StartOID'
 		length: 0.
 	taskRepo addTask: task.
 	task := MooseCustomTaskWithContext new
@@ -63,7 +63,7 @@
 				withPairsFile: v context first
 				from: startOIDString
 				to: endOIDString ]
-		description: 'Task 7 '
+		description: '7 Calculate Coupling Intersections'
 		length: 0.
 	taskRepo addTask: task.
 	test := MooseTaskBrowser new.

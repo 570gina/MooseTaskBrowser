@@ -25,7 +25,7 @@ ExceptionDialog >> extent [
 { #category : #initialization }
 ExceptionDialog >> initializeDialogWindow: aWindow [
 	super initializeDialogWindow: aWindow.
-	aWindow toolbar okButton label: 'Process'.
+	aWindow toolbar okButton label: 'Next'.
 	aWindow toolbar cancelButton label: 'Stop'
 ]
 
