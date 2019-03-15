@@ -30,26 +30,26 @@ MooseTaskTests >> setUp [
 
 	super setUp.
 	taskRepo := MooseTaskRepository new.
-	task := MooseCustomTaskWithContext new
+	task := MooseCustomTask new
 		with: (MessageSend receiver: self selector: #body:)
 		description: 'a description 1'
 		length: 0.
 	taskRepo addTask: task.
-	task := MooseCustomTaskWithContext new
+	task := MooseCustomTask new
 		with: (MessageSend receiver: self selector: #body:)
 		description: 'a description 2'
 		length: 0.
 	taskRepo addTask: task.
-	task := MooseCustomTaskWithContext new
+	task := MooseCustomTask new
 		with: self createBlockHandle
 		description: 'a description 3'
 		length: 0.
 	taskRepo addTask: task.
-	task := MooseCustomTaskWithContext new
+	task := MooseCustomTask new
 		with: (MessageSend receiver: self selector: #body:)
 		description: 'a description 4'
 		length: 0.
-	task := MooseCustomTaskWithContext new
+	task := MooseCustomTask new
 		with: [ :v | 
 			(1 to: 20000000)
 				do: [ :i | true ]
@@ -60,7 +60,7 @@ MooseTaskTests >> setUp [
 		description: 'a description 5'
 		length: 0.
 	taskRepo addTask: task.
-	task := MooseCustomTaskWithContext new
+	task := MooseCustomTask new
 		with: [ :v | 
 			(1 to: 20000000)
 				do: [ :i | true ]
@@ -71,7 +71,7 @@ MooseTaskTests >> setUp [
 		description: 'a description 6'
 		length: 0.
 	taskRepo addTask: task.
-	task := MooseCustomTaskWithContext new
+	task := MooseCustomTask new
 		with: [ :v | 
 			(1 to: 20000000)
 				do: [ :i | true ]

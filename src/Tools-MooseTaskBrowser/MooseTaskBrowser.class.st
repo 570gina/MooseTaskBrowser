@@ -54,14 +54,14 @@ MooseTaskBrowser class >> example [
 	startOIDString := 'HEAD'.
 	endOIDString := ''.
 	taskRepo := MooseTaskRepository new.
-	task := MooseCustomTaskWithContext new
+	task := MooseCustomTask new
 		with: [ :v | 
 			| loc |
 			loc := GMUtility cloneRepo: urlString ]
 		description: '1 Clone Repository'
 		length: 0.
 	taskRepo addTask: task.
-	task := MooseCustomTaskWithContext new
+	task := MooseCustomTask new
 		with: [ :v | 
 			| output |
 			output := GMUtility
@@ -72,7 +72,7 @@ MooseTaskBrowser class >> example [
 		description: '2 Filter Commits On Repository Left Branch'
 		length: 0.
 	taskRepo addTask: task.
-	task := MooseCustomTaskWithContext new
+	task := MooseCustomTask new
 		with: [ :v | 
 			| output |
 			output := GMUtility generateSelectedCommits: v context second.
@@ -80,7 +80,7 @@ MooseTaskBrowser class >> example [
 		description: '3 Generate Selected Commits'
 		length: 0.
 	taskRepo addTask: task.
-	task := MooseCustomTaskWithContext new
+	task := MooseCustomTask new
 		with: [ :v | 
 			| output |
 			output := GMUtility generatePairsAndTransactions: v context second.
@@ -88,7 +88,7 @@ MooseTaskBrowser class >> example [
 		description: '4 Generate Pairs And Transactions'
 		length: 0.
 	taskRepo addTask: task.
-	task := MooseCustomTaskWithContext new
+	task := MooseCustomTask new
 		with: [ :v | 
 			| output |
 			output := GMUtility
@@ -98,14 +98,14 @@ MooseTaskBrowser class >> example [
 		description: '5 Generate MSE File For StartOID'
 		length: 0.
 	taskRepo addTask: task.
-	task := MooseCustomTaskWithContext new
+	task := MooseCustomTask new
 		with: [ :v | 
 			GMUtility generateClientImplementationPairs: v context second.
 			v context first ]
 		description: '6 Generate ClientImplementation Pairs'
 		length: 0.
 	taskRepo addTask: task.
-	task := MooseCustomTaskWithContext new
+	task := MooseCustomTask new
 		with: [ :v | 
 			GMUtility
 				calculateCouplingIntersectionsFor: gitName
@@ -128,7 +128,7 @@ MooseTaskBrowser class >> example2 [
 	startOIDString := 'HEAD'.
 	endOIDString := ''.
 	taskRepo := MooseTaskRepository new.
-	requestUrl := MooseCustomTaskWithContext new
+	requestUrl := MooseCustomTask new
 		with: [ :v | 
 			| loc |
 			loc := UIManager default
@@ -137,11 +137,10 @@ MooseTaskBrowser class >> example2 [
 		description: '0 prompt url'
 		length: 0.
 	taskRepo addTask: requestUrl.
-	clone := MooseCustomTaskWithContext new
+	clone := MooseCustomTask new
 		with: [ :v | GMUtility cloneRepo: (v context at: v dependancies anyOne) ]
 		description: '1 Clone Repository'
 		length: 0.
-	clone requires: requestUrl.
 	taskRepo addTask: clone.
 	test := MooseTaskBrowser new.
 	test repositoryView setList: taskRepo tasks.
@@ -321,37 +320,14 @@ MooseTaskBrowser >> repositoryView [
 
 { #category : #actions }
 MooseTaskBrowser >> run [
-	| index context |
-	index := listPresenter getIndex.
-	context := Dictionary new.
-
-	"runner run:  (listPresenter selectedItem)."
-	index to: listPresenter listSize do: [ :i | 
-		listPresenter setIndex: i.
-		listPresenter selectedItem
-			context:
-				(listPresenter selectedItem dependancies
-					collect: [ :d | 
-						d
-							-> (context at: d ifAbsent: [ self error: ' Dependancies not yet met' ]) ])
-					asDictionary.
-		context
-			at: listPresenter selectedItem
-			ifAbsentPut: [listPresenter selectedItem run].
-		context at: listPresenter selectedItem ].
-	"]
-			on: Error
-			do: [ :e | 
-				| view |
-				view := ExceptionDialog new.
-				view
-					messageText:
-						('Task: ' , listPresenter selectedItem description , '\'
-							, e description) withCRs.
-				view openDialogWithSpec
-					cancelAction: [ view window close.
-						^ false ].
-				view window modalRelativeTo: World ] ]."
+	MooseJob new
+		steps:
+			(listPresenter listItems
+				collect: [ :t | 
+					MooseTaskRuntime new
+						task: t;
+						yourself ]);
+		run.
 	listPresenter resetSelection.
 	^ true
 ]
