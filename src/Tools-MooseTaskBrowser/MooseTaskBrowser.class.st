@@ -1,5 +1,54 @@
 "
-| task taskRepo test gitName urlString startOIDString endOIDString |
+Todo -
+
+	move run method to a MooseTaskRunner class. 
+	decouple the UI from the runner 
+"
+Class {
+	#name : #MooseTaskBrowser,
+	#superclass : #ComposablePresenter,
+	#instVars : [
+		'list',
+		'listPresenter',
+		'saveButton',
+		'loadButton',
+		'addButton',
+		'upButton',
+		'downButton',
+		'runButton',
+		'state',
+		'taskRepo',
+		'repositoryView',
+		'runner'
+	],
+	#category : #'Tools-MooseTaskBrowser'
+}
+
+{ #category : #specs }
+MooseTaskBrowser class >> defaultSpec [
+	^ SpecColumnLayout composed
+		newRow: [ :row | 
+			row
+				add: #loadButton;
+				add: #saveButton;
+				add: #addButton ]
+			height: self toolbarHeight;
+		newRow: [ :row | 
+			row
+				add: #listPresenter;
+				newColumn: [ :col | 
+					col
+						add: #upButton;
+						add: #downButton ]
+					width: self defaultFont height + 6 ];
+		newRow: [ :row | row add: #runButton ] height: self toolbarHeight;
+		yourself
+]
+
+{ #category : #specs }
+MooseTaskBrowser class >> example [
+	<example>
+	| task taskRepo test gitName urlString startOIDString endOIDString |
 	gitName := 'FactoryVariants'.
 	urlString := 'https://github.com/fuhrmanator/FactoryVariants'.
 	startOIDString := 'HEAD'.
@@ -69,45 +118,34 @@
 	test := MooseTaskBrowser new.
 	test repositoryView setList: taskRepo tasks.
 	test openWithSpec
-"
-Class {
-	#name : #MooseTaskBrowser,
-	#superclass : #ComposablePresenter,
-	#instVars : [
-		'list',
-		'listPresenter',
-		'saveButton',
-		'loadButton',
-		'addButton',
-		'upButton',
-		'downButton',
-		'runButton',
-		'state',
-		'taskRepo',
-		'repositoryView'
-	],
-	#category : #'Tools-MooseTaskBrowser'
-}
+]
 
 { #category : #specs }
-MooseTaskBrowser class >> defaultSpec [
-	^ SpecColumnLayout composed
-		newRow: [ :row | 
-			row
-				add: #loadButton;
-				add: #saveButton;
-				add: #addButton ]
-			height: self toolbarHeight;
-		newRow: [ :row | 
-			row
-				add: #listPresenter;
-				newColumn: [ :col | 
-					col
-						add: #upButton;
-						add: #downButton ]
-					width: self defaultFont height + 6 ];
-		newRow: [ :row | row add: #runButton ] height: self toolbarHeight;
-		yourself
+MooseTaskBrowser class >> example2 [
+	<example>
+	| requestUrl clone taskRepo test gitName urlString startOIDString endOIDString |
+	gitName := 'FactoryVariants'.
+	startOIDString := 'HEAD'.
+	endOIDString := ''.
+	taskRepo := MooseTaskRepository new.
+	requestUrl := MooseCustomTaskWithContext new
+		with: [ :v | 
+			| loc |
+			loc := UIManager default
+				request: 'Please insert the url to clone'
+				initialAnswer: 'https://github.com/fuhrmanator/FactoryVariants' ]
+		description: '0 prompt url'
+		length: 0.
+	taskRepo addTask: requestUrl.
+	clone := MooseCustomTaskWithContext new
+		with: [ :v | GMUtility cloneRepo: (v context at: v dependancies anyOne) ]
+		description: '1 Clone Repository'
+		length: 0.
+	clone requires: requestUrl.
+	taskRepo addTask: clone.
+	test := MooseTaskBrowser new.
+	test repositoryView setList: taskRepo tasks.
+	test openWithSpec
 ]
 
 { #category : #menu }
@@ -122,6 +160,11 @@ MooseTaskBrowser class >> menuMooseTask: aBuilder [
 		icon: (self iconNamed: #delete);
 		keyText: 'd';
 		selector: #deleteTask
+]
+
+{ #category : #api }
+MooseTaskBrowser >> aboutText [
+	^ 'Moose Task Browser'
 ]
 
 { #category : #accessing }
@@ -149,6 +192,12 @@ MooseTaskBrowser >> ensureKeyBindingsFor: aWidget [
 { #category : #api }
 MooseTaskBrowser >> extent [
 	^ 350 @ 450
+]
+
+{ #category : #initialization }
+MooseTaskBrowser >> initialize [
+	super initialize.
+		runner := MooseTaskRunner new
 ]
 
 { #category : #initialization }
@@ -272,23 +321,37 @@ MooseTaskBrowser >> repositoryView [
 
 { #category : #actions }
 MooseTaskBrowser >> run [
-	| index nextInput |
+	| index context |
 	index := listPresenter getIndex.
+	context := Dictionary new.
+
+	"runner run:  (listPresenter selectedItem)."
 	index to: listPresenter listSize do: [ :i | 
 		listPresenter setIndex: i.
-		nextInput
-			ifNotNil: [ listPresenter selectedItem context: nextInput ].
-		nextInput := [ listPresenter selectedItem run ]
-			on: Exception
+		listPresenter selectedItem
+			context:
+				(listPresenter selectedItem dependancies
+					collect: [ :d | 
+						d
+							-> (context at: d ifAbsent: [ self error: ' Dependancies not yet met' ]) ])
+					asDictionary.
+		context
+			at: listPresenter selectedItem
+			ifAbsentPut: [listPresenter selectedItem run].
+		context at: listPresenter selectedItem ].
+	"]
+			on: Error
 			do: [ :e | 
-				|view| view := ExceptionDialog new.
-					view messageText:
+				| view |
+				view := ExceptionDialog new.
+				view
+					messageText:
 						('Task: ' , listPresenter selectedItem description , '\'
 							, e description) withCRs.
 				view openDialogWithSpec
 					cancelAction: [ view window close.
 						^ false ].
-				view window modalRelativeTo: World ] ].
+				view window modalRelativeTo: World ] ]."
 	listPresenter resetSelection.
 	^ true
 ]

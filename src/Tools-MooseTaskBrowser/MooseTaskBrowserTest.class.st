@@ -1,6 +1,6 @@
 Class {
 	#name : #MooseTaskBrowserTest,
-	#superclass : #TestCase,
+	#superclass : #MooseTaskTests,
 	#instVars : [
 		'ui'
 	],
@@ -14,57 +14,9 @@ MooseTaskBrowserTest >> addTasks [
 	ui repositoryView window triggerOkAction
 ]
 
-{ #category : #running }
-MooseTaskBrowserTest >> setUp [
-	"Hooks that subclasses may override to define the fixture of test."
-
-	| task taskRepo |
-	taskRepo := MooseTaskRepository new.
-	task := MooseCustomTaskWithContext new
-		with: [ :v | 
-			v context: 100 atRandom.
-			(1 to: 20000000)
-				do: [ :i | true ]
-				displayingProgress:
-					'running task: ' , v description , ' with context '
-						, v context asString.
-			v context + 1 ]
-		description: 'a description 1'
-		length: 0.
-	taskRepo addTask: task.
-	task := MooseCustomTaskWithContext new
-		with: [ :v | 
-			(1 to: 20000000)
-				do: [ :i | true ]
-				displayingProgress:
-					'running task: ' , v description , ' with context '
-						, v context asString.
-			v context + 1 ]
-		description: 'a description 2'
-		length: 0.
-	taskRepo addTask: task.
-	task := MooseCustomTaskWithContext new
-		with: [ :v | 
-			(1 to: 20000000)
-				do: [ :i | true ]
-				displayingProgress:
-					'running task: ' , v description , ' with context '
-						, v context asString.
-			v context + 1 ]
-		description: 'a description 3'
-		length: 0.
-	taskRepo addTask: task.
-	task := MooseCustomTaskWithContext new
-		with: [ :v | 
-			(1 to: 20000000)
-				do: [ :i | true ]
-				displayingProgress:
-					'running task: ' , v description , ' with context '
-						, v context asString.
-			v context + 1 ]
-		description: 'a description 4'
-		length: 0.
-	taskRepo addTask: task.
+{ #category : #preparation }
+MooseTaskBrowserTest >> setUp [ 
+	super setUp.
 	ui := MooseTaskBrowser new.
 	ui repositoryView setList: taskRepo tasks
 	"ui openWithSpec"

@@ -2,7 +2,8 @@ Class {
 	#name : #MooseCustomTaskWithContext,
 	#superclass : #MooseCustomTask,
 	#instVars : [
-		'context'
+		'context',
+		'dependancies'
 	],
 	#category : #'Tools-MooseTaskBrowser'
 }
@@ -15,4 +16,20 @@ MooseCustomTaskWithContext >> context [
 { #category : #accessing }
 MooseCustomTaskWithContext >> context: anObject [
 	context := anObject
+]
+
+{ #category : #accessing }
+MooseCustomTaskWithContext >> dependancies [
+	^ dependancies
+]
+
+{ #category : #dependancies }
+MooseCustomTaskWithContext >> initialize [ 
+	super initialize.
+	dependancies := Set new .
+]
+
+{ #category : #dependancies }
+MooseCustomTaskWithContext >> requires: aMooseCustomTaskWithContext [
+	dependancies add: aMooseCustomTaskWithContext
 ]
