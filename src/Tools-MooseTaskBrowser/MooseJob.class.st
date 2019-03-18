@@ -4,9 +4,9 @@ Class {
 	#instVars : [
 		'steps',
 		'context',
-		'jobInput'
+		'jobOutput'
 	],
-	#category : #'Tools-MooseTaskBrowser'
+	#category : #'Tools-MooseTaskBrowser-core'
 }
 
 { #category : #running }

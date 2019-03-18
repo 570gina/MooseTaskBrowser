@@ -5,7 +5,7 @@ Class {
 		'taskRepo',
 		'task'
 	],
-	#category : #'Tools-MooseTaskBrowser'
+	#category : #'Tools-MooseTaskBrowser-tests'
 }
 
 { #category : #running }

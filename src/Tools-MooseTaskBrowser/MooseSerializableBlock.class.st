@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'internalBlock'
 	],
-	#category : #'Tools-MooseTaskBrowser'
+	#category : #'Tools-MooseTaskBrowser-core'
 }
 
 { #category : #'instance creation' }

@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'ui'
 	],
-	#category : #'Tools-MooseTaskBrowser'
+	#category : #'Tools-MooseTaskBrowser-tests'
 }
 
 { #category : #preparation }

@@ -7,7 +7,7 @@ Class {
 	#instVars : [
 		'messageText'
 	],
-	#category : #'Tools-MooseTaskBrowser'
+	#category : #'Tools-MooseTaskBrowser-core'
 }
 
 { #category : #specs }

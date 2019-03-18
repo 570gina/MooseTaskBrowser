@@ -1,7 +1,7 @@
 Class {
 	#name : #MooseTaskPersistenceTest,
 	#superclass : #MooseTaskTests,
-	#category : #'Tools-MooseTaskBrowser'
+	#category : #'Tools-MooseTaskBrowser-tests'
 }
 
 { #category : #tests }

@@ -1,7 +1,7 @@
 Class {
 	#name : #MooseTaskRunner,
 	#superclass : #Object,
-	#category : #'Tools-MooseTaskBrowser'
+	#category : #'Tools-MooseTaskBrowser-core'
 }
 
 { #category : #actions }

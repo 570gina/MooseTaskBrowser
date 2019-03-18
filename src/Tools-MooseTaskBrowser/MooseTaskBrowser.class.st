@@ -1,8 +1,28 @@
 "
 Todo -
-
+	Allow to the job to receive arguments. 
+	
+	Implement a task that responds to a composite (meaning, tasks that can be runned at the same time. cooking the sauce while working the dough).
+	Define how does a complex task merges all the output into one general output. 
+	Define how a complex composite task dispatches the arguments to the sub tasks. 
+	Track down how many arguments needs a task. (A regular task may need as much arguments as the block that it uses)
+	Test test test
 	move run method to a MooseTaskRunner class. 
-	decouple the UI from the runner 
+
+	Nowadays, the result of the execution of a task is beign stored in the context variable (dictionary) on the method run of the class mooseJob. 
+	Change this behavior to store the result of the task into the related taskruntime object. 
+	Modify the variable context of task runtime to be named ""input"". Context is to vague.
+	After, ensure to cache the ""last used input"", 
+	Now we can do some improvements by executing the actual task, only when the given input differs with the last input. 
+	This last behaviours needs much testing. 
+	
+	Modify the UI for: 
+		1 allowing the job to receive arguments. 
+		2 display the job's output. (or allow to inspect it)
+		3 reuse the job many times instead of using allways a new one (this will allow us to *really* use the cached result mechanism )
+		4 allow from the ui to mark as "" to re-execute "" one or many tasks 
+		
+		
 "
 Class {
 	#name : #MooseTaskBrowser,
@@ -21,7 +41,7 @@ Class {
 		'repositoryView',
 		'runner'
 	],
-	#category : #'Tools-MooseTaskBrowser'
+	#category : #'Tools-MooseTaskBrowser-core'
 }
 
 { #category : #specs }
@@ -326,7 +346,8 @@ MooseTaskBrowser >> run [
 				collect: [ :t | 
 					MooseTaskRuntime new
 						task: t;
-						yourself ]);
+						yourself.
+					 ]);
 		run.
 	listPresenter resetSelection.
 	^ true
@@ -346,10 +367,7 @@ MooseTaskBrowser >> saveButton [
 MooseTaskBrowser >> setTasks: aCollection [
 	list
 		ifNil: [ list := aCollection ]
-		ifNotNil: [ aCollection
-				do: [ :i | 
-					(list includes: i)
-						ifFalse: [ list add: i ] ] ].
+		ifNotNil: [ aCollection do: [ :i | list add: i ] ].
 	list
 		ifNotNil: [ listPresenter
 				items: list;
@@ -370,7 +388,8 @@ MooseTaskBrowser >> swapItems: aNumber [
 	list removeAt: selectedIndex.
 	list add: tempItem afterIndex: selectedIndex + aNumber.
 	listPresenter items: list.
-	listPresenter setSelectedItem: tempItem
+	listPresenter setIndex: selectedIndex + aNumber+1.
+
 ]
 
 { #category : #accessing }

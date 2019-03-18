@@ -1,7 +1,7 @@
 Class {
 	#name : #MooseTaskRepositoryTest,
 	#superclass : #TestCase,
-	#category : #'Tools-MooseTaskBrowser'
+	#category : #'Tools-MooseTaskBrowser-tests'
 }
 
 { #category : #tests }
