@@ -3,43 +3,52 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'steps',
-		'context',
-		'jobOutput'
+		'input'
 	],
 	#category : #'Tools-MooseTaskBrowser-core'
 }
+
+{ #category : #adding }
+MooseJob >> addSteps: aCollection [
+	steps addAll: aCollection
+]
 
 { #category : #running }
 MooseJob >> debuggerErrorHandling: anError [
 	anError debug
 ]
 
-{ #category : #accessing }
-MooseJob >> jobInput [
-	^ jobInput ifNil: [ #nothing ]
+{ #category : #running }
+MooseJob >> initialize [
+	super initialize.
+	steps := OrderedCollection new
+]
+
+{ #category : #running }
+MooseJob >> input [
+	^ input 
+]
+
+{ #category : #running }
+MooseJob >> input: aValue [
+	input := aValue
+]
+
+{ #category : #adding }
+MooseJob >> removeStep: aMooseTaskRuntime [
+	steps remove: aMooseTaskRuntime
 ]
 
 { #category : #running }
 MooseJob >> run [
-	context := Dictionary new.
-	context at: 0 put: self jobInput.
-	steps
-		doWithIndex: [ :step :index | 
-			[ step
-				context:
-					(context
-						at: index - 1
-						ifAbsent: [ self error: ' Previous step has to be executed' ]).
-			context at: index ifAbsentPut: [ step run ].
-			context at: index ]
-				on: Error
-				do: [ :err | self debuggerErrorHandling: err ] ].
-	^ context at: steps size
+	^ steps allButFirst
+		inject: (steps first run: self input)
+		into: [ :result :step | step run: result ]
 ]
 
-{ #category : #running }
-MooseJob >> runOn: aRunner [
-	
+{ #category : #accessing }
+MooseJob >> steps [
+	^ steps
 ]
 
 { #category : #running }
@@ -51,6 +60,8 @@ MooseJob >> steps: aCollectionOfTasks [
 MooseJob >> uiErrorHandling: anError [
 	| view |
 	view := ExceptionDialog new.
+	view okLabel:'Next'.
+	view cancelLabel:'Stop'.
 	view messageText: ('Task: ' , anError description) withCRs.
 	view openDialogWithSpec
 		cancelAction: [ view window close.

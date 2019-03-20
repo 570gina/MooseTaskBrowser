@@ -5,7 +5,9 @@ Class {
 	#name : #ExceptionDialog,
 	#superclass : #ComposablePresenter,
 	#instVars : [
-		'messageText'
+		'messageText',
+		'okLabel',
+		'cancelLabel'
 	],
 	#category : #'Tools-MooseTaskBrowser-core'
 }
@@ -17,6 +19,16 @@ ExceptionDialog class >> defaultSpec [
 		yourself
 ]
 
+{ #category : #accessing }
+ExceptionDialog >> cancelLabel [
+	^ cancelLabel
+]
+
+{ #category : #accessing }
+ExceptionDialog >> cancelLabel: anObject [
+	cancelLabel := anObject
+]
+
 { #category : #api }
 ExceptionDialog >> extent [
 	^ 250 @ 200
@@ -25,8 +37,8 @@ ExceptionDialog >> extent [
 { #category : #initialization }
 ExceptionDialog >> initializeDialogWindow: aWindow [
 	super initializeDialogWindow: aWindow.
-	aWindow toolbar okButton label: 'Next'.
-	aWindow toolbar cancelButton label: 'Stop'
+	aWindow toolbar okButton label: okLabel.
+	aWindow toolbar cancelButton label: cancelLabel
 ]
 
 { #category : #initialization }
@@ -42,6 +54,16 @@ ExceptionDialog >> messageText [
 { #category : #accessing }
 ExceptionDialog >> messageText: aString [
 	messageText text: aString
+]
+
+{ #category : #accessing }
+ExceptionDialog >> okLabel [
+	^ okLabel
+]
+
+{ #category : #accessing }
+ExceptionDialog >> okLabel: anObject [
+	okLabel := anObject
 ]
 
 { #category : #api }

@@ -1,34 +1,39 @@
 "
 Todo -
-	Allow to the job to receive arguments. 
+	Allow to the job to receive arguments. [ to test ]
 	
 	Implement a task that responds to a composite (meaning, tasks that can be runned at the same time. cooking the sauce while working the dough).
-	Define how does a complex task merges all the output into one general output. 
-	Define how a complex composite task dispatches the arguments to the sub tasks. 
-	Track down how many arguments needs a task. (A regular task may need as much arguments as the block that it uses)
 	Test test test
-	move run method to a MooseTaskRunner class. 
 
 	Nowadays, the result of the execution of a task is beign stored in the context variable (dictionary) on the method run of the class mooseJob. 
-	Change this behavior to store the result of the task into the related taskruntime object. 
-	Modify the variable context of task runtime to be named ""input"". Context is to vague.
+	Change this behavior to store the result of the task into the related taskruntime object.  [ Done - To test. (test what happen if the new input is different. If the output is nil, if the output is not nil, etc ) ]
+	Modify the variable context of task runtime to be named ""input"". Context is to vague. [ done ]
 	After, ensure to cache the ""last used input"", 
-	Now we can do some improvements by executing the actual task, only when the given input differs with the last input. 
+	Now we can do some improvements by executing the actual task, only when the given input differs with the last input. [ Done. Still needs testing!  ]
 	This last behaviours needs much testing. 
 	
+	modify the MooseTaskRuntime to be as a composite of many childs.
+	ensure to implement run: for multiple childs. 
+	test adn test and test again
+	and come to ask me if you need something anddd:
+	test and test and test and think in how to implement a MooseJobRunner that executes each taskruntime in a specific way. 
+	
+	
 	Modify the UI for: 
-		1 allowing the job to receive arguments. 
+		1 allowing the job to receive arguments. [ not yet interesting  ]
 		2 display the job's output. (or allow to inspect it)
-		3 reuse the job many times instead of using allways a new one (this will allow us to *really* use the cached result mechanism )
+		3 reuse the job many times instead of using allways a new one (this will allow us to *really* use the cached result mechanism ) [ done, needs testing ]
 		4 allow from the ui to mark as "" to re-execute "" one or many tasks 
-		
+		5 allow the user to specify if many tasks can run together (or they share input)
+	
+			
+
 		
 "
 Class {
 	#name : #MooseTaskBrowser,
-	#superclass : #ComposablePresenter,
+	#superclass : #ComposablePresenterWithModel,
 	#instVars : [
-		'list',
 		'listPresenter',
 		'saveButton',
 		'loadButton',
@@ -85,26 +90,26 @@ MooseTaskBrowser class >> example [
 		with: [ :v | 
 			| output |
 			output := GMUtility
-				filterCommitsOnRepoLeftBranchOnly: v context
+				filterCommitsOnRepoLeftBranchOnly: v input
 				from: startOIDString
 				to: endOIDString.
-			Array with: v context with: output ]
+			Array with: v input with: output ]
 		description: '2 Filter Commits On Repository Left Branch'
 		length: 0.
 	taskRepo addTask: task.
 	task := MooseCustomTask new
 		with: [ :v | 
 			| output |
-			output := GMUtility generateSelectedCommits: v context second.
-			Array with: v context first with: output ]
+			output := GMUtility generateSelectedCommits: v input second.
+			Array with: v input first with: output ]
 		description: '3 Generate Selected Commits'
 		length: 0.
 	taskRepo addTask: task.
 	task := MooseCustomTask new
 		with: [ :v | 
 			| output |
-			output := GMUtility generatePairsAndTransactions: v context second.
-			Array with: v context first with: output ]
+			output := GMUtility generatePairsAndTransactions: v input second.
+			Array with: v input first with: output ]
 		description: '4 Generate Pairs And Transactions'
 		length: 0.
 	taskRepo addTask: task.
@@ -113,15 +118,15 @@ MooseTaskBrowser class >> example [
 			| output |
 			output := GMUtility
 				generateMSEFileFor: startOIDString
-				reponame: v context first basename.
-			Array with: v context second with: output ]
+				reponame: v input first basename.
+			Array with: v input second with: output ]
 		description: '5 Generate MSE File For StartOID'
 		length: 0.
 	taskRepo addTask: task.
 	task := MooseCustomTask new
 		with: [ :v | 
-			GMUtility generateClientImplementationPairs: v context second.
-			v context first ]
+			GMUtility generateClientImplementationPairs: v input second.
+			v input first ]
 		description: '6 Generate ClientImplementation Pairs'
 		length: 0.
 	taskRepo addTask: task.
@@ -129,13 +134,13 @@ MooseTaskBrowser class >> example [
 		with: [ :v | 
 			GMUtility
 				calculateCouplingIntersectionsFor: gitName
-				withPairsFile: v context first
+				withPairsFile: v input first
 				from: startOIDString
 				to: endOIDString ]
 		description: '7 Calculate Coupling Intersections'
 		length: 0.
 	taskRepo addTask: task.
-	test := MooseTaskBrowser new.
+	test := MooseTaskBrowser on: MooseJob new.
 	test repositoryView setList: taskRepo tasks.
 	test openWithSpec
 ]
@@ -143,7 +148,7 @@ MooseTaskBrowser class >> example [
 { #category : #specs }
 MooseTaskBrowser class >> example2 [
 	<example>
-	| requestUrl clone taskRepo test gitName urlString startOIDString endOIDString |
+	| requestUrl clone taskRepo test gitName startOIDString endOIDString |
 	gitName := 'FactoryVariants'.
 	startOIDString := 'HEAD'.
 	endOIDString := ''.
@@ -152,17 +157,45 @@ MooseTaskBrowser class >> example2 [
 		with: [ :v | 
 			| loc |
 			loc := UIManager default
-				request: 'Please insert the url to clone'
+				request: 'Please insert the url to clone, with argument: '
 				initialAnswer: 'https://github.com/fuhrmanator/FactoryVariants' ]
 		description: '0 prompt url'
 		length: 0.
 	taskRepo addTask: requestUrl.
 	clone := MooseCustomTask new
-		with: [ :v | GMUtility cloneRepo: (v context at: v dependancies anyOne) ]
+		with: [ :v | GMUtility cloneRepo: v input ]
 		description: '1 Clone Repository'
 		length: 0.
 	taskRepo addTask: clone.
-	test := MooseTaskBrowser new.
+	test := MooseTaskBrowser on: MooseJob new.
+	test repositoryView setList: taskRepo tasks.
+	test openWithSpec
+]
+
+{ #category : #specs }
+MooseTaskBrowser class >> example3 [
+	<example>
+	| task1 task2 taskRepo test |
+	taskRepo := MooseTaskRepository new.
+	task1 := MooseCustomTask new
+		with: [ :v | 
+			(1 to: 60000000)
+				do: [ :i | true ]
+				displayingProgress: 'running task: '.
+			true ]
+		description: 'a description 1'
+		length: 0.
+	taskRepo addTask: task1.
+	task2 := MooseCustomTask new
+		with: [ :v | 
+			(1 to: 60000000)
+				do: [ :i | true ]
+				displayingProgress: 'running task: '.
+			true ]
+		description: 'a description 2'
+		length: 0.
+	taskRepo addTask: task2.
+	test := MooseTaskBrowser on: MooseJob new..
 	test repositoryView setList: taskRepo tasks.
 	test openWithSpec
 ]
@@ -171,6 +204,9 @@ MooseTaskBrowser class >> example2 [
 MooseTaskBrowser class >> menuMooseTask: aBuilder [
 	<contextMenu>
 	<mooseTaskListMenu>
+	| target listPresenter |
+	target := aBuilder model.
+	listPresenter := target listPresenter.
 	(aBuilder item: #Inspect)
 		icon: (self iconNamed: #smallInspectIt);
 		keyText: 'i';
@@ -178,7 +214,11 @@ MooseTaskBrowser class >> menuMooseTask: aBuilder [
 	(aBuilder item: #Delete)
 		icon: (self iconNamed: #delete);
 		keyText: 'd';
-		selector: #deleteTask
+		selector: #deleteTask	.
+	listPresenter selectedItems size > 1
+		ifTrue: [ (aBuilder item: #combine)
+				keyText: 'b';
+				selector: #combineTasks ]
 ]
 
 { #category : #api }
@@ -193,8 +233,8 @@ MooseTaskBrowser >> addButton [
 
 { #category : #'list control' }
 MooseTaskBrowser >> deleteTask [
-	list removeAt: listPresenter selectedIndex.
-	listPresenter items: list.
+	self model removeStep: listPresenter selectedItem.
+	self model: self model
 ]
 
 { #category : #accessing }
@@ -210,59 +250,22 @@ MooseTaskBrowser >> ensureKeyBindingsFor: aWidget [
 
 { #category : #api }
 MooseTaskBrowser >> extent [
-	^ 350 @ 450
-]
-
-{ #category : #initialization }
-MooseTaskBrowser >> initialize [
-	super initialize.
-		runner := MooseTaskRunner new
+	^ 650 @ 400
 ]
 
 { #category : #initialization }
 MooseTaskBrowser >> initializePresenter [
 	listPresenter
-		whenSelectedItemChanged: [ :item | 
-			| size |
-			size := listPresenter listSize.
-			self isRunning
-				ifTrue: [ runButton disable.
-						upButton disable.
-						downButton disable ];
-				ifFalse: [ item
-							ifNil: [ runButton disable.
-								upButton disable.
-								downButton disable ]
-							ifNotNil: [ runButton enable.
-								size > 1
-									ifTrue: [ upButton enable.
-										downButton enable.
-										listPresenter getIndex = 1
-											ifTrue: [ upButton disable ].
-										listPresenter getIndex = size
-											ifTrue: [ downButton disable ] ] ] ] ].
-	upButton action: [ self swapItems: -2 ].
-	downButton action: [ self swapItems: 0 ].
-	runButton
-		action: [ state := true.
-			runButton disable.
-			self run
-				ifFalse: [ self inform: 'Tasks stop.'.
-					runButton enable ]
-				ifTrue: [ self inform: 'Tasks finish.' ].
-			state := false ].
-	addButton
-		action: [ repositoryView openDialogWithSpec
-				okAction: [ self
-						setTasks:
-							(repositoryView listPresenter selectedItems asOrderedCollection
-								sort: [ :a :b | a description <= b description ]) ].
-			repositoryView listPresenter resetSelection ]
+		whenSelectedItemChanged: [ :item | self manageArrowButtons: item ].
+	upButton action: [ self swapItems: -1 ].
+	downButton action: [ self swapItems: 1 ].
+	runButton action: [ self run ].
+	addButton action: [ self manageTaskAddDialog ]
 ]
 
 { #category : #initialization }
 MooseTaskBrowser >> initializeWidgets [
-	listPresenter := self newList.
+	listPresenter := self newList beMultipleSelection.
 	listPresenter
 		menu: [ :menu :shifted | self mooseTaskListMenu: menu shifted: shifted ].
 	loadButton := self newButton
@@ -302,11 +305,6 @@ MooseTaskBrowser >> isRunning [
 ]
 
 { #category : #accessing }
-MooseTaskBrowser >> list [
-	^ list
-]
-
-{ #category : #accessing }
 MooseTaskBrowser >> listPresenter [
 	^ listPresenter
 ]
@@ -314,6 +312,39 @@ MooseTaskBrowser >> listPresenter [
 { #category : #accessing }
 MooseTaskBrowser >> loadButton [
 	^ loadButton
+]
+
+{ #category : #initialization }
+MooseTaskBrowser >> manageArrowButtons: item [
+	upButton enable.
+	downButton enable.
+	self model steps
+		ifEmpty: [ upButton disable.
+			downButton disable ]
+		ifNotEmpty: [ self model steps first = item
+				ifTrue: [ upButton disable ].
+			self model steps last = item
+				ifTrue: [ downButton disable ] ]
+]
+
+{ #category : #initialization }
+MooseTaskBrowser >> manageTaskAddDialog [
+	repositoryView openDialogWithSpec
+		okAction: [ | steps |
+			steps := repositoryView listPresenter selectedItems
+				asOrderedCollection
+				sort: [ :a :b | a description <= b description ].
+			steps := steps collect: #asTaskRuntime.
+			self model addSteps: steps.
+			self model: self model ]
+]
+
+{ #category : #accessing }
+MooseTaskBrowser >> modelChanged [
+	listPresenter items: self model steps.
+	self model steps
+		ifEmpty: [ runButton disable ]
+		ifNotEmpty: [ runButton enable ]
 ]
 
 { #category : #menu }
@@ -325,12 +356,16 @@ MooseTaskBrowser >> mooseTaskListMenu: aMenu shifted: shifted [
 
 { #category : #shortcuts }
 MooseTaskBrowser >> registerMooseTaskListShortcuts: aWidget [
-		aWidget
+	aWidget
 		bindKeyCombination: $i meta
-		toAction: [ listPresenter selectedItem ifNotNil: [ self inspectTask] ].
+		toAction: [ listPresenter selectedItem ifNotNil: [ self inspectTask ] ].
 	aWidget
 		bindKeyCombination: $d meta
-		toAction: [ listPresenter selectedItem ifNotNil: [ self deleteTask  ] ].
+		toAction: [ listPresenter selectedItem ifNotNil: [ self deleteTask ] ].
+	
+	aWidget
+		bindKeyCombination: $b meta
+		toAction: [ listPresenter selectedItem ifNotNil: [ self combineTasks ] ]
 ]
 
 { #category : #accessing }
@@ -340,17 +375,10 @@ MooseTaskBrowser >> repositoryView [
 
 { #category : #actions }
 MooseTaskBrowser >> run [
-	MooseJob new
-		steps:
-			(listPresenter listItems
-				collect: [ :t | 
-					MooseTaskRuntime new
-						task: t;
-						yourself.
-					 ]);
-		run.
-	listPresenter resetSelection.
-	^ true
+	[ runButton disable.
+	self model run.
+	self inform: 'Task finished' ]
+		ensure: [ runButton enable ]. listPresenter resetSelection
 ]
 
 { #category : #accessing }
@@ -363,18 +391,6 @@ MooseTaskBrowser >> saveButton [
 	^ saveButton
 ]
 
-{ #category : #actions }
-MooseTaskBrowser >> setTasks: aCollection [
-	list
-		ifNil: [ list := aCollection ]
-		ifNotNil: [ aCollection do: [ :i | list add: i ] ].
-	list
-		ifNotNil: [ listPresenter
-				items: list;
-				displayBlock: [ :task | task description ];
-				setIndex: listPresenter listSize ]
-]
-
 { #category : #accessing }
 MooseTaskBrowser >> state [
 	^ state
@@ -382,14 +398,12 @@ MooseTaskBrowser >> state [
 
 { #category : #'list control' }
 MooseTaskBrowser >> swapItems: aNumber [
-	| selectedIndex tempItem |
-	selectedIndex := listPresenter getIndex.
-	tempItem := list at: selectedIndex.
-	list removeAt: selectedIndex.
-	list add: tempItem afterIndex: selectedIndex + aNumber.
-	listPresenter items: list.
-	listPresenter setIndex: selectedIndex + aNumber+1.
-
+	| thisIndex thatIndex |
+	thisIndex := listPresenter selectedIndex.
+	thatIndex := thisIndex + aNumber.
+	self model steps swap: thisIndex with: thatIndex.
+	self modelChanged.
+		listPresenter setIndex:thatIndex.
 ]
 
 { #category : #accessing }
