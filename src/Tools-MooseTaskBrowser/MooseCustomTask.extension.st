@@ -9,6 +9,7 @@ MooseCustomTask >> asTaskRuntime [
 
 { #category : #'*Tools-MooseTaskBrowser' }
 MooseCustomTask >> basicRunWith: aParameter [
+
 	^ computation value: aParameter
 ]
 

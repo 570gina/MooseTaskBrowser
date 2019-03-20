@@ -8,11 +8,15 @@ Class {
 }
 
 { #category : #tests }
-MooseJobTests >> testJobReducesAnAritmeticOperation [
+MooseJobTests >> testJobReducesAnArithmeticOperation [
 	steps := OrderedCollection new.
 	steps
-		add: (MooseCustomTask new with: [ 1 ] description: 'gets a one' length: 0).
-	steps
+		add:
+			(MooseCustomTask new
+				with: [ :i | 1 ]
+				description: 'gets a one'
+				length: 0).
+		steps
 		add:
 			(MooseCustomTask new
 				with: [ :i | i input + 3 ]

@@ -38,7 +38,8 @@ MooseJob >> removeStep: aMooseTaskRuntime [
 MooseJob >> run [
 	^ steps allButFirst
 		inject: (steps first run: self input)
-		into: [ :result :step | self halt.step run: result ]
+		into: [ :result :step | 
+			step run: result ]
 ]
 
 { #category : #accessing }

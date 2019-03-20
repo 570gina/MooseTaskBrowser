@@ -15,30 +15,36 @@ MooseTaskBrowserTest >> addTasks [
 ]
 
 { #category : #preparation }
-MooseTaskBrowserTest >> setUp [ 
+MooseTaskBrowserTest >> setUp [
 	super setUp.
-	ui := MooseTaskBrowser new.
+	ui := MooseTaskBrowser  on: MooseJob new.
 	ui repositoryView setList: taskRepo tasks
 	"ui openWithSpec"
 ]
 
 { #category : #tests }
 MooseTaskBrowserTest >> testAddTasksWhenTasksIsSelectedAndOkButtonIsClicked [
+	| oldSize |
+	oldSize := ui taskTreePresenter roots size.
 	ui addButton performAction.
 	ui repositoryView listPresenter selectAll.
 	ui repositoryView window triggerOkAction.
 	self
-		assert: ui listPresenter listItems equals:  ui repositoryView listPresenter listItems
+		assert: (ui taskTreePresenter roots size + oldSize)
+		equals: ui repositoryView listPresenter listItems size
 ]
 
 { #category : #tests }
 MooseTaskBrowserTest >> testNotAddTasksWhenTasksIsSelectedAndCancelButtonIsClicked [
+	| oldSize |
+	oldSize := ui taskTreePresenter roots size.
 	ui addButton performAction.
 	ui repositoryView listPresenter selectAll.
 	ui repositoryView window triggerCancelAction.
+	self assert: ui taskTreePresenter roots size equals: oldSize.
 	self
-		deny: ui listPresenter listItems
-		equals: ui repositoryView listPresenter listItems.
+		deny: ui taskTreePresenter roots
+		equals: ui repositoryView listPresenter listItems
 ]
 
 { #category : #tests }
@@ -51,18 +57,14 @@ MooseTaskBrowserTest >> testRepositoryIsDisplayedWhenAddButtonIsClicked [
 ]
 
 { #category : #tests }
-MooseTaskBrowserTest >> testRunButtonEnabledWhenSelectedTask [
+MooseTaskBrowserTest >> testRunButtonEnabledWhenTaskListIsNotEmpty [
 	self addTasks.
-	ui listPresenter setIndex: 1.
-	self assert: ui runButton enabled.
-	ui listPresenter setIndex: 2.
+
 	self assert: ui runButton enabled
 ]
 
 { #category : #tests }
-MooseTaskBrowserTest >> testRunButtonNotEnabledWhenNoSelectedTask [
-	self addTasks.
-	ui listPresenter resetSelection.
+MooseTaskBrowserTest >> testRunButtonNotEnabledWhenTaskListIsEmpty [
 	self deny: ui runButton enabled
 ]
 
@@ -70,29 +72,28 @@ MooseTaskBrowserTest >> testRunButtonNotEnabledWhenNoSelectedTask [
 MooseTaskBrowserTest >> testUpButtonNotEnabledWhenTopItemIsSelected [
 	| size |
 	self addTasks.
-	size := ui listPresenter listSize.
-	ui listPresenter setIndex: size.
+	size := ui treePresenter listSize.
+	ui treePresenter setIndex: size.
 	self deny: ui downButton enabled
 ]
 
 { #category : #tests }
 MooseTaskBrowserTest >> testselectedTaskMoveDownWhenDownButtonIsClicked [
-	| task |
-	self addTasks.
-	ui listPresenter setIndex: 1.
-	task := ui listPresenter selectedItem.
+	| temp |
+	ui taskTreePresenter setIndex: 1.
+	temp := ui selectedTask.
 	ui downButton performAction.
-	self assert: 2 equals: ui listPresenter getIndex.
-	self assert: task equals: ui listPresenter selectedItem
+	self assert: 2 equals: ui taskTreePresenter getIndex.
+	self assert: task equals: ui taskTreePresenter selectedItem
 ]
 
 { #category : #tests }
 MooseTaskBrowserTest >> testselectedTaskMoveUpWhenUpButtonIsClicked [
-	| task |
+	| temp |
 	self addTasks.
-	ui listPresenter setIndex: 2.
-	task := ui listPresenter selectedItem.
+	ui taskTreePresenter setIndex: 2.
+	temp := ui taskTreePresenter selectedItem.
 	ui upButton performAction.
-	self assert: 1 equals: ui listPresenter getIndex.
-	self assert: task equals: ui listPresenter selectedItem
+	self assert: 1 equals: ui taskTreePresenter getIndex.
+	self assert: task equals: ui taskTreePresenter selectedItem
 ]
