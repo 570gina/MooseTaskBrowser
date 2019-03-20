@@ -35,7 +35,7 @@ MooseTaskRuntime >> printOn: aStream [
 		nextPutAll: input printString.
 	self isError
 		ifTrue: [ aStream
-				nextPutAll: 'Error:# ';
+				nextPutAll: ' Error:# ';
 				nextPutAll: error printString ]
 		ifFalse: [ aStream
 				nextPutAll: ' Last result:# ';
@@ -49,8 +49,8 @@ MooseTaskRuntime >> run [
 		on: Error
 		do: [ :err | 
 			error := err.
-			output := nil.
-			err debug ]
+			err debug.
+			output := nil. ]
 ]
 
 { #category : #running }
