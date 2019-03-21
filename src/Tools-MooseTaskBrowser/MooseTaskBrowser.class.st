@@ -74,7 +74,7 @@ MooseTaskBrowser class >> defaultSpec [
 ]
 
 { #category : #examples }
-MooseTaskBrowser class >> example [
+MooseTaskBrowser class >> example1 [
 	<example>
 	| task taskRepo test gitName urlString startOIDString endOIDString |
 	gitName := 'FactoryVariants'.
@@ -203,13 +203,119 @@ MooseTaskBrowser class >> example3 [
 	test openWithSpec
 ]
 
+{ #category : #examples }
+MooseTaskBrowser class >> example4 [
+	<example>
+	| task taskRepo test |
+	taskRepo := MooseTaskRepository new.
+	task := MooseCustomTask new
+		with: [ :v | 
+			| url |
+			url := UIManager default
+				request: 'Please insert the url to clone, with argument: '
+				initialAnswer: 'https://github.com/fuhrmanator/FactoryVariants' ]
+		description: '0 Prompt URL'
+		length: 0.
+	taskRepo addTask: task.
+	task := MooseCustomTask new
+		with: [ :v | GMUtility cloneRepo: v input ]
+		description: '1 Clone Repository'
+		length: 0.
+	taskRepo addTask: task.
+	task := MooseCustomTask new
+		with: [ :v | 
+			| output |
+			output := GMUtility
+				filterCommitsOnRepoLeftBranchOnly: v input
+				from: 'HEAD'
+				to: ''.
+			Array with: v input with: output ]
+		description: '2 Filter Commits On Repository Left Branch'
+		length: 0.
+	taskRepo addTask: task.
+	task := MooseCustomTask new
+		with: [ :v | 
+			| output |
+			output := GMUtility generateSelectedCommits: v input last.
+			Array with: v input first with: output ]
+		description: '3 Generate Selected Commits'
+		length: 0.
+	taskRepo addTask: task.
+	task := MooseCustomTask new
+		with: [ :v | 
+			| output |
+			output := GMUtility generatePairsAndTransactions: v input last.
+			Array with: v input first with: output ]
+		description: '4 Generate Pairs And Transactions'
+		length: 0.
+	taskRepo addTask: task.
+	task := MooseCustomTask new
+		with: [ :v | 
+			| output |
+			output := GMUtility
+				generateMSEFileFor: 'HEAD'
+				reponame: v input first basename.
+			Array with: v input first with: v input last with: output ]
+		description: '5 Generate MSE File For StartOID'
+		length: 0.
+	taskRepo addTask: task.
+	task := MooseCustomTask new
+		with: [ :v | 
+			GMUtility generateClientImplementationPairs: v input last.
+			Array with: v input first with: v input second ]
+		description: '6 Generate ClientImplementation Pairs'
+		length: 0.
+	taskRepo addTask: task.
+	task := MooseCustomTask new
+		with: [ :v | 
+			GMUtility
+				calculateCouplingIntersectionsFor: (v input first asString splitOn: '\') last
+				withPairsFile: v input last
+				from: 'HEAD'
+				to: '' ]
+		description: '7 Calculate Coupling Intersections'
+		length: 0.
+	taskRepo addTask: task.
+	test := MooseTaskBrowser on: MooseJob new.
+	test repositoryView setList: taskRepo tasks.
+	test openWithSpec
+]
+
+{ #category : #examples }
+MooseTaskBrowser class >> example5 [
+	<example>
+	| task1 task2 taskRepo test |
+	taskRepo := MooseTaskRepository new.
+	task1 := MooseCustomTask new
+		with: [ :v | 
+			(1 to: 50000000)
+				do: [ :i | true ]
+				displayingProgress: 'running task: 1'.
+			2 ]
+		description: 'a description 1'
+		length: 0.
+	taskRepo addTask: task1.
+	task2 := MooseCustomTask new
+		with: [ :v | 
+			(1 to: 50000000)
+				do: [ :i | true ]
+				displayingProgress: 'running task: 2'.
+			v input + 2 ]
+		description: 'a description 2'
+		length: 0.
+	taskRepo addTask: task2.
+	test := MooseTaskBrowser on: MooseJob new.
+	test repositoryView setList: taskRepo tasks.
+	test openWithSpec
+]
+
 { #category : #menu }
 MooseTaskBrowser class >> menuMooseTask: aBuilder [
 	<contextMenu>
 	<mooseTaskListMenu>
 	| target listPresenter |
 	target := aBuilder model.
-	listPresenter := target listPresenter.
+	listPresenter := target taskTreePresenter.
 	listPresenter selectedItems size > 1
 		ifTrue: [ (aBuilder item: #Combine)
 				icon: (self iconNamed: #collection);
@@ -393,7 +499,7 @@ MooseTaskBrowser >> run [
 	self inform: 'Task finished' ]
 		ensure: [ runButton enable ].
 	self model: self model.
-	taskTreePresenter selectAll
+	checkBox state: false.
 ]
 
 { #category : #accessing }
