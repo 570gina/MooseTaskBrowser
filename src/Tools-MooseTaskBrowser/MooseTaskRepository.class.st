@@ -7,7 +7,7 @@ Class {
 	#classInstVars : [
 		'tasks'
 	],
-	#category : #'Tools-MooseTaskBrowser'
+	#category : #'Tools-MooseTaskBrowser-core'
 }
 
 { #category : #action }

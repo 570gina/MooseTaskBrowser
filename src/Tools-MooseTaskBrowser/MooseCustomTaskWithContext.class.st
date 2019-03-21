@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'context'
 	],
-	#category : #'Tools-MooseTaskBrowser'
+	#category : #'Tools-MooseTaskBrowser-core'
 }
 
 { #category : #accessing }
