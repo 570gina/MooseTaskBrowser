@@ -284,26 +284,35 @@ MooseTaskBrowser class >> example4 [
 { #category : #examples }
 MooseTaskBrowser class >> example5 [
 	<example>
-	| task1 task2 taskRepo test |
+	| task taskRepo test |
 	taskRepo := MooseTaskRepository new.
-	task1 := MooseCustomTask new
+	task := MooseCustomTask new
 		with: [ :v | 
-			(1 to: 50000000)
+			(1 to: 20000000)
 				do: [ :i | true ]
 				displayingProgress: 'running task: 1'.
 			2 ]
 		description: 'a description 1'
 		length: 0.
-	taskRepo addTask: task1.
-	task2 := MooseCustomTask new
+	taskRepo addTask: task.
+	task := MooseCustomTask new
 		with: [ :v | 
-			(1 to: 50000000)
+			(1 to: 20000000)
 				do: [ :i | true ]
 				displayingProgress: 'running task: 2'.
 			v input + 2 ]
 		description: 'a description 2'
 		length: 0.
-	taskRepo addTask: task2.
+	taskRepo addTask: task.
+	task := MooseCustomTask new
+		with: [ :v | 
+			(1 to: 20000000)
+				do: [ :i | true ]
+				displayingProgress: 'running task: 3'.
+			v input + 2 ]
+		description: 'a description 3'
+		length: 0.
+	taskRepo addTask: task.
 	test := MooseTaskBrowser on: MooseJob new.
 	test repositoryView setList: taskRepo tasks.
 	test openWithSpec
@@ -345,16 +354,23 @@ MooseTaskBrowser >> checkBox [
 ^checkBox
 ]
 
-{ #category : #actions }
+{ #category : #'list control' }
 MooseTaskBrowser >> checkedAllBox [
 	taskTreePresenter selectAll
+]
+
+{ #category : #'list control' }
+MooseTaskBrowser >> combineTasks [
+	UIManager default
+				request: 'Please name this group: '
 ]
 
 { #category : #'list control' }
 MooseTaskBrowser >> deleteTasks [
 	taskTreePresenter selectedItems
 		do: [ :i | self model removeStep: i content ].
-	self model: self model
+	self model: self model.
+	taskTreePresenter highlightedItem: nil
 ]
 
 { #category : #accessing }
@@ -376,7 +392,8 @@ MooseTaskBrowser >> extent [
 { #category : #initialization }
 MooseTaskBrowser >> initializePresenter [
 	taskTreePresenter
-		whenSelectedItemChanged: [ :item | self manageArrowButtons: item ].
+		whenHighlightedItemChanged: [ :item | self manageArrowButtons: item ].
+	taskTreePresenter whenSelectedItemsChanged: [ :item | self manageRunButton].
 	checkBox
 		whenActivatedDo: [ self checkedAllBox ];
 		whenDeactivatedDo: [ self uncheckedAllBox ].
@@ -431,22 +448,28 @@ MooseTaskBrowser >> loadButton [
 
 { #category : #actions }
 MooseTaskBrowser >> manageArrowButtons: item [
-	upButton disable.
-	downButton disable.
-	checkBox disable.
-	self model steps
-		ifNotEmpty: [ checkBox enable.
-			taskTreePresenter selectedItems size = 1
-				ifTrue: [ upButton enable.
-					downButton enable.
-					self model steps first = item
-						ifTrue: [ upButton disable ].
-					self model steps last = item
-						ifTrue: [ downButton disable ] ] ]
+	item
+		ifNotNil: [ self model steps first = item content
+				ifTrue: [ upButton disable ]
+				ifFalse: [ upButton enable ].
+			self model steps last = item content
+				ifTrue: [ downButton disable ]
+				ifFalse: [ downButton enable ] ]
+		ifNil: [ upButton disable.
+			downButton disable ]
+]
+
+{ #category : #actions }
+MooseTaskBrowser >> manageRunButton [
+	taskTreePresenter selectedItems size = 0
+		ifTrue: [ runButton disable ]
+		ifFalse: [ runButton enable ]
 ]
 
 { #category : #actions }
 MooseTaskBrowser >> manageTaskAddDialog [
+	| items |
+	items := taskTreePresenter selectedItems.
 	repositoryView openDialogWithSpec
 		okAction: [ | steps |
 			steps := repositoryView listPresenter selectedItems
@@ -455,17 +478,21 @@ MooseTaskBrowser >> manageTaskAddDialog [
 			steps := steps collect: #asTaskRuntime.
 			self model addSteps: steps.
 			self model: self model.
-			checkBox enabled: false.
-			taskTreePresenter resetSelection.
+			taskTreePresenter selectedItems: items.
 			repositoryView listPresenter resetSelection ]
 ]
 
 { #category : #accessing }
 MooseTaskBrowser >> modelChanged [
 	taskTreePresenter roots: self model steps.
+	checkBox state: false.
 	self model steps
-		ifEmpty: [ runButton disable ]
-		ifNotEmpty: [ runButton enable ]
+		ifEmpty: [ 
+			upButton disable.
+			downButton disable.
+			checkBox disable ]
+		ifNotEmpty: [ 
+			checkBox enable ]
 ]
 
 { #category : #menu }
@@ -492,14 +519,14 @@ MooseTaskBrowser >> repositoryView [
 
 { #category : #actions }
 MooseTaskBrowser >> run [
-	| temp |
-	temp := taskTreePresenter selectedItems.
-	[ runButton disable.
-	self model run.
+	runButton disable.
+	self model
+		updateAtive: (taskTreePresenter selectedItems collect: [ :each | each content ]).
+	[ self model run.
 	self inform: 'Task finished' ]
 		ensure: [ runButton enable ].
 	self model: self model.
-	checkBox state: false.
+	checkBox state: false
 ]
 
 { #category : #accessing }
@@ -514,13 +541,14 @@ MooseTaskBrowser >> saveButton [
 
 { #category : #'list control' }
 MooseTaskBrowser >> swapItems: aNumber [
-"
-	| thisIndex thatIndex |
-	thisIndex := listPresenter selectedIndex.
-	thatIndex := thisIndex + aNumber.
-	self model steps swap: thisIndex with: thatIndex.
+	| item items |
+	item := taskTreePresenter highlightedItem.
+	items := taskTreePresenter selectedItems.
+	self model move: aNumber theStep: item content.
 	self model: self model.
-	listPresenter setIndex: thatIndex"
+	taskTreePresenter
+		highlightedItem: item;
+		selectedItems: items
 ]
 
 { #category : #accessing }
@@ -538,7 +566,7 @@ MooseTaskBrowser >> title [
 	^'Moose Tasks'
 ]
 
-{ #category : #actions }
+{ #category : #'list control' }
 MooseTaskBrowser >> uncheckedAllBox [
 	taskTreePresenter deselectAll
 ]

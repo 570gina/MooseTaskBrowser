@@ -7,10 +7,21 @@ Class {
 		'computation',
 		'input',
 		'output',
-		'error'
+		'error',
+		'active'
 	],
 	#category : #'Tools-MooseTaskBrowser-core'
 }
+
+{ #category : #accessing }
+MooseTaskRuntime >> active [
+	^active
+]
+
+{ #category : #accessing }
+MooseTaskRuntime >> active: aBoolean [
+active := aBoolean
+]
 
 { #category : #running }
 MooseTaskRuntime >> input [
@@ -58,7 +69,8 @@ MooseTaskRuntime >> run: anInput [
 	^ ((anInput isNil or: [ input = anInput ]) and: [ output isNotNil ])
 		ifTrue: [ output ]
 		ifFalse: [ input := anInput.
-			self run ]
+			active
+				ifTrue: [ self run ] ]
 ]
 
 { #category : #accessing }
