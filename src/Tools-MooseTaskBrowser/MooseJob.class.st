@@ -13,6 +13,16 @@ MooseJob >> addSteps: aCollection [
 	steps addAll: aCollection
 ]
 
+{ #category : #action }
+MooseJob >> doNotForceAnyStep [
+	steps do: [ :v | v forceToRun: false ]
+]
+
+{ #category : #action }
+MooseJob >> forceRunAllSteps [
+	steps do: [ :v | v forceToRun: true ]
+]
+
 { #category : #initialization }
 MooseJob >> initialize [
 	super initialize.

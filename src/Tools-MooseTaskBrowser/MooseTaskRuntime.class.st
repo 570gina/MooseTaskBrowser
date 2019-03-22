@@ -8,7 +8,9 @@ Class {
 		'input',
 		'output',
 		'error',
-		'active'
+		'active',
+		'hasRun',
+		'forceToRun'
 	],
 	#category : #'Tools-MooseTaskBrowser-core'
 }
@@ -21,6 +23,31 @@ MooseTaskRuntime >> active [
 { #category : #accessing }
 MooseTaskRuntime >> active: aBoolean [
 active := aBoolean
+]
+
+{ #category : #accessing }
+MooseTaskRuntime >> description [
+	^ task description
+]
+
+{ #category : #accessing }
+MooseTaskRuntime >> forceToRun [
+	^ forceToRun
+]
+
+{ #category : #accessing }
+MooseTaskRuntime >> forceToRun: aValue [
+	forceToRun := aValue 
+]
+
+{ #category : #accessing }
+MooseTaskRuntime >> hasRun [
+	^ hasRun
+]
+
+{ #category : #accesing }
+MooseTaskRuntime >> icon [
+	^ self iconNamed: #play
 ]
 
 { #category : #running }
@@ -55,22 +82,30 @@ MooseTaskRuntime >> printOn: aStream [
 
 { #category : #running }
 MooseTaskRuntime >> run [
+	hasRun := true.
 	^ [ error := nil.
 	output := task runWith: self ]
 		on: Error
 		do: [ :err | 
 			error := err.
 			err debug.
-			output := nil. ]
+			output := nil ]
 ]
 
 { #category : #running }
 MooseTaskRuntime >> run: anInput [
-	^ ((anInput isNil or: [ input = anInput ]) and: [ output isNotNil ])
-		ifTrue: [ output ]
-		ifFalse: [ input := anInput.
-			active
-				ifTrue: [ self run ] ]
+	^ (self shouldRunFor: anInput)
+		ifTrue: [ input := anInput.
+			self run ]
+		ifFalse: [ output ]
+]
+
+{ #category : #running }
+MooseTaskRuntime >> shouldRunFor: anInput [
+	^ forceToRun
+		or: [ (hasRun
+				and: [ (anInput isNil or: [ input = anInput ]) and: [ output isNotNil ] ])
+				not ]
 ]
 
 { #category : #accessing }
@@ -80,5 +115,9 @@ MooseTaskRuntime >> task [
 
 { #category : #accessing }
 MooseTaskRuntime >> task: aMooseCustomTask [
-	task := aMooseCustomTask
+	task := aMooseCustomTask.
+	hasRun := false.
+	forceToRun := false. 
+	input := nil.
+	output := nil
 ]
