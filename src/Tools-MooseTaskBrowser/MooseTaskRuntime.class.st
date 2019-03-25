@@ -68,7 +68,7 @@ MooseTaskRuntime >> output [
 { #category : #accessing }
 MooseTaskRuntime >> printOn: aStream [
 	task description printOn: aStream.
-	aStream
+	"aStream
 		nextPutAll: ' Last input:# ';
 		nextPutAll: input printString.
 	self isError
@@ -77,7 +77,7 @@ MooseTaskRuntime >> printOn: aStream [
 				nextPutAll: error printString ]
 		ifFalse: [ aStream
 				nextPutAll: ' Last result:# ';
-				nextPutAll: output printString ]
+				nextPutAll: output printString ]"
 ]
 
 { #category : #running }

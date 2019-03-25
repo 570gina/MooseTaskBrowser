@@ -440,17 +440,21 @@ MooseTaskBrowser >> loadButton [
 
 { #category : #actions }
 MooseTaskBrowser >> manageArrowButtons: aSelection [
-	| item |
-	item := self model steps at: aSelection newSelectedRowIndexes first.
-	item
-		ifNotNil: [ self model steps first = item
-				ifTrue: [ upButton disable ]
-				ifFalse: [ upButton enable ].
-			self model steps last = item
-				ifTrue: [ downButton disable ]
-				ifFalse: [ downButton enable ] ]
-		ifNil: [ upButton disable.
-			downButton disable ]
+	| selectedItem |
+	aSelection newSelectedRowIndexes isEmptyOrNil
+		ifFalse:
+			[ selectedItem := (self model steps at: aSelection newSelectedRowIndexes first).
+			selectedItem
+				ifNotNil: [ 
+					self model steps first = selectedItem
+						ifTrue: [ upButton disable ]
+						ifFalse: [ upButton enable ].
+								
+					self model steps last = selectedItem
+						ifTrue: [ downButton disable ]
+						ifFalse: [ downButton enable ] ] ]
+		ifTrue: [ upButton disable.
+			downButton disable ].
 ]
 
 { #category : #actions }
@@ -495,7 +499,7 @@ MooseTaskBrowser >> newTable [
 		hResizing: #spaceFill;
 		vResizing: #spaceFill;
 		beMultipleSelection;
-		rowHeight: 150
+		rowHeight: 70
 ]
 
 { #category : #shortcuts }
@@ -553,8 +557,6 @@ MooseTaskBrowser >> stepsDatasource [
 MooseTaskBrowser >> swapItems: aNumber [
 	| items |
 	items := self stepsDatasource selectedItems.
-	aNumber > 0
-		ifTrue: [ items := items reversed ].
 	items do: [ :item | self model move: aNumber theStep: item ].
 	self stepsDatasource setSelectedItems: items.
 	self model: self model
