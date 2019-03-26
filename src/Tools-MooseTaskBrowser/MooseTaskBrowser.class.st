@@ -242,6 +242,28 @@ MooseTaskBrowser class >> example5 [
 	test openWithSpec
 ]
 
+{ #category : #menu }
+MooseTaskBrowser class >> menu: aBuilder [
+	<contextMenu>
+	<mooseTaskBrowserMenu>
+	| target items |
+target := aBuilder model.
+items:=target stepsDatasource selectedItems.
+
+	items size > 1
+		ifTrue: [ (aBuilder item: #Combine)
+				icon: (self iconNamed: #collection);
+				selector: #combineSelected ]
+		ifFalse: [ (aBuilder item: #Inspect)
+				icon: (self iconNamed: #smallInspectIt);
+				keyText: 'i';
+				selector: #inspectSelected ].
+	(aBuilder item: #Delete)
+		icon: (self iconNamed: #delete);
+		keyText: 'd';
+		selector: #deleteSelected
+]
+
 { #category : #api }
 MooseTaskBrowser >> aboutText [
 	^ 'Moose Task Browser'
@@ -272,15 +294,15 @@ MooseTaskBrowser >> combine [
 ]
 
 { #category : #'list control' }
-MooseTaskBrowser >> combineTasks [
+MooseTaskBrowser >> combineSelected [
 	UIManager default
 				request: 'Please name this group: '
 ]
 
 { #category : #'list control' }
-MooseTaskBrowser >> deleteTasks [
+MooseTaskBrowser >> deleteSelected [
 	self stepsDatasource selectedItems
-		do: [ :i | self model removeStep: i model ].
+		do: [ :i | self model removeStep: i  ].
 	self model: self model
 ]
 
@@ -418,10 +440,10 @@ MooseTaskBrowser >> newTable [
 MooseTaskBrowser >> registerMooseTaskListShortcuts: aWidget [
 	aWidget
 		bindKeyCombination: $i meta
-		toAction: [ self stepsDatasource selectedItem ifNotNil: [ self inspectTask ] ].
+		toAction: [ self stepsDatasource selectedItems ifNotNil: [ self inspectSelected ] ].
 	aWidget
 		bindKeyCombination: $d meta
-		toAction: [ self stepsDatasource selectedItem ifNotNil: [ self deleteTasks ] ]
+		toAction: [ self stepsDatasource selectedItems ifNotNil: [ self deleteSelected ] ]
 ]
 
 { #category : #accessing }
@@ -449,16 +471,22 @@ MooseTaskBrowser >> saveButton [
 	^ saveButton
 ]
 
+{ #category : #menu }
+MooseTaskBrowser >> setMenu: aMenu [
+	self stepsDatasource selectedItems isEmptyOrNil
+		ifTrue: [ ^ nil ].
+	aMenu
+		addAllFromPragma: 'mooseTaskBrowserMenu'
+		target: self.
+	^ aMenu
+]
+
 { #category : #accessing }
 MooseTaskBrowser >> stepsDatasource [
 	^ stepsDatasource
 		ifNil: [ stepsDatasource := MooseDataSource new
 				elements: self model steps;
-				menu: [ :items | 
-					MenuMorph new
-						add: 'Combine' target: self selector: #combine;
-						add: 'Inspect' target: self selector: #inspectSelected;
-						yourself ];
+				menu: [ :i|self setMenu: MenuMorph new ];
 				format:
 					[ :c | (MooseTaskRuntimeItem owner: self on: c) buildWithSpec asMorph ]
 						yourself ]
