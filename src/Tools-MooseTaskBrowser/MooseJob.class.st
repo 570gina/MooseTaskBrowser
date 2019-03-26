@@ -44,7 +44,7 @@ MooseJob >> move: aModifier theStep: aMooseTaskRuntime [
 	| index |
 	index := steps indexOf: aMooseTaskRuntime.
 	steps swap: index with: index + aModifier.
-	self halt.
+
 ]
 
 { #category : #action }

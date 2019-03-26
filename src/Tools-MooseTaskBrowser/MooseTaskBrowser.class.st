@@ -358,19 +358,16 @@ MooseTaskBrowser >> loadButton [
 
 { #category : #actions }
 MooseTaskBrowser >> manageArrowButtons: aSelection [
-	| firstSelectedItem lastSelectedItem |
-	(aSelection newSelectedRowIndexes isEmptyOrNil or: aSelection newSelectedRowIndexes size =  self model steps size)
-		ifFalse: [ firstSelectedItem := self model steps
+	| selectedItem |
+	(aSelection newSelectedRowIndexes isEmptyOrNil
+		or: aSelection newSelectedRowIndexes size > 1)
+		ifFalse: [ selectedItem := self model steps
 				at: aSelection newSelectedRowIndexes first.
-			lastSelectedItem := self model steps
-				at: aSelection newSelectedRowIndexes last.
-			firstSelectedItem
-				ifNotNil: [ (self model steps first = firstSelectedItem
-						or: self model steps first = lastSelectedItem)
+			selectedItem
+				ifNotNil: [ self model steps first = selectedItem
 						ifTrue: [ upButton disable ]
 						ifFalse: [ upButton enable ].
-					(self model steps last = firstSelectedItem
-						or: self model steps last = lastSelectedItem)
+					self model steps last = selectedItem
 						ifTrue: [ downButton disable ]
 						ifFalse: [ downButton enable ] ] ]
 		ifTrue: [ upButton disable.
