@@ -25,12 +25,12 @@ MooseTaskBrowserTest >> setUp [
 { #category : #tests }
 MooseTaskBrowserTest >> testAddTasksWhenTasksIsSelectedAndOkButtonIsClicked [
 	| oldSize |
-	oldSize := ui taskTreePresenter roots size.
+	oldSize := ui taskTable dataSource elements size.
 	ui addButton performAction.
 	ui repositoryView listPresenter selectAll.
 	ui repositoryView window triggerOkAction.
 	self
-		assert: (ui taskTreePresenter roots size + oldSize)
+		assert: ui taskTable dataSource elements size + oldSize
 		equals: ui repositoryView listPresenter listItems size
 ]
 

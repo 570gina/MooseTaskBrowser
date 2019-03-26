@@ -7,10 +7,37 @@ Class {
 		'computation',
 		'input',
 		'output',
-		'error'
+		'error',
+		'hasRun',
+		'forceToRun'
 	],
 	#category : #'Tools-MooseTaskBrowser-core'
 }
+
+{ #category : #accessing }
+MooseTaskRuntime >> description [
+	^ task description
+]
+
+{ #category : #accessing }
+MooseTaskRuntime >> forceToRun [
+	^ forceToRun
+]
+
+{ #category : #accessing }
+MooseTaskRuntime >> forceToRun: aValue [
+	forceToRun := aValue 
+]
+
+{ #category : #accessing }
+MooseTaskRuntime >> hasRun [
+	^ hasRun
+]
+
+{ #category : #accessing }
+MooseTaskRuntime >> icon [
+	^ self iconNamed: #play
+]
 
 { #category : #running }
 MooseTaskRuntime >> input [
@@ -30,7 +57,7 @@ MooseTaskRuntime >> output [
 { #category : #accessing }
 MooseTaskRuntime >> printOn: aStream [
 	task description printOn: aStream.
-	aStream
+	"aStream
 		nextPutAll: ' Last input:# ';
 		nextPutAll: input printString.
 	self isError
@@ -39,26 +66,35 @@ MooseTaskRuntime >> printOn: aStream [
 				nextPutAll: error printString ]
 		ifFalse: [ aStream
 				nextPutAll: ' Last result:# ';
-				nextPutAll: output printString ]
+				nextPutAll: output printString ]"
 ]
 
 { #category : #running }
 MooseTaskRuntime >> run [
+	hasRun := true.
 	^ [ error := nil.
 	output := task runWith: self ]
 		on: Error
 		do: [ :err | 
 			error := err.
 			err debug.
-			output := nil. ]
+			output := nil ]
 ]
 
 { #category : #running }
 MooseTaskRuntime >> run: anInput [
-	^ ((anInput isNil or: [ input = anInput ]) and: [ output isNotNil ])
-		ifTrue: [ output ]
-		ifFalse: [ input := anInput.
-			self run ]
+	^ (self shouldRunFor: anInput)
+		ifTrue: [ input := anInput.
+			 self run ]
+		ifFalse: [ output ]
+]
+
+{ #category : #running }
+MooseTaskRuntime >> shouldRunFor: anInput [
+	^ forceToRun
+		or: [ (hasRun
+				and: [ (anInput isNil or: [ input = anInput ]) and: [ output isNotNil ] ])
+				not ]
 ]
 
 { #category : #accessing }
@@ -68,5 +104,9 @@ MooseTaskRuntime >> task [
 
 { #category : #accessing }
 MooseTaskRuntime >> task: aMooseCustomTask [
-	task := aMooseCustomTask
+	task := aMooseCustomTask.
+	hasRun := false.
+	"forceToRun := false."
+	input := nil.
+	output := nil
 ]

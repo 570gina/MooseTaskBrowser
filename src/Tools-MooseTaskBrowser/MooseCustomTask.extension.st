@@ -4,6 +4,7 @@ Extension { #name : #MooseCustomTask }
 MooseCustomTask >> asTaskRuntime [
 	^ MooseTaskRuntime new
 		task: self;
+		forceToRun: true;
 		yourself
 ]
 

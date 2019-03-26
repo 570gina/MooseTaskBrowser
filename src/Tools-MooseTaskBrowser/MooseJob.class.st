@@ -13,6 +13,16 @@ MooseJob >> addSteps: aCollection [
 	steps addAll: aCollection
 ]
 
+{ #category : #action }
+MooseJob >> doNotForceAnyStep [
+	steps do: [ :v | v forceToRun: false ]
+]
+
+{ #category : #action }
+MooseJob >> forceRunAllSteps [
+	steps do: [ :v | v forceToRun: true ]
+]
+
 { #category : #initialization }
 MooseJob >> initialize [
 	super initialize.
@@ -29,6 +39,14 @@ MooseJob >> input: aValue [
 	input := aValue
 ]
 
+{ #category : #'organizing steps' }
+MooseJob >> move: aModifier theStep: aMooseTaskRuntime [
+	| index |
+	index := steps indexOf: aMooseTaskRuntime.
+	steps swap: index with: index + aModifier.
+
+]
+
 { #category : #action }
 MooseJob >> removeStep: aMooseTaskRuntime [
 	steps remove: aMooseTaskRuntime
@@ -36,9 +54,15 @@ MooseJob >> removeStep: aMooseTaskRuntime [
 
 { #category : #action }
 MooseJob >> run [
+	^ self runWithUpdatingBlock: [  ]
+]
+
+{ #category : #action }
+MooseJob >> runWithUpdatingBlock: aBlock [
 	^ steps allButFirst
 		inject: (steps first run: self input)
 		into: [ :result :step | 
+			aBlock value.
 			step run: result ]
 ]
 
