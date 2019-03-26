@@ -78,7 +78,8 @@ MooseTaskRuntimeItem >> emptyLabel [
 
 { #category : #initialization }
 MooseTaskRuntimeItem >> initializePresenter [
-	checkbox whenChangedDo: [ :val | self model forceToRun: val not ]
+	checkbox whenActivatedDo: [ self model forceToRun: true ].
+	checkbox whenDeactivatedDo: [ self model forceToRun: false ]
 
 	
 ]
@@ -110,21 +111,21 @@ MooseTaskRuntimeItem >> input: anObject [
 
 { #category : #initialization }
 MooseTaskRuntimeItem >> modelChanged [
-	self model isError
-		ifTrue: [ self widget ifNotNil: [ self widget backgroundColor: Color red ] ].
 	self model
 		ifNotNil: [ input label: 'Input: ' , self model input asString.
 			description label: 'Task: ' , self model description.
 			output label: 'Output: ' , self model output asString.
 			self model hasRun
 				ifTrue: [ self model isError
-						ifTrue: [ checkbox state: true.
-							test image: (self iconNamed: #testRed) ]
-						ifFalse: [ 
+						ifTrue: [ test image: (self iconNamed: #testRed).
+							checkbox state: true.
+							checkbox disable ]
+						ifFalse: [ test image: (self iconNamed: #testGreen).
 							checkbox state: self model forceToRun.
-							test image: (self iconNamed: #testGreen) ] ]
-				ifFalse: [ checkbox state: true.
-					test image: (self iconNamed: #testNotRun) ] ]
+							checkbox enable ] ]
+				ifFalse: [ test image: (self iconNamed: #testNotRun).
+					checkbox state: true.
+			] ]
 ]
 
 { #category : #accessing }

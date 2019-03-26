@@ -23,6 +23,15 @@ MooseJob >> forceRunAllSteps [
 	steps do: [ :v | v forceToRun: true ]
 ]
 
+{ #category : #action }
+MooseJob >> getCheckBoxState [
+	steps
+		do: [ :v | 
+			v forceToRun
+				ifTrue: [ ^ true ] ].
+	^ false
+]
+
 { #category : #initialization }
 MooseJob >> initialize [
 	super initialize.
@@ -73,14 +82,4 @@ MooseJob >> steps [
 { #category : #accessing }
 MooseJob >> steps: aCollectionOfTasks [
 	steps := aCollectionOfTasks 
-]
-
-{ #category : #action }
-MooseJob >> updateAtive: items [
-	items
-		ifNotNil: [ steps
-				do: [ :i | 
-					(items includes: i)
-						ifTrue: [ i active: true ]
-						ifFalse: [ i active: false ] ] ]
 ]

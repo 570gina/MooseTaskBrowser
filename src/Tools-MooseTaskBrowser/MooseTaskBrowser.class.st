@@ -86,7 +86,7 @@ MooseTaskBrowser class >> example1 [
 	taskRepo := MooseTaskRepository new.
 	task := MooseCustomTask new
 		with: [ :v | 
-			| loc |1/0.
+			| loc |
 			loc := GMUtility cloneRepo: urlString ]
 		description: '1 Clone Repository'
 		length: 0.
@@ -94,6 +94,7 @@ MooseTaskBrowser class >> example1 [
 	task := MooseCustomTask new
 		with: [ :v | 
 			| output |
+			
 			output := GMUtility
 				filterCommitsOnRepoLeftBranchOnly: v input
 				from: startOIDString
@@ -206,84 +207,6 @@ MooseTaskBrowser class >> example3 [
 ]
 
 { #category : #examples }
-MooseTaskBrowser class >> example4 [
-	<example>
-	| task taskRepo test |
-	taskRepo := MooseTaskRepository new.
-	task := MooseCustomTask new
-		with: [ :v | 
-			| url |
-			url := UIManager default
-				request: 'Please insert the url to clone, with argument: '
-				initialAnswer: 'https://github.com/fuhrmanator/FactoryVariants' ]
-		description: '0 Prompt URL'
-		length: 0.
-	taskRepo addTask: task.
-	task := MooseCustomTask new
-		with: [ :v | GMUtility cloneRepo: v input ]
-		description: '1 Clone Repository'
-		length: 0.
-	taskRepo addTask: task.
-	task := MooseCustomTask new
-		with: [ :v | 
-			| output |
-			output := GMUtility
-				filterCommitsOnRepoLeftBranchOnly: v input
-				from: 'HEAD'
-				to: ''.
-			Array with: v input with: output ]
-		description: '2 Filter Commits On Repository Left Branch'
-		length: 0.
-	taskRepo addTask: task.
-	task := MooseCustomTask new
-		with: [ :v | 
-			| output |
-			output := GMUtility generateSelectedCommits: v input last.
-			Array with: v input first with: output ]
-		description: '3 Generate Selected Commits'
-		length: 0.
-	taskRepo addTask: task.
-	task := MooseCustomTask new
-		with: [ :v | 
-			| output |
-			output := GMUtility generatePairsAndTransactions: v input last.
-			Array with: v input first with: output ]
-		description: '4 Generate Pairs And Transactions'
-		length: 0.
-	taskRepo addTask: task.
-	task := MooseCustomTask new
-		with: [ :v | 
-			| output |
-			output := GMUtility
-				generateMSEFileFor: 'HEAD'
-				reponame: v input first basename.
-			Array with: v input first with: v input last with: output ]
-		description: '5 Generate MSE File For StartOID'
-		length: 0.
-	taskRepo addTask: task.
-	task := MooseCustomTask new
-		with: [ :v | 
-			GMUtility generateClientImplementationPairs: v input last.
-			Array with: v input first with: v input second ]
-		description: '6 Generate ClientImplementation Pairs'
-		length: 0.
-	taskRepo addTask: task.
-	task := MooseCustomTask new
-		with: [ :v | 
-			GMUtility
-				calculateCouplingIntersectionsFor: (v input first asString splitOn: '\') last
-				withPairsFile: v input last
-				from: 'HEAD'
-				to: '' ]
-		description: '7 Calculate Coupling Intersections'
-		length: 0.
-	taskRepo addTask: task.
-	test := MooseTaskBrowser on: MooseJob new.
-	test repositoryView setList: taskRepo tasks.
-	test openWithSpec
-]
-
-{ #category : #examples }
 MooseTaskBrowser class >> example5 [
 	<example>
 	| task taskRepo test |
@@ -338,7 +261,9 @@ MooseTaskBrowser >> checkBox [
 { #category : #'list control' }
 MooseTaskBrowser >> checkedAllBox [
 	self model forceRunAllSteps.
-	self model: self model.
+	self model: self model
+
+	
 ]
 
 { #category : #accessing }
@@ -382,15 +307,9 @@ MooseTaskBrowser >> initializePresenter [
 	taskTableMorph
 		onAnnouncement: FTSelectionChanged
 		do: [ :item | self manageArrowButtons: item ].
-
-	"taskTreePresenter		
-		whenHighlightedItemChanged: [ :item | self manageArrowButtons: item ]."
-	"		
-	taskTreePresenter
-		whenSelectedItemsChanged: [ :item | self manageRunButton ]."
-	checkBox
+	"checkBox
 		whenActivatedDo: [ self checkedAllBox ];
-		whenDeactivatedDo: [ self uncheckedAllBox ].
+		whenDeactivatedDo: [ self uncheckedAllBox ]."
 	upButton action: [ self swapItems: -1 ].
 	downButton action: [ self swapItems: 1 ].
 	runButton action: [ self run ].
@@ -441,27 +360,19 @@ MooseTaskBrowser >> loadButton [
 { #category : #actions }
 MooseTaskBrowser >> manageArrowButtons: aSelection [
 	| selectedItem |
+
 	aSelection newSelectedRowIndexes isEmptyOrNil
-		ifFalse:
-			[ selectedItem := (self model steps at: aSelection newSelectedRowIndexes first).
+		ifFalse: [ selectedItem := self model steps
+				at: aSelection newSelectedRowIndexes first.
 			selectedItem
-				ifNotNil: [ 
-					self model steps first = selectedItem
+				ifNotNil: [ self model steps first = selectedItem
 						ifTrue: [ upButton disable ]
 						ifFalse: [ upButton enable ].
-								
 					self model steps last = selectedItem
 						ifTrue: [ downButton disable ]
 						ifFalse: [ downButton enable ] ] ]
 		ifTrue: [ upButton disable.
-			downButton disable ].
-]
-
-{ #category : #actions }
-MooseTaskBrowser >> manageRunButton [
-	self stepsDatasource selectedItems size = 0
-		ifTrue: [ runButton disable ]
-		ifFalse: [ runButton enable ]
+			downButton disable ]
 ]
 
 { #category : #actions }
@@ -482,15 +393,17 @@ MooseTaskBrowser >> manageTaskAddDialog [
 
 { #category : #accessing }
 MooseTaskBrowser >> modelChanged [
-	"taskTreePresenter roots: self model steps."
-	self stepsDatasource elements: self model steps. 
+
+	self stepsDatasource elements: self model steps.
 	taskTableMorph refresh.
 	checkBox state: false.
 	self model steps
 		ifEmpty: [ upButton disable.
 			downButton disable.
-			checkBox disable ]
-		ifNotEmpty: [ checkBox enable ]
+			checkBox disable.
+			runButton disable ]
+		ifNotEmpty: [ checkBox enable.
+			runButton enable ]
 ]
 
 { #category : #initialization }
@@ -519,13 +432,14 @@ MooseTaskBrowser >> repositoryView [
 
 { #category : #actions }
 MooseTaskBrowser >> run [
-	runButton disable.
-	"self model updateAtive: self stepsDatasource selectedItems."
-	[ self model run.
-	self inform: 'Task finished' ]
-		ensure: [ runButton enable ].
-	self model: self model.
-	checkBox state: false
+	self model getCheckBoxState
+		ifTrue: [ runButton disable.
+			[ self model run.
+			self inform: 'Task finished.' ]
+				ensure: [ runButton enable ].
+			self model: self model.
+			checkBox state: false ]
+		ifFalse: [ self inform: 'Please tick the tasks.' ]
 ]
 
 { #category : #accessing }
@@ -580,6 +494,7 @@ MooseTaskBrowser >> title [
 { #category : #'list control' }
 MooseTaskBrowser >> uncheckedAllBox [
 	self model doNotForceAnyStep.
+
 	self model: self model
 ]
 

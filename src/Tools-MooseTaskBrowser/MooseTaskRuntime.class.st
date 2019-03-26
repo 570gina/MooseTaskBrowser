@@ -8,22 +8,11 @@ Class {
 		'input',
 		'output',
 		'error',
-		'active',
 		'hasRun',
 		'forceToRun'
 	],
 	#category : #'Tools-MooseTaskBrowser-core'
 }
-
-{ #category : #accessing }
-MooseTaskRuntime >> active [
-	^active
-]
-
-{ #category : #accessing }
-MooseTaskRuntime >> active: aBoolean [
-active := aBoolean
-]
 
 { #category : #accessing }
 MooseTaskRuntime >> description [
@@ -45,7 +34,7 @@ MooseTaskRuntime >> hasRun [
 	^ hasRun
 ]
 
-{ #category : #accesing }
+{ #category : #accessing }
 MooseTaskRuntime >> icon [
 	^ self iconNamed: #play
 ]
@@ -96,7 +85,7 @@ MooseTaskRuntime >> run [
 MooseTaskRuntime >> run: anInput [
 	^ (self shouldRunFor: anInput)
 		ifTrue: [ input := anInput.
-			self run ]
+			 self run ]
 		ifFalse: [ output ]
 ]
 
@@ -117,7 +106,7 @@ MooseTaskRuntime >> task [
 MooseTaskRuntime >> task: aMooseCustomTask [
 	task := aMooseCustomTask.
 	hasRun := false.
-	forceToRun := false. 
+	"forceToRun := false."
 	input := nil.
 	output := nil
 ]
