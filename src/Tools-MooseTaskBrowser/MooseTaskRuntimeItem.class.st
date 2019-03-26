@@ -121,11 +121,10 @@ MooseTaskRuntimeItem >> modelChanged [
 							checkbox state: true.
 							checkbox disable ]
 						ifFalse: [ test image: (self iconNamed: #testGreen).
-							checkbox state: self model forceToRun.
-							checkbox enable ] ]
+														checkbox enable.checkbox state: self model forceToRun. ] ]
 				ifFalse: [ test image: (self iconNamed: #testNotRun).
 					checkbox state: true.
-			] ]
+					checkbox disable ] ]
 ]
 
 { #category : #accessing }

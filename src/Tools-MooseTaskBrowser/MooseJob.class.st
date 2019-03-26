@@ -23,15 +23,6 @@ MooseJob >> forceRunAllSteps [
 	steps do: [ :v | v forceToRun: true ]
 ]
 
-{ #category : #action }
-MooseJob >> getCheckBoxState [
-	steps
-		do: [ :v | 
-			v forceToRun
-				ifTrue: [ ^ true ] ].
-	^ false
-]
-
 { #category : #initialization }
 MooseJob >> initialize [
 	super initialize.
@@ -52,7 +43,8 @@ MooseJob >> input: aValue [
 MooseJob >> move: aModifier theStep: aMooseTaskRuntime [
 	| index |
 	index := steps indexOf: aMooseTaskRuntime.
-	steps swap: index with: index + aModifier
+	steps swap: index with: index + aModifier.
+	self halt.
 ]
 
 { #category : #action }

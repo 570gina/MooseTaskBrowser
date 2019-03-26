@@ -94,7 +94,6 @@ MooseTaskBrowser class >> example1 [
 	task := MooseCustomTask new
 		with: [ :v | 
 			| output |
-			
 			output := GMUtility
 				filterCommitsOnRepoLeftBranchOnly: v input
 				from: startOIDString
@@ -114,7 +113,7 @@ MooseTaskBrowser class >> example1 [
 	task := MooseCustomTask new
 		with: [ :v | 
 			| output |
-			output := GMUtility generatePairsAndTransactions: v input second.
+			output := GMUtility generatePairsAndTransactions: v input second.1/0.
 			Array with: v input first with: output ]
 		description: '4 Generate Pairs And Transactions'
 		length: 0.
@@ -307,9 +306,9 @@ MooseTaskBrowser >> initializePresenter [
 	taskTableMorph
 		onAnnouncement: FTSelectionChanged
 		do: [ :item | self manageArrowButtons: item ].
-	"checkBox
+	checkBox
 		whenActivatedDo: [ self checkedAllBox ];
-		whenDeactivatedDo: [ self uncheckedAllBox ]."
+		whenDeactivatedDo: [ self uncheckedAllBox ].
 	upButton action: [ self swapItems: -1 ].
 	downButton action: [ self swapItems: 1 ].
 	runButton action: [ self run ].
@@ -359,16 +358,19 @@ MooseTaskBrowser >> loadButton [
 
 { #category : #actions }
 MooseTaskBrowser >> manageArrowButtons: aSelection [
-	| selectedItem |
-
-	aSelection newSelectedRowIndexes isEmptyOrNil
-		ifFalse: [ selectedItem := self model steps
+	| firstSelectedItem lastSelectedItem |
+	(aSelection newSelectedRowIndexes isEmptyOrNil or: aSelection newSelectedRowIndexes size =  self model steps size)
+		ifFalse: [ firstSelectedItem := self model steps
 				at: aSelection newSelectedRowIndexes first.
-			selectedItem
-				ifNotNil: [ self model steps first = selectedItem
+			lastSelectedItem := self model steps
+				at: aSelection newSelectedRowIndexes last.
+			firstSelectedItem
+				ifNotNil: [ (self model steps first = firstSelectedItem
+						or: self model steps first = lastSelectedItem)
 						ifTrue: [ upButton disable ]
 						ifFalse: [ upButton enable ].
-					self model steps last = selectedItem
+					(self model steps last = firstSelectedItem
+						or: self model steps last = lastSelectedItem)
 						ifTrue: [ downButton disable ]
 						ifFalse: [ downButton enable ] ] ]
 		ifTrue: [ upButton disable.
@@ -432,14 +434,12 @@ MooseTaskBrowser >> repositoryView [
 
 { #category : #actions }
 MooseTaskBrowser >> run [
-	self model getCheckBoxState
-		ifTrue: [ runButton disable.
+	runButton disable.
 			[ self model run.
 			self inform: 'Task finished.' ]
 				ensure: [ runButton enable ].
 			self model: self model.
-			checkBox state: false ]
-		ifFalse: [ self inform: 'Please tick the tasks.' ]
+			checkBox state: false 
 ]
 
 { #category : #accessing }
