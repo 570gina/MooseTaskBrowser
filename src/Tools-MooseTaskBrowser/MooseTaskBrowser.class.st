@@ -113,7 +113,7 @@ MooseTaskBrowser class >> example1 [
 	task := MooseCustomTask new
 		with: [ :v | 
 			| output |
-			output := GMUtility generatePairsAndTransactions: v input second.1/0.
+			output := GMUtility generatePairsAndTransactions: v input second.
 			Array with: v input first with: output ]
 		description: '4 Generate Pairs And Transactions'
 		length: 0.
@@ -247,17 +247,16 @@ MooseTaskBrowser class >> menu: aBuilder [
 	<contextMenu>
 	<mooseTaskBrowserMenu>
 	| target items |
-target := aBuilder model.
-items:=target stepsDatasource selectedItems.
-
+	target := aBuilder model.
+	items := target stepsDatasource selectedItems.
 	items size > 1
 		ifTrue: [ (aBuilder item: #Combine)
 				icon: (self iconNamed: #collection);
-				selector: #combineSelected ]
-		ifFalse: [ (aBuilder item: #Inspect)
+				selector: #combineSelected ].
+	 (aBuilder item: #Inspect)
 				icon: (self iconNamed: #smallInspectIt);
 				keyText: 'i';
-				selector: #inspectSelected ].
+				selector: #inspectSelected.
 	(aBuilder item: #Delete)
 		icon: (self iconNamed: #delete);
 		keyText: 'd';
@@ -302,7 +301,8 @@ MooseTaskBrowser >> combineSelected [
 { #category : #'list control' }
 MooseTaskBrowser >> deleteSelected [
 	self stepsDatasource selectedItems
-		do: [ :i | self model removeStep: i  ].
+		do: [ :i | self model removeStep: i ].
+	self stepsDatasource setSelectedItems: #().
 	self model: self model
 ]
 
@@ -486,10 +486,11 @@ MooseTaskBrowser >> stepsDatasource [
 	^ stepsDatasource
 		ifNil: [ stepsDatasource := MooseDataSource new
 				elements: self model steps;
-				menu: [ :i|self setMenu: MenuMorph new ];
+				menu: [ :i | self setMenu: MenuMorph new ];
 				format:
-					[ :c | (MooseTaskRuntimeItem owner: self on: c) buildWithSpec asMorph ]
-						yourself ]
+					[ :c | 
+					(MooseTaskRuntimeItem owner: self on: c) buildWithSpec asMorph.
+					 ] yourself ]
 ]
 
 { #category : #'list control' }
