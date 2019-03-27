@@ -4,6 +4,58 @@ Class {
 	#category : #'Tools-MooseTaskBrowser-tests'
 }
 
+{ #category : #preparation }
+MooseTaskPersistenceTest >> setUp [
+	taskRepo := MooseTaskRepository new.
+	task := MooseCustomTask new
+		with: (MessageSend receiver: self selector: #body:)
+		description: 'a description 1'
+		length: 0.
+	taskRepo addTask: task.
+	task := MooseCustomTask new
+		with: (MessageSend receiver: self selector: #body:)
+		description: 'a description 2'
+		length: 0.
+	taskRepo addTask: task.
+	task := MooseCustomTask new
+		with: self createBlockHandle
+		description: 'a description 3'
+		length: 0.
+	taskRepo addTask: task.
+	task := MooseCustomTask new
+		with: (MessageSend receiver: self selector: #body:)
+		description: 'a description 4'
+		length: 0.
+	taskRepo addTask: task.
+	task := MooseCustomTask new
+		with: [ :v | 
+			(1 to: 20000000)
+				do: [ :i | true ]
+				displayingProgress: 'running task: 5'.
+			v input + 2 ]
+		description: 'a description 5'
+		length: 0.
+	taskRepo addTask: task.
+	task := MooseCustomTask new
+		with: [ :v | 
+			(1 to: 20000000)
+				do: [ :i | true ]
+				displayingProgress: 'running task: 6'.
+			v input + 2 ]
+		description: 'a description 6'
+		length: 0.
+	taskRepo addTask: task.
+	task := MooseCustomTask new
+		with: [ :v | 
+			(1 to: 20000000)
+				do: [ :i | true ]
+				displayingProgress: 'running task: 7'.
+			v input + 2 ]
+		description: 'a description 7'
+		length: 0.
+			taskRepo addTask: task.
+]
+
 { #category : #tests }
 MooseTaskPersistenceTest >> testStoneSerializationOverSingleBlockTask [
 	| stream retrieved |

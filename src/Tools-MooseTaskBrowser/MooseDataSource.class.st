@@ -37,5 +37,6 @@ MooseDataSource >> selectedItems [
 
 { #category : #accessing }
 MooseDataSource >> setSelectedItems: items [
-	table selectRowIndexes: (items collect: [ :i | elements indexOf: i ])
+	table selectRowIndexes: (items collect: [ :i | elements indexOf: i ]).
+	
 ]

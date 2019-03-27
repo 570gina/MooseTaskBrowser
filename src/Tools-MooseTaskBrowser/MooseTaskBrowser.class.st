@@ -286,16 +286,16 @@ MooseTaskBrowser >> checkedAllBox [
 	
 ]
 
-{ #category : #accessing }
-MooseTaskBrowser >> combine [
-	self
-		inform: ' Combining ' , self stepsDatasource selectedItems asString
-]
-
 { #category : #'list control' }
 MooseTaskBrowser >> combineSelected [
-	UIManager default
-				request: 'Please name this group: '
+	| index |
+	index := (taskTableMorph selectedRowIndexes sort: [ :a :b | a <= b ])
+		first.
+	self model
+		combineSteps: self stepsDatasource selectedItems
+		setIndex: index.
+		self halt.
+	self model: self model
 ]
 
 { #category : #'list control' }
@@ -454,11 +454,17 @@ MooseTaskBrowser >> repositoryView [
 { #category : #actions }
 MooseTaskBrowser >> run [
 	runButton disable.
-			[ self model run.
-			self inform: 'Task finished.' ]
-				ensure: [ runButton enable ].
-			self model: self model.
-			checkBox state: false 
+	self model
+		input:
+			((UIManager default
+				request: 'Provide the input for first task: '
+				initialAnswer: self model
+		 input asString) ).
+	[ self model run.
+	self inform: 'Task finished.' ]
+		ensure: [ runButton enable ].
+	self model: self model.
+	checkBox state: false
 ]
 
 { #category : #accessing }
@@ -490,7 +496,7 @@ MooseTaskBrowser >> stepsDatasource [
 				format:
 					[ :c | 
 					(MooseTaskRuntimeItem owner: self on: c) buildWithSpec asMorph.
-					 ] yourself ]
+						 ] yourself ]
 ]
 
 { #category : #'list control' }
@@ -499,6 +505,7 @@ MooseTaskBrowser >> swapItems: aNumber [
 	items := self stepsDatasource selectedItems.
 	items do: [ :item | self model move: aNumber theStep: item ].
 	self stepsDatasource setSelectedItems: items.
+
 	self model: self model
 ]
 
@@ -520,7 +527,6 @@ MooseTaskBrowser >> title [
 { #category : #'list control' }
 MooseTaskBrowser >> uncheckedAllBox [
 	self model doNotForceAnyStep.
-
 	self model: self model
 ]
 

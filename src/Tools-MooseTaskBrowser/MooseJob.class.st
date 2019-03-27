@@ -14,13 +14,29 @@ MooseJob >> addSteps: aCollection [
 ]
 
 { #category : #action }
+MooseJob >> combineSteps: aCollection setIndex: index [
+	aCollection do: [ :i | self removeStep: i ].
+	steps 
+add: aCollection beforeIndex: index
+
+]
+
+{ #category : #action }
 MooseJob >> doNotForceAnyStep [
-	steps do: [ :v | v forceToRun: false ]
+	steps
+		do: [ :v | 
+			v isArray
+				ifTrue: [ v do: [ :i | i forceToRun: false ] ]
+				ifFalse: [ v forceToRun: false ] ]
 ]
 
 { #category : #action }
 MooseJob >> forceRunAllSteps [
-	steps do: [ :v | v forceToRun: true ]
+	steps
+		do: [ :v | 
+			v isArray
+				ifTrue: [ v do: [ :i | i forceToRun: true ] ]
+				ifFalse: [ v forceToRun: true ] ]
 ]
 
 { #category : #initialization }
@@ -40,16 +56,15 @@ MooseJob >> input: aValue [
 ]
 
 { #category : #'organizing steps' }
-MooseJob >> move: aModifier theStep: aMooseTaskRuntime [
+MooseJob >> move: aModifier theStep: aStep [
 	| index |
-	index := steps indexOf: aMooseTaskRuntime.
-	steps swap: index with: index + aModifier.
-
+	index := steps indexOf: aStep.
+	steps swap: index with: index + aModifier
 ]
 
 { #category : #action }
-MooseJob >> removeStep: aMooseTaskRuntime [
-	steps remove: aMooseTaskRuntime
+MooseJob >> removeStep: aStep [
+	steps remove: aStep
 ]
 
 { #category : #action }
