@@ -52,8 +52,8 @@ MooseTaskPersistenceTest >> setUp [
 				displayingProgress: 'running task: 7'.
 			v input + 2 ]
 		description: 'a description 7'
-		length: 0.
-			taskRepo addTask: task.
+		length: 0.	
+	taskRepo addTask: task.
 ]
 
 { #category : #tests }

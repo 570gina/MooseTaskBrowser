@@ -48,7 +48,7 @@ Class {
 		'taskTableMorph',
 		'stepsDatasource'
 	],
-	#category : #'Tools-MooseTaskBrowser-core'
+	#category : #'Tools-MooseTaskBrowser-core-ui'
 }
 
 { #category : #specs }
@@ -291,10 +291,8 @@ MooseTaskBrowser >> combineSelected [
 	| index |
 	index := (taskTableMorph selectedRowIndexes sort: [ :a :b | a <= b ])
 		first.
-	self model
-		combineSteps: self stepsDatasource selectedItems
-		setIndex: index.
-		self halt.
+	self model combineSteps: self stepsDatasource selectedItems.
+	self stepsDatasource setSelectedIndexes: index.
 	self model: self model
 ]
 
@@ -340,6 +338,7 @@ MooseTaskBrowser >> initializePresenter [
 { #category : #initialization }
 MooseTaskBrowser >> initializeWidgets [
 	taskTableMorph := self newTable.
+	taskTableMorph.
 	taskTable := taskTableMorph asSpecAdapter.
 	checkBox := self newCheckBox.
 	loadButton := self newButton
@@ -414,7 +413,6 @@ MooseTaskBrowser >> manageTaskAddDialog [
 
 { #category : #accessing }
 MooseTaskBrowser >> modelChanged [
-
 	self stepsDatasource elements: self model steps.
 	taskTableMorph refresh.
 	checkBox state: false.
@@ -494,9 +492,7 @@ MooseTaskBrowser >> stepsDatasource [
 				elements: self model steps;
 				menu: [ :i | self setMenu: MenuMorph new ];
 				format:
-					[ :c | 
-					(MooseTaskRuntimeItem owner: self on: c) buildWithSpec asMorph.
-						 ] yourself ]
+						[ :c | (MooseTaskRuntimeItem owner: self on: c) buildWithSpec asMorph ] ]
 ]
 
 { #category : #'list control' }

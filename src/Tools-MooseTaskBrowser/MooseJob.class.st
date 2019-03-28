@@ -14,11 +14,14 @@ MooseJob >> addSteps: aCollection [
 ]
 
 { #category : #action }
-MooseJob >> combineSteps: aCollection setIndex: index [
+MooseJob >> combineSteps: aCollection [
+	| firstTaskIndex combination |
+	firstTaskIndex := steps indexOf: aCollection first.
 	aCollection do: [ :i | self removeStep: i ].
-	steps 
-add: aCollection beforeIndex: index
-
+	combination := aCollection allButFirst
+		inject: aCollection first
+		into: [ :acc :each | acc combineWith: each ].
+	steps add: combination beforeIndex: firstTaskIndex
 ]
 
 { #category : #action }
@@ -74,11 +77,14 @@ MooseJob >> run [
 
 { #category : #action }
 MooseJob >> runWithUpdatingBlock: aBlock [
+	steps first run: self input.
+	aBlock value.
 	^ steps allButFirst
-		inject: (steps first run: self input)
+		inject: steps first output
 		into: [ :result :step | 
+			step run: result.
 			aBlock value.
-			step run: result ]
+			step output ]
 ]
 
 { #category : #accessing }
