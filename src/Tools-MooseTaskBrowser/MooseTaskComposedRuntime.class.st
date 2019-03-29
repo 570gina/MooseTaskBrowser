@@ -9,7 +9,7 @@ Class {
 
 { #category : #'adding tasks' }
 MooseTaskComposedRuntime >> addTaskRuntime: aMooseTaskRuntime [
-	tasks add: aMooseTaskRuntime
+	tasks add: aMooseTaskRuntime.
 ]
 
 { #category : #running }
@@ -25,7 +25,7 @@ MooseTaskComposedRuntime >> combineWith: aMooseTaskRuntime [
 	aMooseTaskRuntime class = MooseTaskComposedRuntime
 		ifTrue: [ aMooseTaskRuntime tasks do: [ :t | combination addTaskRuntime: t ] ]
 		ifFalse: [ combination addTaskRuntime: aMooseTaskRuntime ].
-	^ combination
+	^ combination 
 ]
 
 { #category : #'adding tasks' }

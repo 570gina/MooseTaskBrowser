@@ -87,6 +87,21 @@ MooseJob >> runWithUpdatingBlock: aBlock [
 			step output ]
 ]
 
+{ #category : #action }
+MooseJob >> separateStep: aStep [
+	| index |
+	index := steps indexOf: aStep.
+	self removeStep: aStep.
+	aStep tasks do: [ :i | steps add: i beforeIndex: index. index := index+1 ]
+]
+
+{ #category : #action }
+MooseJob >> separateSteps: aCollection [
+	aCollection
+		do: [ :i |
+			self separateStep: i ]
+]
+
 { #category : #accessing }
 MooseJob >> steps [
 	^ steps

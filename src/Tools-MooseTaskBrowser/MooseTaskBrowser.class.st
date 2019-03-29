@@ -51,6 +51,12 @@ Class {
 	#category : #'Tools-MooseTaskBrowser-core-ui'
 }
 
+{ #category : #check }
+MooseTaskBrowser class >> allIsComposedRuntime: items [
+
+items do:[:i| (i isKindOf: MooseTaskComposedRuntime) ifFalse:[^false]].^true
+]
+
 { #category : #specs }
 MooseTaskBrowser class >> defaultSpec [
 	^ SpecColumnLayout composed
@@ -206,7 +212,7 @@ MooseTaskBrowser class >> example3 [
 ]
 
 { #category : #examples }
-MooseTaskBrowser class >> example5 [
+MooseTaskBrowser class >> example4 [
 	<example>
 	| task taskRepo test |
 	taskRepo := MooseTaskRepository new.
@@ -253,10 +259,14 @@ MooseTaskBrowser class >> menu: aBuilder [
 		ifTrue: [ (aBuilder item: #Combine)
 				icon: (self iconNamed: #collection);
 				selector: #combineSelected ].
-	 (aBuilder item: #Inspect)
-				icon: (self iconNamed: #smallInspectIt);
-				keyText: 'i';
-				selector: #inspectSelected.
+	(self allIsComposedRuntime: items)
+		ifTrue: [ (aBuilder item: #Separate)
+				icon: (self iconNamed: #windowMinimizeInactive);
+				selector: #separateSelected ].
+	(aBuilder item: #Inspect)
+		icon: (self iconNamed: #smallInspectIt);
+		keyText: 'i';
+		selector: #inspectSelected.
 	(aBuilder item: #Delete)
 		icon: (self iconNamed: #delete);
 		keyText: 'd';
@@ -473,6 +483,17 @@ MooseTaskBrowser >> runButton [
 { #category : #accessing }
 MooseTaskBrowser >> saveButton [
 	^ saveButton
+]
+
+{ #category : #'list control' }
+MooseTaskBrowser >> separateSelected [
+	| index |
+	index := (taskTableMorph selectedRowIndexes sort: [ :a :b | a <= b ])
+		first.
+	self model separateSteps: self stepsDatasource selectedItems.
+	self stepsDatasource setSelectedIndexes: index.
+	self model: self model
+	
 ]
 
 { #category : #menu }

@@ -25,7 +25,7 @@ MooseTaskRuntime >> combineWith: aMooseTaskRuntime [
 		ifFalse: [ combination
 				addTaskRuntime: self;
 				addTaskRuntime: aMooseTaskRuntime ].
-	^ combination
+	^ combination 
 ]
 
 { #category : #accessing }
@@ -77,7 +77,6 @@ MooseTaskRuntime >> task [
 MooseTaskRuntime >> task: aMooseCustomTask [
 	task := aMooseCustomTask.
 	hasRun := false.
-	"forceToRun := false."
 	input := nil.
 	output := nil
 ]

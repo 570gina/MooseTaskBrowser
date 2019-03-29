@@ -35,26 +35,6 @@ MooseTaskRuntimeTest >> setUp [
 ]
 
 { #category : #running }
-MooseTaskRuntimeTest >> testACombinationCannotHoldTwiceTheSameRuntimeTask [
-	| combination |
-	combination := task1 combineWith: task1.
-	self assert: (combination isKindOf: MooseTaskRuntime).
-	self assert: combination equals: task1
-]
-
-{ #category : #running }
-MooseTaskRuntimeTest >> testAComposedCombinationCannotHoldTwiceTheSameRuntimeTask [
-	| combination exp1 exp2 |
-	combination := task1 combineWith: task2.
-	self assert: combination tasks size equals: 2.
-	exp1 := combination combineWith: task1.
-	self assert: combination equals: exp1.
-	exp2 := combination combineWith: task2.
-	self assert: combination equals: exp2.
-	self assert: exp2 equals: exp1
-]
-
-{ #category : #running }
 MooseTaskRuntimeTest >> testCombineComposedTaskAndComposedTaskGivesANewCompositeWithFourTasks [
 	| combination sub1 sub2 |
 	"Look on 'adaptToFraction: rcvr andSend: selector' and adaptTo... messages. Check senders and implementation"
