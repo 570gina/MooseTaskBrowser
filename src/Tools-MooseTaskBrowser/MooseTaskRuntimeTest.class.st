@@ -93,6 +93,13 @@ MooseTaskRuntimeTest >> testCombineTwoSimpleTasksGivesANewComposite [
 ]
 
 { #category : #running }
+MooseTaskRuntimeTest >> testSeparateAComposedTaskGivesSomeSingleTasks [
+	| combination |
+	combination := task1 combineWith: task2.
+	self assert: (combination isKindOf: MooseTaskComposedRuntime).
+]
+
+{ #category : #running }
 MooseTaskRuntimeTest >> testTaskRuntimeGivesAllwaysANewRuntime [
 	self deny: task1 equals: task1dash1.
 	self assert: task1 task equals: task1dash1 task

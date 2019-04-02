@@ -3,7 +3,8 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'steps',
-		'input'
+		'input',
+		'filePath'
 	],
 	#category : #'Tools-MooseTaskBrowser-core'
 }
@@ -33,6 +34,16 @@ MooseJob >> doNotForceAnyStep [
 				ifFalse: [ v forceToRun: false ] ]
 ]
 
+{ #category : #accessing }
+MooseJob >> filePath [
+	^ filePath
+]
+
+{ #category : #accessing }
+MooseJob >> filePath: anObject [
+	filePath := anObject
+]
+
 { #category : #action }
 MooseJob >> forceRunAllSteps [
 	steps
@@ -45,7 +56,8 @@ MooseJob >> forceRunAllSteps [
 { #category : #initialization }
 MooseJob >> initialize [
 	super initialize.
-	steps := OrderedCollection new
+	steps := OrderedCollection new.
+	filePath:= nil.
 ]
 
 { #category : #accessing }

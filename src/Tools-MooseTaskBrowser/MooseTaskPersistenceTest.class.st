@@ -57,12 +57,11 @@ MooseTaskPersistenceTest >> setUp [
 ]
 
 { #category : #tests }
-MooseTaskPersistenceTest >> testStoneSerializationOverSingleBlockTask [
+MooseTaskPersistenceTest >> testStonSerializationOverSingleBlockTask [
 	| stream retrieved |
 	task := taskRepo tasks detect: [ :t | t computation isBlock ].
-	stream := String new writeStream.
-	(STONWriter on: stream) nextPut: task.
-	retrieved := (STONReader on: stream contents readStream) next.
+	stream := STON toStringPretty: task.
+	retrieved := (STONReader on: stream  readStream) next.
 	self
 		assert: retrieved computation asString
 		equals: task computation asString.
@@ -70,25 +69,23 @@ MooseTaskPersistenceTest >> testStoneSerializationOverSingleBlockTask [
 ]
 
 { #category : #tests }
-MooseTaskPersistenceTest >> testStoneSerializationOverSingleMessageSendTask [
+MooseTaskPersistenceTest >> testStonSerializationOverSingleMessageSendTask [
 	| stream retrieved |
-	stream := String new writeStream.
 	task := taskRepo tasks detect: [ :t | t computation isMessageSend ].
-	(STONWriter on: stream) nextPut: task.
-	retrieved := (STONReader on: stream contents readStream) next.
+	stream := STON toStringPretty: task.
+	retrieved := (STONReader on: stream readStream) next.
 	self
 		assert: retrieved computation selector
 		equals: task computation selector.
 	self
-		assert: (retrieved computation receiver isKindOf: MooseTaskPersistenceTest).
+		assert: (retrieved computation receiver isKindOf: MooseTaskPersistenceTest)
 ]
 
 { #category : #tests }
-MooseTaskPersistenceTest >> testStoneSerializationOverSingleMultipleTasks [
+MooseTaskPersistenceTest >> testStonSerializationOverSingleMultipleTasks [
 	| stream retrievedCollection |
-	stream := String new writeStream.
-	(STONWriter on: stream) nextPut: taskRepo.
-	retrievedCollection := (STONReader on: stream contents readStream)
+	stream := STON toStringPretty: taskRepo.
+	retrievedCollection := (STONReader on: stream readStream)
 		next.
 	retrievedCollection tasks
 		select: [ :i | i computation isMessageSend ]
@@ -97,5 +94,5 @@ MooseTaskPersistenceTest >> testStoneSerializationOverSingleMultipleTasks [
 				assert: (retrieved computation receiver isKindOf: MooseTaskPersistenceTest) ].
 	retrievedCollection tasks
 		reject: [ :i | i computation isMessageSend ]
-		thenDo: [ :b | self assert: b computation  isBlock ]
+		thenDo: [ :b | self assert: b computation isBlock ]
 ]

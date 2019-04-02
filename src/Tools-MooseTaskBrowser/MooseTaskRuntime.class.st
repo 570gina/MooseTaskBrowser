@@ -55,17 +55,7 @@ MooseTaskRuntime >> icon [
 
 { #category : #accessing }
 MooseTaskRuntime >> printOn: aStream [
-	task description printOn: aStream.
-	"aStream
-		nextPutAll: ' Last input:# ';
-		nextPutAll: input printString.
-	self isError
-		ifTrue: [ aStream
-				nextPutAll: ' Error:# ';
-				nextPutAll: error printString ]
-		ifFalse: [ aStream
-				nextPutAll: ' Last result:# ';
-				nextPutAll: output printString ]"
+	task description printOn: aStream
 ]
 
 { #category : #accessing }

@@ -56,7 +56,7 @@ MooseTaskComposedRuntime >> initialize [
 
 { #category : #running }
 MooseTaskComposedRuntime >> output [
-	^ output collect: [ :f | f synchronizeTimeout: 5 minutes ]
+	^ output	collect: [ :f | f synchronizeTimeout: 1 minutes ]
 ]
 
 { #category : #accessing }
