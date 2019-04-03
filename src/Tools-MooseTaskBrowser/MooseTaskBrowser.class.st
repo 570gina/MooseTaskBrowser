@@ -142,6 +142,7 @@ MooseTaskBrowser class >> example1 [
 	task := MooseCustomTask new
 		with: [ :v | 
 			| mseFileRef |
+
 			mseFileRef := GMUtility
 				generateMSEFileFor: 'HEAD'
 				reponame: (v input at: 'loc') basename.
@@ -182,38 +183,14 @@ MooseTaskBrowser class >> example1 [
 { #category : #examples }
 MooseTaskBrowser class >> example2 [
 	<example>
-	| requestUrl clone taskRepo test   |
-	taskRepo := MooseTaskRepository new.
-	requestUrl := MooseCustomTask new
-		with: [ :v | 
-			| loc |
-			loc := UIManager default
-				request: 'Please insert the url to clone, with argument: '
-				initialAnswer: 'https://github.com/fuhrmanator/FactoryVariants' ]
-		description: '0 prompt url'
-		length: 0.
-	taskRepo addTask: requestUrl.
-	clone := MooseCustomTask new
-		with: [ :v | 
-			GMUtility cloneRepo: v input. ]
-		description: '1 Clone Repository'
-		length: 0.
-	taskRepo addTask: clone.
-	test := MooseTaskBrowser on: MooseJob new.
-	test repositoryView setList: taskRepo tasks.
-	test openWithSpec
-]
-
-{ #category : #examples }
-MooseTaskBrowser class >> example3 [
-	<example>
 	| task taskRepo test |
 	taskRepo := MooseTaskRepository new.
 	task := MooseCustomTask new
 		with: [ :v | 
-			(1 to: 100000000)
-				do: [ :i | true ]
-				displayingProgress: 'running task: 1'.
+			v progress
+				min: 1;
+				max: 10000000000.
+			(1 to: 100000000) do: [ :i | v progress increase ].
 			true ]
 		description: 'a description 1'
 		length: 0.
@@ -236,7 +213,7 @@ MooseTaskBrowser class >> example3 [
 		description: 'a description 3'
 		length: 0.
 	taskRepo addTask: task.
-		task := MooseCustomTask new
+	task := MooseCustomTask new
 		with: [ :v | 
 			(1 to: 50000000)
 				do: [ :i | true ]
@@ -251,7 +228,7 @@ MooseTaskBrowser class >> example3 [
 ]
 
 { #category : #examples }
-MooseTaskBrowser class >> example4 [
+MooseTaskBrowser class >> example3 [
 	<example>
 	| task taskRepo test |
 	taskRepo := MooseTaskRepository new.
@@ -288,95 +265,23 @@ MooseTaskBrowser class >> example4 [
 ]
 
 { #category : #examples }
-MooseTaskBrowser class >> example5 [
+MooseTaskBrowser class >> example4 [
 	<example>
 	| task taskRepo test |
 	taskRepo := MooseTaskRepository new.
 	task := MooseCustomTask new
-		with: [ :v | 
-			| loc |
-			loc := UIManager default
-				request: 'Please insert the url to clone, with argument: '
-				initialAnswer: 'https://github.com/fuhrmanator/FactoryVariants' ]
-		description: '0 prompt url'
+		with: [ :v | v input asInteger + 3 ]
+		description: '+3'
 		length: 0.
 	taskRepo addTask: task.
 	task := MooseCustomTask new
-		with: [ :v | GMUtility cloneRepo: v input ]
-		description: '1 Clone Repository'
+		with: [ :v | v input asInteger + 4 ]
+		description: '+4'
 		length: 0.
 	taskRepo addTask: task.
 	task := MooseCustomTask new
-		with: [ :v | 
-			| commitMetadata |
-			commitMetadata := GMUtility
-				filterCommitsOnRepoLeftBranchOnly: v input
-				from: 'HEAD'
-				to: ''.
-			Dictionary
-				newFrom:
-					{('loc' -> v input).
-					('commitMetadata' -> commitMetadata)} ]
-		description: '2 Filter Commits On Repository Left Branch'
-		length: 0.
-	taskRepo addTask: task.
-	task := MooseCustomTask new
-		with: [ :v | 
-			| selectedCommits |
-			selectedCommits := GMUtility
-				generateSelectedCommits: (v input at: 'commitMetadata').
-			Dictionary
-				newFrom:
-					{('loc' -> (v input at: 'loc')).
-					('selectedCommits' -> selectedCommits)} ]
-		description: '3 Generate Selected Commits'
-		length: 0.
-	taskRepo addTask: task.
-	task := MooseCustomTask new
-		with: [ :v | 
-			| pairsAndTransactions |
-			pairsAndTransactions := GMUtility
-				generatePairsAndTransactions: (v input at: 'selectedCommits').
-			Dictionary
-				newFrom:
-					{('loc' -> (v input at: 'loc')).
-					('pairsAndTransactions' -> pairsAndTransactions)} ]
-		description: '4 Generate Pairs And Transactions'
-		length: 0.
-	taskRepo addTask: task.
-	task := MooseCustomTask new
-		with: [ :v | 
-			| mseFileRef |
-			mseFileRef := GMUtility
-				generateMSEFileFor: 'HEAD'
-				reponame: (v input at: 'loc') basename.
-			Dictionary
-				newFrom:
-					{('gitName' -> (v input at: 'loc') basename).
-					('pairsAndTransactions' -> (v input at: 'pairsAndTransactions')).
-					('mseFileRef' -> mseFileRef)} ]
-		description: '5 Generate MSE File For StartOID'
-		length: 0.
-	taskRepo addTask: task.
-	task := MooseCustomTask new
-		with: [ :v | 
-			GMUtility
-				generateClientImplementationPairs: (v input at: 'mseFileRef').
-			Dictionary
-				newFrom:
-					{('gitName' -> (v input at: 'gitName')).
-					('pairsAndTransactions' -> (v input at: 'pairsAndTransactions'))} ]
-		description: '6 Generate ClientImplementation Pairs'
-		length: 0.
-	taskRepo addTask: task.
-	task := MooseCustomTask new
-		with: [ :v | 
-			GMUtility
-				calculateCouplingIntersectionsFor: (v input at: 'gitName')
-				withPairsFile: (v input at: 'pairsAndTransactions') first
-				from: 'HEAD'
-				to: '' ]
-		description: '7 Calculate Coupling Intersections'
+		with: [ :v | v input first asInteger+ v input second asInteger]
+		description: '++'
 		length: 0.
 	taskRepo addTask: task.
 	test := MooseTaskBrowser on: MooseJob new.
@@ -490,6 +395,7 @@ MooseTaskBrowser >> initializePresenter [
 
 { #category : #initialization }
 MooseTaskBrowser >> initializeWidgets [
+	self title: 'Moose Tasks'.
 	taskTableMorph := self newTable.
 	taskTableMorph.
 	taskTable := taskTableMorph asSpecAdapter.
@@ -529,7 +435,9 @@ MooseTaskBrowser >> inspectSelected [
 MooseTaskBrowser >> loadAJob [
 	file := MooseJobFile new.
 	file load
-		ifTrue: [ self model: file job. self inform: 'Loaded' ]
+		ifTrue: [ self model: file job.
+			self title: 'Moose Tasks -> ' , file fileName , '.txt'.
+			self inform: 'Loaded' ]
 ]
 
 { #category : #accessing }
@@ -585,7 +493,8 @@ MooseTaskBrowser >> modelChanged [
 			loadButton enable ]
 		ifNotEmpty: [ checkBox enable.
 			runButton enable.
-			saveButton enable.loadButton disable  ]
+			saveButton enable.].
+	file ifNotNil: [ saveButton enable ]
 ]
 
 { #category : #initialization }
@@ -642,7 +551,8 @@ MooseTaskBrowser >> saveTheJob [
 	file ifNil: [ file := MooseJobFile new ].
 	file job: self model.
 	file saveAs
-		ifTrue: [ self inform: 'Saved' ]
+		ifTrue: [ self inform: 'Saved'.
+			self title: 'Moose Tasks -> ' , file fileName, '.txt' ]
 ]
 
 { #category : #'list control' }
@@ -682,7 +592,6 @@ MooseTaskBrowser >> swapItems: aNumber [
 	items := self stepsDatasource selectedItems.
 	items do: [ :item | self model move: aNumber theStep: item ].
 	self stepsDatasource setSelectedItems: items.
-
 	self model: self model
 ]
 
@@ -694,11 +603,6 @@ MooseTaskBrowser >> taskRepo [
 { #category : #accessing }
 MooseTaskBrowser >> taskTable [
 	^ taskTable
-]
-
-{ #category : #api }
-MooseTaskBrowser >> title [ 
-	^'Moose Tasks'
 ]
 
 { #category : #'list control' }

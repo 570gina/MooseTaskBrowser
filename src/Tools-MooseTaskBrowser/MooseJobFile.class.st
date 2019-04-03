@@ -36,12 +36,12 @@ MooseJobFile >> load [
 		chooseExistingFileReference: 'Select a Job'
 		extensions: #('txt')
 		path: FileLocator home.
-	reference ifNil: [ ^ true ].
+	reference ifNil: [ ^ false ].
 	reference extension = 'txt'
 		ifFalse: [ ^ false ].
 	fileName := reference base.
 	text := reference readStreamDo: [ :stream | stream upToEnd ].
-	job:=(STONReader on: text readStream) next.
+	job := (STONReader on: text readStream) next.
 	^ true
 ]
 
