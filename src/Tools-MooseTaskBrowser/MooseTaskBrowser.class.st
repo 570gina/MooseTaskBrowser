@@ -47,7 +47,9 @@ Class {
 		'taskTable',
 		'taskTableMorph',
 		'stepsDatasource',
-		'file'
+		'file',
+		'newJobButton',
+		'change'
 	],
 	#category : #'Tools-MooseTaskBrowser-core-ui'
 }
@@ -66,6 +68,7 @@ MooseTaskBrowser class >> defaultSpec [
 				add: #checkBox width: self defaultFont height;
 				newRow: [ :inRow | 
 					inRow
+						add: #newJobButton;
 						add: #loadButton;
 						add: #saveButton;
 						add: #addButton ] ]
@@ -325,6 +328,11 @@ MooseTaskBrowser >> addButton [
 ]
 
 { #category : #accessing }
+MooseTaskBrowser >> change [
+^change
+]
+
+{ #category : #accessing }
 MooseTaskBrowser >> checkBox [
 ^checkBox
 ]
@@ -390,16 +398,21 @@ MooseTaskBrowser >> initializePresenter [
 	runButton action: [ self run ].
 	addButton action: [ self manageTaskAddDialog ].
 	saveButton action: [ self saveTheJob ].
-	loadButton action: [ self loadAJob. ]
+	loadButton action: [ self loadAJob ].
+	newJobButton action: [ self newAnEmptyJob ].
 ]
 
 { #category : #initialization }
 MooseTaskBrowser >> initializeWidgets [
 	self title: 'Moose Tasks'.
+		change := false.
 	taskTableMorph := self newTable.
 	taskTableMorph.
 	taskTable := taskTableMorph asSpecAdapter.
 	checkBox := self newCheckBox.
+	newJobButton := self newButton
+		label: 'New';
+		icon: (self iconNamed: #page).
 	loadButton := self newButton
 		label: 'Load';
 		icon: (self iconNamed: #smallOpen).
@@ -433,11 +446,14 @@ MooseTaskBrowser >> inspectSelected [
 
 { #category : #actions }
 MooseTaskBrowser >> loadAJob [
+	| state |
+	state := file.
 	file := MooseJobFile new.
 	file load
 		ifTrue: [ self model: file job.
 			self title: 'Moose Tasks -> ' , file fileName , '.txt'.
-			self inform: 'Loaded' ]
+			self inform: 'Loaded'.change := false. ]
+		ifFalse: [ file := state ]
 ]
 
 { #category : #accessing }
@@ -484,17 +500,49 @@ MooseTaskBrowser >> modelChanged [
 	self stepsDatasource elements: self model steps.
 	taskTableMorph refresh.
 	checkBox state: false.
+	change := true.
 	self model steps
 		ifEmpty: [ upButton disable.
 			downButton disable.
 			checkBox disable.
 			runButton disable.
 			saveButton disable.
-			loadButton enable ]
+			loadButton enable.
+			newJobButton disable ]
 		ifNotEmpty: [ checkBox enable.
 			runButton enable.
-			saveButton enable.].
-	file ifNotNil: [ saveButton enable ]
+			saveButton enable.
+			newJobButton enable ].
+	file
+		ifNotNil: [ saveButton enable.
+			newJobButton enable ]
+]
+
+{ #category : #initialization }
+MooseTaskBrowser >> newAnEmptyJob [
+	| select |
+	change
+		ifTrue: [ select := UIManager default
+				confirm: 'Save changes?'
+				label: 'Question'
+				trueChoice: 'Yes'
+				falseChoice: 'No'
+				cancelChoice: 'Cancel'
+				default: true.
+			select
+				ifNil: [ ^ false ];
+				ifTrue: [ self saveTheJob
+							ifFalse: [ ^ false ] ] ].
+	file := nil.
+	self stepsDatasource setSelectedItems: #().
+	self model: MooseJob new.
+	self title: 'Moose Tasks'.
+	^ true
+]
+
+{ #category : #initialization }
+MooseTaskBrowser >> newJobButton [
+^newJobButton
 ]
 
 { #category : #initialization }
@@ -548,11 +596,17 @@ MooseTaskBrowser >> saveButton [
 
 { #category : #actions }
 MooseTaskBrowser >> saveTheJob [
+	| state |
+	state := file.
 	file ifNil: [ file := MooseJobFile new ].
 	file job: self model.
 	file saveAs
-		ifTrue: [ self inform: 'Saved'.
-			self title: 'Moose Tasks -> ' , file fileName, '.txt' ]
+		ifTrue: [ 
+			self inform: 'Saved'.
+			self title: 'Moose Tasks -> ' , file fileName , '.txt'.change := false.
+			^ true ]
+		ifFalse: [ file := state.
+			^ false ]
 ]
 
 { #category : #'list control' }
