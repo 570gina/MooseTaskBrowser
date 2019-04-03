@@ -190,10 +190,9 @@ MooseTaskBrowser class >> example2 [
 	taskRepo := MooseTaskRepository new.
 	task := MooseCustomTask new
 		with: [ :v | 
-			v progress
-				min: 1;
-				max: 10000000000.
-			(1 to: 100000000) do: [ :i | v progress increase ].
+			(1 to: 10000000)
+				do: [ :i | true ]
+				displayingProgress: 'running task: 1'.
 			true ]
 		description: 'a description 1'
 		length: 0.
@@ -209,7 +208,7 @@ MooseTaskBrowser class >> example2 [
 	taskRepo addTask: task.
 	task := MooseCustomTask new
 		with: [ :v | 
-			(1 to: 100000000)
+			(1 to: 10000000)
 				do: [ :i | true ]
 				displayingProgress: 'running task: 3'.
 			true ]
@@ -405,22 +404,22 @@ MooseTaskBrowser >> initializePresenter [
 { #category : #initialization }
 MooseTaskBrowser >> initializeWidgets [
 	self title: 'Moose Tasks'.
-		change := false.
+	change := false.
 	taskTableMorph := self newTable.
 	taskTableMorph.
 	taskTable := taskTableMorph asSpecAdapter.
 	checkBox := self newCheckBox.
 	newJobButton := self newButton
-		label: 'New';
+		label: 'New Job';
 		icon: (self iconNamed: #page).
 	loadButton := self newButton
-		label: 'Load';
+		label: 'Load Job';
 		icon: (self iconNamed: #smallOpen).
 	saveButton := self newButton
-		label: 'Save';
+		label: 'Save Job';
 		icon: (self iconNamed: #glamorousSave).
 	addButton := self newButton
-		label: 'Add';
+		label: 'Add Tasks';
 		icon: (self iconNamed: #smallAdd).
 	upButton := self newButton icon: (self iconNamed: #up).
 	downButton := self newButton icon: (self iconNamed: #down).
@@ -452,7 +451,8 @@ MooseTaskBrowser >> loadAJob [
 	file load
 		ifTrue: [ self model: file job.
 			self title: 'Moose Tasks -> ' , file fileName , '.txt'.
-			self inform: 'Loaded'.change := false. ]
+			self inform: 'Loaded'.
+			change := false ]
 		ifFalse: [ file := state ]
 ]
 
