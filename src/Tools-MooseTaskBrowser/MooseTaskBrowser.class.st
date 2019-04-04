@@ -446,14 +446,18 @@ MooseTaskBrowser >> inspectSelected [
 { #category : #actions }
 MooseTaskBrowser >> loadAJob [
 	| state |
-	state := file.
-	file := MooseJobFile new.
-	file load
-		ifTrue: [ self model: file job.
-			self title: 'Moose Tasks -> ' , file fileName , '.txt'.
-			self inform: 'Loaded'.
-			change := false ]
-		ifFalse: [ file := state ]
+	(self model steps isEmpty and: file isNil)
+		ifTrue: [ change := false ].
+	self saveChangesDialog
+		ifTrue: [ state := file.
+			file := MooseJobFile new.
+			file load
+				ifTrue: [ self model: file job.
+					self title: 'Moose Tasks -> ' , file fileName , '.txt'.
+					self inform: 'Loaded'.
+					self stepsDatasource setSelectedItems: #().
+					change := false ]
+				ifFalse: [ file := state ] ]
 ]
 
 { #category : #accessing }
@@ -520,24 +524,13 @@ MooseTaskBrowser >> modelChanged [
 
 { #category : #initialization }
 MooseTaskBrowser >> newAnEmptyJob [
-	| select |
-	change
-		ifTrue: [ select := UIManager default
-				confirm: 'Save changes?'
-				label: 'Question'
-				trueChoice: 'Yes'
-				falseChoice: 'No'
-				cancelChoice: 'Cancel'
-				default: true.
-			select
-				ifNil: [ ^ false ];
-				ifTrue: [ self saveTheJob
-							ifFalse: [ ^ false ] ] ].
+	self saveChangesDialog
+ifTrue: [  
 	file := nil.
 	self stepsDatasource setSelectedItems: #().
 	self model: MooseJob new.
 	self title: 'Moose Tasks'.
-	^ true
+]
 ]
 
 { #category : #initialization }
@@ -592,6 +585,24 @@ MooseTaskBrowser >> runButton [
 { #category : #accessing }
 MooseTaskBrowser >> saveButton [
 	^ saveButton
+]
+
+{ #category : #actions }
+MooseTaskBrowser >> saveChangesDialog [
+	| select |
+	change
+		ifTrue: [ select := UIManager default
+				confirm: 'Save changes?'
+				label: 'Question'
+				trueChoice: 'Yes'
+				falseChoice: 'No'
+				cancelChoice: 'Cancel'
+				default: true.
+			select
+				ifNil: [ ^ false ];
+				ifTrue: [ self saveTheJob
+							ifFalse: [ ^ false ] ] ]
+					.^true
 ]
 
 { #category : #actions }
