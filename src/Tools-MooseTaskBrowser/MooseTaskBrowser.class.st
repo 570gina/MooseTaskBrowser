@@ -224,7 +224,7 @@ MooseTaskBrowser class >> example2 [
 		description: 'a description 4'
 		length: 0.
 	taskRepo addTask: task.
-	test := MooseTaskBrowser on: MooseJob new.
+	test := MooseTaskBrowser on: MooseJob new. 
 	test repositoryView setList: taskRepo tasks.
 	test openWithSpec
 ]
@@ -501,6 +501,9 @@ MooseTaskBrowser >> manageTaskAddDialog [
 
 { #category : #accessing }
 MooseTaskBrowser >> modelChanged [
+	Transcript
+		show: 'Job model was changed.';
+		cr.
 	self stepsDatasource elements: self model steps.
 	taskTableMorph refresh.
 	checkBox state: false.
@@ -648,7 +651,7 @@ MooseTaskBrowser >> stepsDatasource [
 				elements: self model steps;
 				menu: [ :i | self setMenu: MenuMorph new ];
 				format:
-						[ :c | (MooseTaskRuntimeItem owner: self on: c) buildWithSpec asMorph ] ]
+						[ :c | (MooseTaskRuntimeItem owner: self model on: c) buildWithSpec asMorph ] ]
 ]
 
 { #category : #'list control' }

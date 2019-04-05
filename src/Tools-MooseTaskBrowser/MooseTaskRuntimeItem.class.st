@@ -112,8 +112,7 @@ MooseTaskRuntimeItem >> input: anObject [
 { #category : #initialization }
 MooseTaskRuntimeItem >> modelChanged [
 	self model
-		ifNotNil: [ 
-			input label: 'Input: ' , self model input asString.
+		ifNotNil: [ input label: 'Input: ' , self model input asString.
 			description label: 'Task: ' , self model description.
 			output label: 'Output: ' , self model output asString.
 			self model hasRun

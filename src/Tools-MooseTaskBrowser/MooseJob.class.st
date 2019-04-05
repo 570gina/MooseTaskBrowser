@@ -45,7 +45,7 @@ MooseJob >> forceRunAllSteps [
 { #category : #initialization }
 MooseJob >> initialize [
 	super initialize.
-	steps := OrderedCollection new.
+	steps := OrderedCollection new
 ]
 
 { #category : #accessing }
@@ -84,7 +84,7 @@ MooseJob >> runWithUpdatingBlock: aBlock [
 		into: [ :result :step | 
 			step run: result.
 			aBlock value.
-			step output ]
+			step output. ]
 ]
 
 { #category : #action }

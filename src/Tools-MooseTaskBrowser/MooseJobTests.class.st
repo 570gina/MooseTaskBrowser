@@ -16,7 +16,7 @@ MooseJobTests >> testJobReducesAnArithmeticOperation [
 				with: [ :i | 1 ]
 				description: 'gets a one'
 				length: 0).
-		steps
+	steps
 		add:
 			(MooseCustomTask new
 				with: [ :i | i input + 3 ]
@@ -24,9 +24,7 @@ MooseJobTests >> testJobReducesAnArithmeticOperation [
 				length: 0).
 	steps := steps
 		collect: [ :t | 
-			MooseTaskRuntime new
-				task: t;
-				yourself ].
+			t asTaskRuntime  ].
 	self
 		assert:
 			(MooseJob new
