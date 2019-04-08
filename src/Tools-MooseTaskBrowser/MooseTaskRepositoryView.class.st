@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'listPresenter'
 	],
-	#category : #'Tools-MooseTaskBrowser-core'
+	#category : #'Tools-MooseTaskBrowser-core-ui'
 }
 
 { #category : #specs }

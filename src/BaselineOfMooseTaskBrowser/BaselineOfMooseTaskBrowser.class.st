@@ -9,10 +9,14 @@ BaselineOfMooseTaskBrowser >> baseline: spec [
 	<baseline>
 	spec
 		for: #common
-		do: [ 
-			spec preLoadDoIt: #verifyMooseInstalled.
+		do: [ spec preLoadDoIt: #verifyMooseInstalled.
 			"Packages"
-			spec package: 'Tools-MooseTaskBrowser' ]
+			spec
+				baseline: 'TaskIt'
+				with: [ spec repository: 'github://sbragagnolo/taskit' ].
+			spec
+				package: 'Tools-MooseTaskBrowser'
+				with: [ spec requires: #(TaskIt) ] ]
 ]
 
 { #category : #accessing }

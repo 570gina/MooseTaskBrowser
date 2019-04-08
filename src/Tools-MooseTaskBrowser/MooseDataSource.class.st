@@ -4,14 +4,17 @@ Class {
 	#instVars : [
 		'format'
 	],
-	#category : #'Tools-MooseTaskBrowser-core'
+	#category : #'Tools-MooseTaskBrowser-core-ui'
 }
 
 { #category : #accessing }
 MooseDataSource >> cellColumn: column row: rowIndex [
-	^ FTCellMorph new
-		addMorphBack: (self format value: (self elementAt: rowIndex)) asMorph;
-		yourself
+	| cell |
+	cell := FTCellMorph new.
+	(self elementAt: rowIndex) tasks
+		collect: [ :v | self format value: v ]
+		thenDo: [ :m | cell addMorphBack: m asMorph ].
+	^ cell
 ]
 
 { #category : #accessing }
@@ -30,12 +33,24 @@ MooseDataSource >> selectAll [
 ]
 
 { #category : #accessing }
+MooseDataSource >> selectedIndexes [
+	^ table selectedRowIndexes
+	
+]
+
+{ #category : #accessing }
 MooseDataSource >> selectedItems [
 	^ table selectedRowIndexes
 		collect: [ :index | self elementAt: index ]
 ]
 
 { #category : #accessing }
+MooseDataSource >> setSelectedIndexes: indexes [
+	table selectRowIndexes: indexes.
+]
+
+{ #category : #accessing }
 MooseDataSource >> setSelectedItems: items [
-	table selectRowIndexes: (items collect: [ :i | elements indexOf: i ])
+	table selectRowIndexes: (items collect: [ :i | elements indexOf: i ]).
+	
 ]

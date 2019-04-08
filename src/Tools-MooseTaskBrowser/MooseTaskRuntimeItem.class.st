@@ -9,7 +9,7 @@ Class {
 		'test',
 		'emptyLabel'
 	],
-	#category : #'Tools-MooseTaskBrowser-core'
+	#category : #'Tools-MooseTaskBrowser-core-ui'
 }
 
 { #category : #specs }
@@ -31,7 +31,7 @@ MooseTaskRuntimeItem class >> defaultSpec [
 						add: #description height: h;
 						add: #output height: h;
 						add: #emptyLabel ] ]
-			height: 3*h;
+			height: 3 * h;
 		yourself
 ]
 
@@ -121,7 +121,8 @@ MooseTaskRuntimeItem >> modelChanged [
 							checkbox state: true.
 							checkbox disable ]
 						ifFalse: [ test image: (self iconNamed: #testGreen).
-														checkbox enable.checkbox state: self model forceToRun. ] ]
+							checkbox enable.
+							checkbox state: self model forceToRun ] ]
 				ifFalse: [ test image: (self iconNamed: #testNotRun).
 					checkbox state: true.
 					checkbox disable ] ]
