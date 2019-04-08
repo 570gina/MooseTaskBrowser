@@ -145,7 +145,7 @@ MooseTaskBrowser class >> example1 [
 	task := MooseCustomTask new
 		with: [ :v | 
 			| mseFileRef |
-
+			Transcript show: 'here'; cr.
 			mseFileRef := GMUtility
 				generateMSEFileFor: 'HEAD'
 				reponame: (v input at: 'loc') basename.
@@ -501,9 +501,6 @@ MooseTaskBrowser >> manageTaskAddDialog [
 
 { #category : #accessing }
 MooseTaskBrowser >> modelChanged [
-	Transcript
-		show: 'Job model was changed.';
-		cr.
 	self stepsDatasource elements: self model steps.
 	taskTableMorph refresh.
 	checkBox state: false.
@@ -573,9 +570,11 @@ MooseTaskBrowser >> run [
 			(UIManager default
 				request: 'Provide the input for first task: '
 				initialAnswer: self model input asString).
-	[ self model runWithUpdatingBlock: [ self model: self model ] ]
-		ensure: [ self inform: 'Tasks finished.'.runButton enable ].
-	self model: self model.
+	(self model runWithUpdatingBlock: [ self model: self model ])
+		addSuccessCallback: [ :result | 
+			self inform: 'Tasks finished.'.
+			self model: self model.
+			runButton enable ].
 	checkBox state: false
 ]
 

@@ -71,7 +71,7 @@ MooseTaskAbstractRuntime >> run [
 MooseTaskAbstractRuntime >> run: anInput [
 	^ (self shouldRunFor: anInput)
 		ifTrue: [ input := anInput.
-			 self run ]
+			self run ]
 		ifFalse: [ output ]
 ]
 
