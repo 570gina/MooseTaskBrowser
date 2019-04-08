@@ -42,14 +42,14 @@ Class {
 		'runButton',
 		'taskRepo',
 		'repositoryView',
-		'runner',
 		'checkBox',
 		'taskTable',
 		'taskTableMorph',
 		'stepsDatasource',
 		'file',
 		'newJobButton',
-		'change'
+		'change',
+		'isRunning'
 	],
 	#category : #'Tools-MooseTaskBrowser-core-ui'
 }
@@ -93,6 +93,9 @@ MooseTaskBrowser class >> example1 [
 	task := MooseCustomTask new
 		with: [ :v | 
 			| loc |
+			Transcript
+				show: 'Task 0 running';
+				cr.
 			loc := UIManager default
 				request: 'Please insert the url to clone, with argument: '
 				initialAnswer: 'https://github.com/fuhrmanator/FactoryVariants' ]
@@ -100,13 +103,20 @@ MooseTaskBrowser class >> example1 [
 		length: 0.
 	taskRepo addTask: task.
 	task := MooseCustomTask new
-		with: [ :v | GMUtility cloneRepo: v input ]
+		with: [ :v | 
+			Transcript
+				show: 'Task 1 running';
+				cr.
+			GMUtility cloneRepo: v input ]
 		description: '1 Clone Repository'
 		length: 0.
 	taskRepo addTask: task.
 	task := MooseCustomTask new
 		with: [ :v | 
 			| commitMetadata |
+			Transcript
+				show: 'Task 2 running';
+				cr.
 			commitMetadata := GMUtility
 				filterCommitsOnRepoLeftBranchOnly: v input
 				from: 'HEAD'
@@ -121,6 +131,9 @@ MooseTaskBrowser class >> example1 [
 	task := MooseCustomTask new
 		with: [ :v | 
 			| selectedCommits |
+			Transcript
+				show: 'Task 3 running';
+				cr.
 			selectedCommits := GMUtility
 				generateSelectedCommits: (v input at: 'commitMetadata').
 			Dictionary
@@ -133,6 +146,9 @@ MooseTaskBrowser class >> example1 [
 	task := MooseCustomTask new
 		with: [ :v | 
 			| pairsAndTransactions |
+			Transcript
+				show: 'Task 4 running';
+				cr.
 			pairsAndTransactions := GMUtility
 				generatePairsAndTransactions: (v input at: 'selectedCommits').
 			Dictionary
@@ -145,7 +161,9 @@ MooseTaskBrowser class >> example1 [
 	task := MooseCustomTask new
 		with: [ :v | 
 			| mseFileRef |
-			Transcript show: 'here'; cr.
+			Transcript
+				show: 'Task 5 running';
+				cr.
 			mseFileRef := GMUtility
 				generateMSEFileFor: 'HEAD'
 				reponame: (v input at: 'loc') basename.
@@ -159,6 +177,9 @@ MooseTaskBrowser class >> example1 [
 	taskRepo addTask: task.
 	task := MooseCustomTask new
 		with: [ :v | 
+			Transcript
+				show: 'Task 6 running';
+				cr.
 			GMUtility
 				generateClientImplementationPairs: (v input at: 'mseFileRef').
 			Dictionary
@@ -170,6 +191,9 @@ MooseTaskBrowser class >> example1 [
 	taskRepo addTask: task.
 	task := MooseCustomTask new
 		with: [ :v | 
+						Transcript
+				show: 'Task 7 running';
+				cr.
 			GMUtility
 				calculateCouplingIntersectionsFor: (v input at: 'gitName')
 				withPairsFile: (v input at: 'pairsAndTransactions') first
@@ -190,6 +214,9 @@ MooseTaskBrowser class >> example2 [
 	taskRepo := MooseTaskRepository new.
 	task := MooseCustomTask new
 		with: [ :v | 
+			Transcript
+				show: 'Task 1 running';
+				cr.
 			(1 to: 10000000)
 				do: [ :i | true ]
 				displayingProgress: 'running task: 1'.
@@ -199,8 +226,11 @@ MooseTaskBrowser class >> example2 [
 	taskRepo addTask: task.
 	task := MooseCustomTask new
 		with: [ :v | 
+			Transcript
+				show: 'Task 2 running';
+				cr.
 			(1 to: 50000000)
-				do: [ :i | 1/0.true ]
+				do: [ :i | true ]
 				displayingProgress: 'running task: 2'.
 			true ]
 		description: 'a description 2'
@@ -208,6 +238,9 @@ MooseTaskBrowser class >> example2 [
 	taskRepo addTask: task.
 	task := MooseCustomTask new
 		with: [ :v | 
+			Transcript
+				show: 'Task 3 running';
+				cr.
 			(1 to: 10000000)
 				do: [ :i | true ]
 				displayingProgress: 'running task: 3'.
@@ -217,6 +250,9 @@ MooseTaskBrowser class >> example2 [
 	taskRepo addTask: task.
 	task := MooseCustomTask new
 		with: [ :v | 
+						Transcript
+				show: 'Task 4 running';
+				cr.
 			(1 to: 50000000)
 				do: [ :i | true ]
 				displayingProgress: 'running task: 4'.
@@ -236,6 +272,9 @@ MooseTaskBrowser class >> example3 [
 	taskRepo := MooseTaskRepository new.
 	task := MooseCustomTask new
 		with: [ :v | 
+			Transcript
+				show: 'Task 1 running';
+				cr.
 			(1 to: 20000000)
 				do: [ :i | true ]
 				displayingProgress: 'running task: 1'.
@@ -245,6 +284,9 @@ MooseTaskBrowser class >> example3 [
 	taskRepo addTask: task.
 	task := MooseCustomTask new
 		with: [ :v | 
+			Transcript
+				show: 'Task 2 running';
+				cr.
 			(1 to: 20000000)
 				do: [ :i | true ]
 				displayingProgress: 'running task: 2'.
@@ -254,6 +296,9 @@ MooseTaskBrowser class >> example3 [
 	taskRepo addTask: task.
 	task := MooseCustomTask new
 		with: [ :v | 
+						Transcript
+				show: 'Task 3 running';
+				cr.
 			(1 to: 20000000)
 				do: [ :i | true ]
 				displayingProgress: 'running task: 3'.
@@ -272,17 +317,31 @@ MooseTaskBrowser class >> example4 [
 	| task taskRepo test |
 	taskRepo := MooseTaskRepository new.
 	task := MooseCustomTask new
-		with: [ :v | v input asInteger + 3 ]
+		with: [ :v | 
+			Transcript
+				show: 'Task +3 running';
+				cr.
+			v input asInteger + 3 ]
 		description: '+3'
 		length: 0.
 	taskRepo addTask: task.
 	task := MooseCustomTask new
-		with: [ :v | v input asInteger + 4 ]
+		with: [ :v | 
+			Transcript
+				show: 'Task +4 running';
+				cr.
+			v input asInteger + 4 ]
 		description: '+4'
 		length: 0.
 	taskRepo addTask: task.
 	task := MooseCustomTask new
-		with: [ :v | v input first asInteger+ v input second asInteger]
+		with: [ :v | 
+			| total |Transcript
+				show: 'Task ++ running';
+				cr.
+			total := 0.
+			v input do: [ :num | total := total + num asInteger ].
+			total ]
 		description: '++'
 		length: 0.
 	taskRepo addTask: task.
@@ -405,6 +464,7 @@ MooseTaskBrowser >> initializePresenter [
 MooseTaskBrowser >> initializeWidgets [
 	self title: 'Moose Tasks'.
 	change := false.
+	isRunning:= false.
 	taskTableMorph := self newTable.
 	taskTableMorph.
 	taskTable := taskTableMorph asSpecAdapter.
@@ -503,7 +563,7 @@ MooseTaskBrowser >> manageTaskAddDialog [
 MooseTaskBrowser >> modelChanged [
 	self stepsDatasource elements: self model steps.
 	taskTableMorph refresh.
-	checkBox state: false.
+		checkBox state: false.
 	change := true.
 	self model steps
 		ifEmpty: [ upButton disable.
@@ -565,6 +625,7 @@ MooseTaskBrowser >> repositoryView [
 { #category : #actions }
 MooseTaskBrowser >> run [
 	runButton disable.
+	isRunning := true.
 	self model
 		input:
 			(UIManager default
@@ -573,9 +634,10 @@ MooseTaskBrowser >> run [
 	(self model runWithUpdatingBlock: [ self model: self model ])
 		addSuccessCallback: [ :result | 
 			self inform: 'Tasks finished.'.
+			isRunning := false.
 			self model: self model.
-			runButton enable ].
-	checkBox state: false
+			runButton enable.
+			checkBox state: false.]
 ]
 
 { #category : #accessing }
@@ -673,8 +735,11 @@ MooseTaskBrowser >> taskTable [
 
 { #category : #'list control' }
 MooseTaskBrowser >> uncheckedAllBox [
-	self model doNotForceAnyStep.
-	self model: self model
+	isRunning
+		ifFalse: [ self model doNotForceAnyStep.
+			self model: self model ]
+
+	
 ]
 
 { #category : #accessing }

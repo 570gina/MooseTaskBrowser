@@ -69,6 +69,7 @@ MooseTaskAbstractRuntime >> run [
 
 { #category : #running }
 MooseTaskAbstractRuntime >> run: anInput [
+
 	^ (self shouldRunFor: anInput)
 		ifTrue: [ input := anInput.
 			self run ]
