@@ -12,6 +12,9 @@ BaselineOfMooseTaskBrowser >> baseline: spec [
 		do: [ spec preLoadDoIt: #verifyMooseInstalled.
 			"Packages"
 			spec
+				baseline: 'GitMiner'
+				with: [ spec repository: 'github://fuhrmanator/GitMiner/src' ].
+			spec
 				baseline: 'TaskIt'
 				with: [ spec repository: 'github://sbragagnolo/taskit' ].
 			spec
