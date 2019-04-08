@@ -200,7 +200,7 @@ MooseTaskBrowser class >> example2 [
 	task := MooseCustomTask new
 		with: [ :v | 
 			(1 to: 50000000)
-				do: [ :i | true ]
+				do: [ :i | 1/0.true ]
 				displayingProgress: 'running task: 2'.
 			true ]
 		description: 'a description 2'
@@ -224,7 +224,7 @@ MooseTaskBrowser class >> example2 [
 		description: 'a description 4'
 		length: 0.
 	taskRepo addTask: task.
-	test := MooseTaskBrowser on: MooseJob new. 
+	test := MooseTaskBrowser on: MooseJob new.
 	test repositoryView setList: taskRepo tasks.
 	test openWithSpec
 ]
@@ -573,9 +573,8 @@ MooseTaskBrowser >> run [
 			(UIManager default
 				request: 'Provide the input for first task: '
 				initialAnswer: self model input asString).
-	[ self model run.
-	self inform: 'Tasks finished.' ]
-		ensure: [ runButton enable ].
+	[ self model runWithUpdatingBlock: [ self model: self model ] ]
+		ensure: [ self inform: 'Tasks finished.'.runButton enable ].
 	self model: self model.
 	checkBox state: false
 ]
@@ -651,7 +650,7 @@ MooseTaskBrowser >> stepsDatasource [
 				elements: self model steps;
 				menu: [ :i | self setMenu: MenuMorph new ];
 				format:
-						[ :c | (MooseTaskRuntimeItem owner: self model on: c) buildWithSpec asMorph ] ]
+						[ :c | (MooseTaskRuntimeItem owner: self on: c) buildWithSpec asMorph ] ]
 ]
 
 { #category : #'list control' }
