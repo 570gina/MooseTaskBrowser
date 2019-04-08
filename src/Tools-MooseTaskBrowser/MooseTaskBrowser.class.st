@@ -191,7 +191,7 @@ MooseTaskBrowser class >> example1 [
 	taskRepo addTask: task.
 	task := MooseCustomTask new
 		with: [ :v | 
-						Transcript
+			Transcript
 				show: 'Task 7 running';
 				cr.
 			GMUtility
@@ -266,52 +266,6 @@ MooseTaskBrowser class >> example2 [
 ]
 
 { #category : #examples }
-MooseTaskBrowser class >> example3 [
-	<example>
-	| task taskRepo test |
-	taskRepo := MooseTaskRepository new.
-	task := MooseCustomTask new
-		with: [ :v | 
-			Transcript
-				show: 'Task 1 running';
-				cr.
-			(1 to: 20000000)
-				do: [ :i | true ]
-				displayingProgress: 'running task: 1'.
-			2 ]
-		description: 'a description 1'
-		length: 0.
-	taskRepo addTask: task.
-	task := MooseCustomTask new
-		with: [ :v | 
-			Transcript
-				show: 'Task 2 running';
-				cr.
-			(1 to: 20000000)
-				do: [ :i | true ]
-				displayingProgress: 'running task: 2'.
-			v input + 2 ]
-		description: 'a description 2'
-		length: 0.
-	taskRepo addTask: task.
-	task := MooseCustomTask new
-		with: [ :v | 
-						Transcript
-				show: 'Task 3 running';
-				cr.
-			(1 to: 20000000)
-				do: [ :i | true ]
-				displayingProgress: 'running task: 3'.
-			v input + 2 ]
-		description: 'a description 3'
-		length: 0.
-	taskRepo addTask: task.
-	test := MooseTaskBrowser on: MooseJob new.
-	test repositoryView setList: taskRepo tasks.
-	test openWithSpec
-]
-
-{ #category : #examples }
 MooseTaskBrowser class >> example4 [
 	<example>
 	| task taskRepo test |
@@ -336,7 +290,8 @@ MooseTaskBrowser class >> example4 [
 	taskRepo addTask: task.
 	task := MooseCustomTask new
 		with: [ :v | 
-			| total |Transcript
+			| total |
+			Transcript
 				show: 'Task ++ running';
 				cr.
 			total := 0.
@@ -635,9 +590,9 @@ MooseTaskBrowser >> run [
 		addSuccessCallback: [ :result | 
 			self inform: 'Tasks finished.'.
 			isRunning := false.
-			self model: self model.
-			runButton enable.
-			checkBox state: false.]
+			checkBox state: false.
+			self stepsDatasource setSelectedItems: #() ].
+	runButton enable.
 ]
 
 { #category : #accessing }

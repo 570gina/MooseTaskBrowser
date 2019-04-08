@@ -58,13 +58,8 @@ MooseTaskAbstractRuntime >> output [
 
 { #category : #running }
 MooseTaskAbstractRuntime >> run [
-	^ [ error := nil.
-	output := self basicRun ]
-		on: Error
-		do: [ :err | 
-			error := 'Error:',err messageText .
-			err debug.
-			output := nil ]
+	self subclassResponsibility
+
 ]
 
 { #category : #running }
