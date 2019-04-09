@@ -72,10 +72,8 @@ MooseJob >> removeStep: aStep [
 
 { #category : #action }
 MooseJob >> runWithUpdatingBlock: aBlock [
-	steps first run: self input .
-	aBlock value.
-	^ [ steps allButFirst
-		inject: steps first output
+	^ [ steps 
+		inject: self input
 		into: [ :result :step | 
 			step run: result.
 			aBlock value.

@@ -283,6 +283,24 @@ MooseTaskBrowser class >> example4 [
 	task := MooseCustomTask new
 		with: [ :v | 
 			Transcript
+				show: 'Task +1 running';
+				cr.
+			v input asInteger + 1 ]
+		description: '+1'
+		length: 0.
+	taskRepo addTask: task.
+	task := MooseCustomTask new
+		with: [ :v | 
+			Transcript
+				show: 'Task +2 running';
+				cr.
+			v input asInteger + 2 ]
+		description: '+2'
+		length: 0.
+	taskRepo addTask: task.
+	task := MooseCustomTask new
+		with: [ :v | 
+			Transcript
 				show: 'Task +3 running';
 				cr.
 			v input asInteger + 3 ]
@@ -508,10 +526,11 @@ MooseTaskBrowser >> manageArrowButtons: aSelection [
 			downButton disable ]
 ]
 
-{ #category : #actions }
+{ #category : #'as yet unclassified' }
 MooseTaskBrowser >> manageTaskAddDialog [
 	| items |
 	items := self stepsDatasource selectedItems.
+				self stepsDatasource setSelectedItems: #().
 	repositoryView openDialogWithSpec
 		okAction: [ | steps |
 			steps := repositoryView listPresenter selectedItems
