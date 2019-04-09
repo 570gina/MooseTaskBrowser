@@ -526,7 +526,7 @@ MooseTaskBrowser >> manageArrowButtons: aSelection [
 			downButton disable ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #actions }
 MooseTaskBrowser >> manageTaskAddDialog [
 	| items |
 	items := self stepsDatasource selectedItems.
