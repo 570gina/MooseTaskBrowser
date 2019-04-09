@@ -250,7 +250,7 @@ MooseTaskBrowser class >> example2 [
 	taskRepo addTask: task.
 	task := MooseCustomTask new
 		with: [ :v | 
-						Transcript
+			Transcript
 				show: 'Task 4 running';
 				cr.
 			(1 to: 50000000)
@@ -258,6 +258,16 @@ MooseTaskBrowser class >> example2 [
 				displayingProgress: 'running task: 4'.
 			true ]
 		description: 'a description 4'
+		length: 0.
+	taskRepo addTask: task.
+	task := MooseCustomTask new
+		with: [ :v | 
+			Transcript
+				show: 'Task error running';
+				cr.
+			1 / 0.
+			true ]
+		description: 'a error task'
 		length: 0.
 	taskRepo addTask: task.
 	test := MooseTaskBrowser on: MooseJob new.
@@ -518,7 +528,7 @@ MooseTaskBrowser >> manageTaskAddDialog [
 MooseTaskBrowser >> modelChanged [
 	self stepsDatasource elements: self model steps.
 	taskTableMorph refresh.
-		checkBox state: false.
+	checkBox state: false.
 	change := true.
 	self model steps
 		ifEmpty: [ upButton disable.
@@ -529,9 +539,9 @@ MooseTaskBrowser >> modelChanged [
 			loadButton enable.
 			newJobButton disable ]
 		ifNotEmpty: [ checkBox enable.
-			runButton enable.
 			saveButton enable.
-			newJobButton enable ].
+			newJobButton enable. isRunning
+				ifFalse: [ runButton enable ] ].
 	file
 		ifNotNil: [ saveButton enable.
 			newJobButton enable ]
@@ -591,8 +601,7 @@ MooseTaskBrowser >> run [
 			self inform: 'Tasks finished.'.
 			isRunning := false.
 			checkBox state: false.
-			self stepsDatasource setSelectedItems: #() ].
-	runButton enable.
+			self stepsDatasource setSelectedItems: #(). ]
 ]
 
 { #category : #accessing }

@@ -59,7 +59,6 @@ MooseTaskAbstractRuntime >> output [
 { #category : #running }
 MooseTaskAbstractRuntime >> run [
 	self subclassResponsibility
-
 ]
 
 { #category : #running }
@@ -73,7 +72,8 @@ MooseTaskAbstractRuntime >> run: anInput [
 { #category : #running }
 MooseTaskAbstractRuntime >> shouldRunFor: anInput [
 	^ self forceToRun
-		or: [ (self hasRun
+		or: [ 
+			(self hasRun
 				and: [ (anInput isNil or: [ input = anInput ]) and: [ output isNotNil ] ])
 				not ];
 		or: [ self isKindOf: MooseTaskComposedRuntime ]
