@@ -45,6 +45,16 @@ MooseJobFile >> load [
 	^ true
 ]
 
+{ #category : #accessing }
+MooseJobFile >> reference [
+	^ reference
+]
+
+{ #category : #accessing }
+MooseJobFile >> reference: anObject [
+	^ reference := anObject
+]
+
 { #category : #saving }
 MooseJobFile >> saveAs [
 	reference
@@ -52,12 +62,11 @@ MooseJobFile >> saveAs [
 				chooseForSaveFileReference: 'Save Job as?'
 				extensions: #('txt')
 				path: 'aMooseJob' asFileReference ]
-		ifNotNil: [ reference delete ].
+		ifNotNil: [ reference exists
+				ifTrue: [reference delete] ].
+	reference ifNil: [ ^ false ].
+	fileName := reference base.
 	reference
-		ifNil: [ ^ false].
-		fileName := reference base.
-			reference
-				writeStreamDo: [ :stream | stream nextPutAll: (STON toStringPretty: job) ].
-			^ true
-
+		writeStreamDo: [ :stream | stream nextPutAll: (STON toStringPretty: job) ].
+	^ true
 ]

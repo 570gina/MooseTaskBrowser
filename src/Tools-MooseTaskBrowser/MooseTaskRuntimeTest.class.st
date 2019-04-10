@@ -9,7 +9,7 @@ Class {
 		'task4',
 		'task1dash1'
 	],
-	#category : #'Tools-MooseTaskBrowser-tests'
+	#category : #'Tools-MooseTaskBrowser-newTests'
 }
 
 { #category : #running }
@@ -35,23 +35,7 @@ MooseTaskRuntimeTest >> setUp [
 ]
 
 { #category : #running }
-MooseTaskRuntimeTest >> testCombineComposedTaskAndComposedTaskGivesANewCompositeWithFourTasks [
-	| combination sub1 sub2 |
-	"Look on 'adaptToFraction: rcvr andSend: selector' and adaptTo... messages. Check senders and implementation"
-	sub1 := task1 combineWith: task2.
-	sub2 := task3 combineWith: task4.
-	combination := sub1 combineWith: sub2.
-	self assert: (combination isKindOf: MooseTaskComposedRuntime).
-	self assert: (sub1 isKindOf: MooseTaskComposedRuntime).
-	self assert: (sub2 isKindOf: MooseTaskComposedRuntime).
-	self deny: sub1 equals: combination.
-	self deny: sub2 equals: combination.
-	self assert: combination tasks size equals: 4.
-	self assert: combination tasks equals: sub1 tasks , sub2 tasks
-]
-
-{ #category : #running }
-MooseTaskRuntimeTest >> testCombineComposedTaskAndSingleTaskGivesANewCompositeWithThreeTasks [
+MooseTaskRuntimeTest >> testCombiningComposedTaskAndSingleTaskProducesANewComposedTaskWithThreeTasks [
 	| combination combination2 |
 	combination := task1 combineWith: task2.
 	combination2 := combination combineWith: task3.
@@ -68,9 +52,8 @@ MooseTaskRuntimeTest >> testCombineComposedTaskAndSingleTaskGivesANewCompositeWi
 ]
 
 { #category : #running }
-MooseTaskRuntimeTest >> testCombineSingleTaskAndComposedTaskGivesANewCompositeWithThreeTasks [
+MooseTaskRuntimeTest >> testCombiningSingleTaskAndComposedTaskProducesANewComposedTaskWithThreeTasks [
 	| combination combination2 |
-	"Look on 'adaptToFraction: rcvr andSend: selector' and adaptTo... messages. Check senders and implementation"
 	combination := task2 combineWith: task3.
 	combination2 := task1 combineWith: combination.
 	self assert: (combination isKindOf: MooseTaskComposedRuntime).
@@ -86,17 +69,25 @@ MooseTaskRuntimeTest >> testCombineSingleTaskAndComposedTaskGivesANewCompositeWi
 ]
 
 { #category : #running }
-MooseTaskRuntimeTest >> testCombineTwoSimpleTasksGivesANewComposite [
-	| combination |
-	combination := task1 combineWith: task2.
-	self assert: (combination isKindOf: MooseTaskComposedRuntime)
+MooseTaskRuntimeTest >> testCombiningTwoComposedTasksProducesANewComposedTaskWithFourTasks [
+	| combination sub1 sub2 |
+	sub1 := task1 combineWith: task2.
+	sub2 := task3 combineWith: task4.
+	combination := sub1 combineWith: sub2.
+	self assert: (combination isKindOf: MooseTaskComposedRuntime).
+	self assert: (sub1 isKindOf: MooseTaskComposedRuntime).
+	self assert: (sub2 isKindOf: MooseTaskComposedRuntime).
+	self deny: sub1 equals: combination.
+	self deny: sub2 equals: combination.
+	self assert: combination tasks size equals: 4.
+	self assert: combination tasks equals: sub1 tasks , sub2 tasks
 ]
 
 { #category : #running }
-MooseTaskRuntimeTest >> testSeparateAComposedTaskGivesSomeSingleTasks [
+MooseTaskRuntimeTest >> testCombiningTwoSingleTasksProducesANewComposedTask [
 	| combination |
 	combination := task1 combineWith: task2.
-	self assert: (combination isKindOf: MooseTaskComposedRuntime).
+	self assert: (combination isKindOf: MooseTaskComposedRuntime)
 ]
 
 { #category : #running }

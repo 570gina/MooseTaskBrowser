@@ -90,9 +90,7 @@ MooseJob >> separateStep: aStep [
 
 { #category : #action }
 MooseJob >> separateSteps: aCollection [
-	aCollection
-		do: [ :i |
-			self separateStep: i ]
+	aCollection do: [ :i | self separateStep: i ]
 ]
 
 { #category : #accessing }

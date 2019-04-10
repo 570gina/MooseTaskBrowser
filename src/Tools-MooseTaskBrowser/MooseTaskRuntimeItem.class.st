@@ -57,8 +57,8 @@ MooseTaskRuntimeItem >> checkbox [
 ]
 
 { #category : #accessing }
-MooseTaskRuntimeItem >> checkbox: anObject [
-	checkbox := anObject
+MooseTaskRuntimeItem >> checkbox: aBoolean [
+	checkbox := aBoolean
 ]
 
 { #category : #accessing }

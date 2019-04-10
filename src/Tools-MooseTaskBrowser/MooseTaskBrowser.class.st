@@ -205,6 +205,8 @@ MooseTaskBrowser class >> example1 [
 	test := MooseTaskBrowser on: MooseJob new.
 	test repositoryView setList: taskRepo tasks.
 	test openWithSpec
+
+	
 ]
 
 { #category : #examples }
@@ -217,7 +219,7 @@ MooseTaskBrowser class >> example2 [
 			Transcript
 				show: 'Task 1 running';
 				cr.
-			(1 to: 10000000)
+			(1 to: 50000000)
 				do: [ :i | true ]
 				displayingProgress: 'running task: 1'.
 			true ]
@@ -241,7 +243,7 @@ MooseTaskBrowser class >> example2 [
 			Transcript
 				show: 'Task 3 running';
 				cr.
-			(1 to: 10000000)
+			(1 to: 50000000)
 				do: [ :i | true ]
 				displayingProgress: 'running task: 3'.
 			true ]
@@ -325,7 +327,7 @@ MooseTaskBrowser class >> example4 [
 			total := 0.
 			v input do: [ :num | total := total + num asInteger ].
 			total ]
-		description: '++'
+		description: 'count'
 		length: 0.
 	taskRepo addTask: task.
 	test := MooseTaskBrowser on: MooseJob new.
@@ -530,7 +532,7 @@ MooseTaskBrowser >> manageArrowButtons: aSelection [
 MooseTaskBrowser >> manageTaskAddDialog [
 	| items |
 	items := self stepsDatasource selectedItems.
-				self stepsDatasource setSelectedItems: #().
+	self stepsDatasource setSelectedItems: #().
 	repositoryView openDialogWithSpec
 		okAction: [ | steps |
 			steps := repositoryView listPresenter selectedItems
@@ -540,7 +542,8 @@ MooseTaskBrowser >> manageTaskAddDialog [
 			self model addSteps: steps.
 			self model: self model.
 			self stepsDatasource setSelectedItems: items.
-			repositoryView listPresenter resetSelection ]
+			repositoryView listPresenter resetSelection.
+		 ]
 ]
 
 { #category : #accessing }
@@ -620,7 +623,7 @@ MooseTaskBrowser >> run [
 			self inform: 'Tasks finished.'.
 			isRunning := false.
 			checkBox state: false.
-			self stepsDatasource setSelectedItems: #(). ]
+			self stepsDatasource setSelectedItems: #() ]
 ]
 
 { #category : #accessing }
@@ -658,9 +661,9 @@ MooseTaskBrowser >> saveTheJob [
 	file ifNil: [ file := MooseJobFile new ].
 	file job: self model.
 	file saveAs
-		ifTrue: [ 
-			self inform: 'Saved'.
-			self title: 'Moose Tasks -> ' , file fileName , '.txt'.change := false.
+		ifTrue: [ self inform: 'Saved'.
+			self title: 'Moose Tasks -> ' , file fileName , '.txt'.
+			change := false.
 			^ true ]
 		ifFalse: [ file := state.
 			^ false ]
