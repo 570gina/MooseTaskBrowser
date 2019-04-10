@@ -5,7 +5,7 @@ Class {
 		'job',
 		'steps'
 	],
-	#category : #'Tools-MooseTaskBrowser-newTests'
+	#category : #'Tools-MooseTaskBrowser-tests'
 }
 
 { #category : #addMooseTasks }
@@ -60,6 +60,18 @@ MooseTaskJobTest >> testEachTaskOfAJobAllowsToReceiveTheOutputOfPreviousTaskAsIn
 		addSuccessCallback: [ :result | 
 			self assert: result equals: 60.
 			 ]
+]
+
+{ #category : #tests }
+MooseTaskJobTest >> testInputAndOutputOfTheTasksAreNilIfTheTasksNeverRun [
+	steps
+		add: self returnFifty;
+		add: self minusTen;
+		add: self plusTwenty.
+	steps
+		do: [ :item | 
+			self assert: item input isNil.
+			self assert: item output isNil ]
 ]
 
 { #category : #tests }

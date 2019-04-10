@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'file'
 	],
-	#category : #'Tools-MooseTaskBrowser-newTests'
+	#category : #'Tools-MooseTaskBrowser-tests'
 }
 
 { #category : #setup }

@@ -6,7 +6,7 @@ Class {
 		'repository',
 		'job'
 	],
-	#category : #'Tools-MooseTaskBrowser-newTests'
+	#category : #'Tools-MooseTaskBrowser-tests'
 }
 
 { #category : #action }
@@ -101,19 +101,6 @@ MooseTaskBrowserUITest >> testSomeWidgetsNotEnabledWhenTheJobIsEmpty [
 	self deny: browser upButton enabled.
 	self deny: browser downButton enabled.
 	self deny: browser runButton enabled
-]
-
-{ #category : #tests }
-MooseTaskBrowserUITest >> testTitleChangedWhenLoadingAJobOrSavingAJob [
-	| file |
-	self addTasksFromRepository.
-	self assert: browser title equals: 'Moose Tasks'.
-	file := browser file.
-	file reference: 'C:\Users\user\Desktop\test.txt' asFileReference.
-	browser saveTheJob.
-	self assert: browser title equals: 'Moose Tasks - test.txt'.
-	"test finished."
-	browser file reference delete
 ]
 
 { #category : #tests }
