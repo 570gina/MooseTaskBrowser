@@ -382,7 +382,7 @@ MooseTaskBrowser >> checkBox [
 
 { #category : #'list control' }
 MooseTaskBrowser >> checkedAllBox [
-	self model forceRunAllSteps.
+	self model forceRunAllTasks.
 	self model: self model
 
 	
@@ -393,7 +393,7 @@ MooseTaskBrowser >> combineSelected [
 	| index |
 	index := (taskTableMorph selectedRowIndexes sort: [ :a :b | a <= b ])
 		first.
-	self model combineSteps: self stepsDatasource selectedItems.
+	self model combineTasks: self stepsDatasource selectedItems.
 	self stepsDatasource setSelectedIndexes: index.
 	self model: self model
 ]
@@ -401,7 +401,7 @@ MooseTaskBrowser >> combineSelected [
 { #category : #'list control' }
 MooseTaskBrowser >> deleteSelected [
 	self stepsDatasource selectedItems
-		do: [ :i | self model removeStep: i ].
+		do: [ :i | self model removeTask: i ].
 	self stepsDatasource setSelectedItems: #().
 	self model: self model
 ]
@@ -491,7 +491,7 @@ MooseTaskBrowser >> inspectSelected [
 { #category : #actions }
 MooseTaskBrowser >> loadAJob [
 	| state |
-	(self model steps isEmpty and: file isNil)
+	(self model tasks isEmpty and: file isNil)
 		ifTrue: [ change := false ].
 	self saveChangesDialog
 		ifTrue: [ state := file.
@@ -515,13 +515,13 @@ MooseTaskBrowser >> manageArrowButtons: aSelection [
 	| selectedItem |
 	(aSelection newSelectedRowIndexes isEmptyOrNil
 		or: aSelection newSelectedRowIndexes size > 1)
-		ifFalse: [ selectedItem := self model steps
+		ifFalse: [ selectedItem := self model tasks
 				at: aSelection newSelectedRowIndexes first.
 			selectedItem
-				ifNotNil: [ self model steps first = selectedItem
+				ifNotNil: [ self model tasks first = selectedItem
 						ifTrue: [ upButton disable ]
 						ifFalse: [ upButton enable ].
-					self model steps last = selectedItem
+					self model tasks last = selectedItem
 						ifTrue: [ downButton disable ]
 						ifFalse: [ downButton enable ] ] ]
 		ifTrue: [ upButton disable.
@@ -539,7 +539,7 @@ MooseTaskBrowser >> manageTaskAddDialog [
 				asOrderedCollection
 				sort: [ :a :b | a description <= b description ].
 			steps := steps collect: #asTaskRuntime.
-			self model addSteps: steps.
+			self model addTasks: steps.
 			self model: self model.
 			self stepsDatasource setSelectedItems: items.
 			repositoryView listPresenter resetSelection.
@@ -548,11 +548,11 @@ MooseTaskBrowser >> manageTaskAddDialog [
 
 { #category : #accessing }
 MooseTaskBrowser >> modelChanged [
-	self stepsDatasource elements: self model steps.
+	self stepsDatasource elements: self model tasks.
 	taskTableMorph refresh.
 	checkBox state: false.
 	change := true.
-	self model steps
+	self model tasks
 		ifEmpty: [ upButton disable.
 			downButton disable.
 			checkBox disable.
@@ -672,7 +672,7 @@ MooseTaskBrowser >> separateSelected [
 	| index |
 	index := (taskTableMorph selectedRowIndexes sort: [ :a :b | a <= b ])
 		first.
-	self model separateSteps: self stepsDatasource selectedItems.
+	self model separateTasks: self stepsDatasource selectedItems.
 	self stepsDatasource setSelectedIndexes: index.
 	self model: self model
 	
@@ -692,7 +692,7 @@ MooseTaskBrowser >> setMenu: aMenu [
 MooseTaskBrowser >> stepsDatasource [
 	^ stepsDatasource
 		ifNil: [ stepsDatasource := MooseDataSource new
-				elements: self model steps;
+				elements: self model tasks;
 				menu: [ :i | self setMenu: MenuMorph new ];
 				format:
 						[ :c | (MooseTaskRuntimeItem owner: self on: c) buildWithSpec asMorph ] ]
@@ -702,7 +702,7 @@ MooseTaskBrowser >> stepsDatasource [
 MooseTaskBrowser >> swapItems: aNumber [
 	| items |
 	items := self stepsDatasource selectedItems.
-	items do: [ :item | self model move: aNumber theStep: item ].
+	items do: [ :item | self model move: aNumber theTask: item ].
 	self stepsDatasource setSelectedItems: items.
 	self model: self model
 ]
@@ -720,7 +720,7 @@ MooseTaskBrowser >> taskTable [
 { #category : #'list control' }
 MooseTaskBrowser >> uncheckedAllBox [
 	isRunning
-		ifFalse: [ self model doNotForceAnyStep.
+		ifFalse: [ self model doNotForceAnyTask.
 			self model: self model ]
 
 	

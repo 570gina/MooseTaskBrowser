@@ -14,33 +14,33 @@ Class {
 	#name : #MooseJob,
 	#superclass : #Object,
 	#instVars : [
-		'steps',
-		'input'
+		'input',
+		'tasks'
 	],
 	#category : #'Tools-MooseTaskBrowser-Core'
 }
 
 { #category : #action }
-MooseJob >> addSteps: aCollection [
+MooseJob >> addTasks: aCollection [
 	"Add a collection of tasks instances of MooseCustomTask (or object with interfaces understanding asRuntimeTask and force"
 
-	steps addAll: aCollection
+	tasks addAll: aCollection
 ]
 
 { #category : #action }
-MooseJob >> combineSteps: aCollection [
+MooseJob >> combineTasks: aCollection [
 	| firstTaskIndex combination |
-	firstTaskIndex := steps indexOf: aCollection first.
-	aCollection do: [ :i | self removeStep: i ].
+	firstTaskIndex := tasks indexOf: aCollection first.
+	aCollection do: [ :i | self removeTask: i ].
 	combination := aCollection allButFirst
 		inject: aCollection first
 		into: [ :acc :each | acc combineWith: each ].
-	steps add: combination beforeIndex: firstTaskIndex
+	tasks add: combination beforeIndex: firstTaskIndex
 ]
 
 { #category : #action }
-MooseJob >> doNotForceAnyStep [
-	steps
+MooseJob >> doNotForceAnyTask [
+	tasks
 		do: [ :v | 
 			v isArray
 				ifTrue: [ v do: [ :i | i forceToRun: false ] ]
@@ -48,8 +48,8 @@ MooseJob >> doNotForceAnyStep [
 ]
 
 { #category : #action }
-MooseJob >> forceRunAllSteps [
-	steps
+MooseJob >> forceRunAllTasks [
+	tasks
 		do: [ :v | 
 			v isArray
 				ifTrue: [ v do: [ :i | i forceToRun: true ] ]
@@ -59,7 +59,7 @@ MooseJob >> forceRunAllSteps [
 { #category : #initialization }
 MooseJob >> initialize [
 	super initialize.
-	steps := OrderedCollection new
+	tasks := OrderedCollection new
 ]
 
 { #category : #accessing }
@@ -73,20 +73,20 @@ MooseJob >> input: aValue [
 ]
 
 { #category : #'organizing steps' }
-MooseJob >> move: aModifier theStep: aStep [
+MooseJob >> move: aModifier theTask: aTask [
 	| index |
-	index := steps indexOf: aStep.
-	steps swap: index with: index + aModifier
+	index := tasks indexOf: aTask.
+	tasks swap: index with: index + aModifier
 ]
 
 { #category : #action }
-MooseJob >> removeStep: aStep [
-	steps remove: aStep
+MooseJob >> removeTask: aStep [
+	tasks remove: aStep
 ]
 
 { #category : #action }
 MooseJob >> runWithUpdatingBlock: aBlock [
-	^ [ steps 
+	^ [ tasks 
 		inject: self input
 		into: [ :result :step | 
 			step run: result.
@@ -95,24 +95,24 @@ MooseJob >> runWithUpdatingBlock: aBlock [
 ]
 
 { #category : #action }
-MooseJob >> separateStep: aStep [
+MooseJob >> separateTask: aStep [
 	| index |
-	index := steps indexOf: aStep.
-	self removeStep: aStep.
-	aStep tasks do: [ :i | steps add: i beforeIndex: index. index := index + 1 ]
+	index := tasks indexOf: aStep.
+	self removeTask: aStep.
+	aStep tasks do: [ :i | tasks add: i beforeIndex: index. index := index + 1 ]
 ]
 
 { #category : #action }
-MooseJob >> separateSteps: aCollection [
-	aCollection do: [ :i | self separateStep: i ]
+MooseJob >> separateTasks: aCollection [
+	aCollection do: [ :i | self separateTask: i ]
 ]
 
 { #category : #accessing }
-MooseJob >> steps [
-	^ steps
+MooseJob >> tasks [
+	^ tasks
 ]
 
 { #category : #accessing }
-MooseJob >> steps: aCollectionOfTasks [
-	steps := aCollectionOfTasks 
+MooseJob >> tasks: aCollectionOfTasks [
+	tasks := aCollectionOfTasks 
 ]
