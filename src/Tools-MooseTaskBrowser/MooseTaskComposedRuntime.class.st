@@ -1,3 +1,6 @@
+"
+I'm a composite of MooseTaskRuntime.
+"
 Class {
 	#name : #MooseTaskComposedRuntime,
 	#superclass : #MooseTaskAbstractRuntime,

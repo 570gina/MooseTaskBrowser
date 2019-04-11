@@ -35,13 +35,6 @@ MooseTaskAbstractRuntime >> hasRun [
 ]
 
 { #category : #running }
-MooseTaskAbstractRuntime >> initialize [
-	super initialize.
-	input := nil.
-	output := nil
-]
-
-{ #category : #running }
 MooseTaskAbstractRuntime >> input [
 	^ input
 ]

@@ -1,7 +1,7 @@
 "
-I'm a job that manages the execution of tasks. I'm a model of MooseTaskBrowser. 
+I'm a job that manages the execution of tasks. 
 I'm composed of multiple steps, usually  my  steps are instances of MooseCustomTask.
-
+I'm a model of MooseTaskBrowser. 
 I'm used by 
 
 I use ...
@@ -22,6 +22,8 @@ Class {
 
 { #category : #action }
 MooseJob >> addSteps: aCollection [
+	"Add a collection of tasks instances of MooseCustomTask (or object with interfaces understanding asRuntimeTask and force"
+
 	steps addAll: aCollection
 ]
 
@@ -97,7 +99,7 @@ MooseJob >> separateStep: aStep [
 	| index |
 	index := steps indexOf: aStep.
 	self removeStep: aStep.
-	aStep tasks do: [ :i | steps add: i beforeIndex: index. index := index+1 ]
+	aStep tasks do: [ :i | steps add: i beforeIndex: index. index := index + 1 ]
 ]
 
 { #category : #action }

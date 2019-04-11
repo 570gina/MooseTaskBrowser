@@ -572,12 +572,10 @@ MooseTaskBrowser >> modelChanged [
 { #category : #initialization }
 MooseTaskBrowser >> newAnEmptyJob [
 	self saveChangesDialog
-ifTrue: [  
-	file := nil.
-	self stepsDatasource setSelectedItems: #().
-	self model: MooseJob new.
-	self title: 'Moose Tasks'.
-]
+		ifTrue: [ file := nil.
+			self stepsDatasource setSelectedItems: #().
+			self model: MooseJob new.
+			self title: 'Moose Tasks' ] 
 ]
 
 { #category : #initialization }
