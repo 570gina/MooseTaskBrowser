@@ -9,7 +9,7 @@ Class {
 		'task4',
 		'task1dash1'
 	],
-	#category : #'Tools-MooseTaskBrowser-tests'
+	#category : #'Tools-MooseTaskBrowser-Tests'
 }
 
 { #category : #running }

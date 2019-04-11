@@ -5,7 +5,7 @@ Class {
 		'job',
 		'steps'
 	],
-	#category : #'Tools-MooseTaskBrowser-tests'
+	#category : #'Tools-MooseTaskBrowser-Tests'
 }
 
 { #category : #addMooseTasks }

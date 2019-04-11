@@ -1,38 +1,38 @@
 Class {
-	#name : #MooseTaskRepositoryView,
+	#name : #MooseTaskListPresenter,
 	#superclass : #ComposablePresenter,
 	#instVars : [
 		'listPresenter'
 	],
-	#category : #'Tools-MooseTaskBrowser-core-ui'
+	#category : #'Tools-MooseTaskBrowser-Core-ui'
 }
 
 { #category : #specs }
-MooseTaskRepositoryView class >> defaultSpec [
+MooseTaskListPresenter class >> defaultSpec [
 	^ SpecColumnLayout composed
 		add: #listPresenter;
 		yourself
 ]
 
 { #category : #api }
-MooseTaskRepositoryView >> extent [
+MooseTaskListPresenter >> extent [
 	^ 250 @ 400
 ]
 
 { #category : #initialization }
-MooseTaskRepositoryView >> initializeWidgets [
+MooseTaskListPresenter >> initializeWidgets [
 	listPresenter := self newList beMultipleSelection.
 	self focusOrder
 		add: listPresenter.
 ]
 
 { #category : #accessing }
-MooseTaskRepositoryView >> listPresenter [
+MooseTaskListPresenter >> listPresenter [
 	^ listPresenter
 ]
 
 { #category : #action }
-MooseTaskRepositoryView >> setList: aCollection [
+MooseTaskListPresenter >> setList: aCollection [
 	aCollection
 		ifNotNil: [ listPresenter
 				items: aCollection;
@@ -40,6 +40,6 @@ MooseTaskRepositoryView >> setList: aCollection [
 ]
 
 { #category : #api }
-MooseTaskRepositoryView >> title [ 
+MooseTaskListPresenter >> title [ 
 	^'Repository'
 ]

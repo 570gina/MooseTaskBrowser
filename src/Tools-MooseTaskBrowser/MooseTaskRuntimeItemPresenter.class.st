@@ -1,5 +1,5 @@
 Class {
-	#name : #MooseTaskRuntimeItem,
+	#name : #MooseTaskRuntimeItemPresenter,
 	#superclass : #ComposablePresenterWithModel,
 	#instVars : [
 		'description',
@@ -9,11 +9,11 @@ Class {
 		'test',
 		'emptyLabel'
 	],
-	#category : #'Tools-MooseTaskBrowser-core-ui'
+	#category : #'Tools-MooseTaskBrowser-Core-ui'
 }
 
 { #category : #specs }
-MooseTaskRuntimeItem class >> defaultSpec [
+MooseTaskRuntimeItemPresenter class >> defaultSpec [
 	| h |
 	h := self defaultFont height.
 	^ SpecLayout composed
@@ -36,7 +36,7 @@ MooseTaskRuntimeItem class >> defaultSpec [
 ]
 
 { #category : #specs }
-MooseTaskRuntimeItem class >> example [
+MooseTaskRuntimeItemPresenter class >> example [
 	<example>
 	| task |
 	task := MooseCustomTask new
@@ -52,32 +52,32 @@ MooseTaskRuntimeItem class >> example [
 ]
 
 { #category : #accessing }
-MooseTaskRuntimeItem >> checkbox [
+MooseTaskRuntimeItemPresenter >> checkbox [
 	^ checkbox
 ]
 
 { #category : #accessing }
-MooseTaskRuntimeItem >> checkbox: aBoolean [
+MooseTaskRuntimeItemPresenter >> checkbox: aBoolean [
 	checkbox := aBoolean
 ]
 
 { #category : #accessing }
-MooseTaskRuntimeItem >> description [
+MooseTaskRuntimeItemPresenter >> description [
 	^ description
 ]
 
 { #category : #accessing }
-MooseTaskRuntimeItem >> description: anObject [
+MooseTaskRuntimeItemPresenter >> description: anObject [
 	description := anObject
 ]
 
 { #category : #accessing }
-MooseTaskRuntimeItem >> emptyLabel [
+MooseTaskRuntimeItemPresenter >> emptyLabel [
 	^ emptyLabel
 ]
 
 { #category : #initialization }
-MooseTaskRuntimeItem >> initializePresenter [
+MooseTaskRuntimeItemPresenter >> initializePresenter [
 	checkbox whenActivatedDo: [ self model forceToRun: true ].
 	checkbox whenDeactivatedDo: [ self model forceToRun: false ]
 
@@ -85,7 +85,7 @@ MooseTaskRuntimeItem >> initializePresenter [
 ]
 
 { #category : #initialization }
-MooseTaskRuntimeItem >> initializeWidgets [
+MooseTaskRuntimeItemPresenter >> initializeWidgets [
 	input := self newLabel.
 	description := self newLabel.
 	output := self newLabel.
@@ -100,17 +100,17 @@ MooseTaskRuntimeItem >> initializeWidgets [
 ]
 
 { #category : #accessing }
-MooseTaskRuntimeItem >> input [
+MooseTaskRuntimeItemPresenter >> input [
 	^ input
 ]
 
 { #category : #accessing }
-MooseTaskRuntimeItem >> input: anObject [
+MooseTaskRuntimeItemPresenter >> input: anObject [
 	input := anObject
 ]
 
 { #category : #initialization }
-MooseTaskRuntimeItem >> modelChanged [
+MooseTaskRuntimeItemPresenter >> modelChanged [
 	self model
 		ifNotNil: [ input label: 'Input: ' , self model input asString.
 			description label: 'Task: ' , self model description.
@@ -129,21 +129,21 @@ MooseTaskRuntimeItem >> modelChanged [
 ]
 
 { #category : #accessing }
-MooseTaskRuntimeItem >> output [
+MooseTaskRuntimeItemPresenter >> output [
 	^ output
 ]
 
 { #category : #accessing }
-MooseTaskRuntimeItem >> output: anObject [
+MooseTaskRuntimeItemPresenter >> output: anObject [
 	output := anObject
 ]
 
 { #category : #accessing }
-MooseTaskRuntimeItem >> test [
+MooseTaskRuntimeItemPresenter >> test [
 	^ test
 ]
 
 { #category : #accessing }
-MooseTaskRuntimeItem >> test: anObject [
+MooseTaskRuntimeItemPresenter >> test: anObject [
 	test := anObject
 ]

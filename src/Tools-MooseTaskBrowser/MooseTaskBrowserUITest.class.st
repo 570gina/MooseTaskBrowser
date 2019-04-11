@@ -6,7 +6,7 @@ Class {
 		'repository',
 		'job'
 	],
-	#category : #'Tools-MooseTaskBrowser-tests'
+	#category : #'Tools-MooseTaskBrowser-Tests'
 }
 
 { #category : #action }

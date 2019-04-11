@@ -1,10 +1,7 @@
 "
 I'm a job that manages the execution of tasks. 
-I'm composed of multiple steps, usually  my  steps are instances of MooseCustomTask.
+I'm managed of list of tasks, usually instances of MooseTaskRuntime.
 I'm a model of MooseTaskBrowser. 
-I'm used by 
-
-I use ...
 
 See MooseTaskbrowser >> #example2 for an example.
 
@@ -24,7 +21,7 @@ Class {
 MooseJob >> addTasks: aCollection [
 	"Add a collection of tasks instances of MooseCustomTask (or object with interfaces understanding asRuntimeTask and force"
 
-	tasks addAll: aCollection
+	tasks addAll: (aCollection  collect: #asTaskRuntime)
 ]
 
 { #category : #action }
