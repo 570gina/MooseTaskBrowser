@@ -1,3 +1,15 @@
+"
+I'm a job that manages the execution of tasks. I'm a model of MooseTaskBrowser. 
+I'm composed of multiple steps, usually  my  steps are instances of MooseCustomTask.
+
+I'm used by 
+
+I use ...
+
+See MooseTaskbrowser >> #example2 for an example.
+
+
+"
 Class {
 	#name : #MooseJob,
 	#superclass : #Object,
@@ -5,7 +17,7 @@ Class {
 		'steps',
 		'input'
 	],
-	#category : #'Tools-MooseTaskBrowser-core'
+	#category : #'Tools-MooseTaskBrowser-Core'
 }
 
 { #category : #action }

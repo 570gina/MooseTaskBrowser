@@ -19,17 +19,17 @@ MooseTaskBrowserUITest >> addTasksFromRepository [
 { #category : #setup }
 MooseTaskBrowserUITest >> setUp [
 	| task |
-	repository := MooseTaskRepository new.
+	repository := OrderedCollection new.
 	(1 to: 2)
 		do: [ :i | 
 			task := MooseCustomTask new
 				with: [ :v | v input asInteger + 2 ]
 				description: '+2 Task'
 				length: 0.
-			repository addTask: task ].
+			repository add: task ].
 	job := MooseJob new.
 	browser := MooseTaskBrowser on: job.
-	browser repositoryView setList: repository tasks
+	browser repositoryView setList: repository
 ]
 
 { #category : #tests }

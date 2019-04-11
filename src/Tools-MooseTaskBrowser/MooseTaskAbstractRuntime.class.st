@@ -6,7 +6,7 @@ Class {
 		'output',
 		'error'
 	],
-	#category : #'Tools-MooseTaskBrowser-core'
+	#category : #'Tools-MooseTaskBrowser-Core'
 }
 
 { #category : #running }

@@ -89,7 +89,7 @@ MooseTaskBrowser class >> defaultSpec [
 MooseTaskBrowser class >> example1 [
 	<example>
 	| task taskRepo test |
-	taskRepo := MooseTaskRepository new.
+	taskRepo := OrderedCollection new.
 	task := MooseCustomTask new
 		with: [ :v | 
 			| loc |
@@ -101,7 +101,7 @@ MooseTaskBrowser class >> example1 [
 				initialAnswer: 'https://github.com/fuhrmanator/FactoryVariants' ]
 		description: '0 prompt url'
 		length: 0.
-	taskRepo addTask: task.
+	taskRepo add: task.
 	task := MooseCustomTask new
 		with: [ :v | 
 			Transcript
@@ -110,7 +110,7 @@ MooseTaskBrowser class >> example1 [
 			GMUtility cloneRepo: v input ]
 		description: '1 Clone Repository'
 		length: 0.
-	taskRepo addTask: task.
+	taskRepo add: task.
 	task := MooseCustomTask new
 		with: [ :v | 
 			| commitMetadata |
@@ -127,7 +127,7 @@ MooseTaskBrowser class >> example1 [
 					('commitMetadata' -> commitMetadata)} ]
 		description: '2 Filter Commits On Repository Left Branch'
 		length: 0.
-	taskRepo addTask: task.
+	taskRepo add: task.
 	task := MooseCustomTask new
 		with: [ :v | 
 			| selectedCommits |
@@ -142,7 +142,7 @@ MooseTaskBrowser class >> example1 [
 					('selectedCommits' -> selectedCommits)} ]
 		description: '3 Generate Selected Commits'
 		length: 0.
-	taskRepo addTask: task.
+	taskRepo add: task.
 	task := MooseCustomTask new
 		with: [ :v | 
 			| pairsAndTransactions |
@@ -157,7 +157,7 @@ MooseTaskBrowser class >> example1 [
 					('pairsAndTransactions' -> pairsAndTransactions)} ]
 		description: '4 Generate Pairs And Transactions'
 		length: 0.
-	taskRepo addTask: task.
+	taskRepo add: task.
 	task := MooseCustomTask new
 		with: [ :v | 
 			| mseFileRef |
@@ -174,7 +174,7 @@ MooseTaskBrowser class >> example1 [
 					('mseFileRef' -> mseFileRef)} ]
 		description: '5 Generate MSE File For StartOID'
 		length: 0.
-	taskRepo addTask: task.
+	taskRepo add: task.
 	task := MooseCustomTask new
 		with: [ :v | 
 			Transcript
@@ -188,7 +188,7 @@ MooseTaskBrowser class >> example1 [
 					('pairsAndTransactions' -> (v input at: 'pairsAndTransactions'))} ]
 		description: '6 Generate ClientImplementation Pairs'
 		length: 0.
-	taskRepo addTask: task.
+	taskRepo add: task.
 	task := MooseCustomTask new
 		with: [ :v | 
 			Transcript
@@ -201,9 +201,9 @@ MooseTaskBrowser class >> example1 [
 				to: '' ]
 		description: '7 Calculate Coupling Intersections'
 		length: 0.
-	taskRepo addTask: task.
+	taskRepo add: task.
 	test := MooseTaskBrowser on: MooseJob new.
-	test repositoryView setList: taskRepo tasks.
+	test repositoryView setList: taskRepo.
 	test openWithSpec
 
 	
@@ -213,7 +213,7 @@ MooseTaskBrowser class >> example1 [
 MooseTaskBrowser class >> example2 [
 	<example>
 	| task taskRepo test |
-	taskRepo := MooseTaskRepository new.
+	taskRepo := OrderedCollection  new.
 	task := MooseCustomTask new
 		with: [ :v | 
 			Transcript
@@ -225,7 +225,7 @@ MooseTaskBrowser class >> example2 [
 			true ]
 		description: 'a description 1'
 		length: 0.
-	taskRepo addTask: task.
+	taskRepo add: task.
 	task := MooseCustomTask new
 		with: [ :v | 
 			Transcript
@@ -237,7 +237,7 @@ MooseTaskBrowser class >> example2 [
 			true ]
 		description: 'a description 2'
 		length: 0.
-	taskRepo addTask: task.
+	taskRepo add: task.
 	task := MooseCustomTask new
 		with: [ :v | 
 			Transcript
@@ -249,7 +249,7 @@ MooseTaskBrowser class >> example2 [
 			true ]
 		description: 'a description 3'
 		length: 0.
-	taskRepo addTask: task.
+	taskRepo add: task.
 	task := MooseCustomTask new
 		with: [ :v | 
 			Transcript
@@ -261,7 +261,7 @@ MooseTaskBrowser class >> example2 [
 			true ]
 		description: 'a description 4'
 		length: 0.
-	taskRepo addTask: task.
+	taskRepo add: task.
 	task := MooseCustomTask new
 		with: [ :v | 
 			Transcript
@@ -271,9 +271,9 @@ MooseTaskBrowser class >> example2 [
 			true ]
 		description: 'a error task'
 		length: 0.
-	taskRepo addTask: task.
+	taskRepo add: task.
 	test := MooseTaskBrowser on: MooseJob new.
-	test repositoryView setList: taskRepo tasks.
+	test repositoryView setList: taskRepo.
 	test openWithSpec
 ]
 
@@ -281,7 +281,7 @@ MooseTaskBrowser class >> example2 [
 MooseTaskBrowser class >> example4 [
 	<example>
 	| task taskRepo test |
-	taskRepo := MooseTaskRepository new.
+	taskRepo := OrderedCollection new.
 	task := MooseCustomTask new
 		with: [ :v | 
 			Transcript
@@ -290,7 +290,7 @@ MooseTaskBrowser class >> example4 [
 			v input asInteger + 1 ]
 		description: '+1'
 		length: 0.
-	taskRepo addTask: task.
+	taskRepo add: task.
 	task := MooseCustomTask new
 		with: [ :v | 
 			Transcript
@@ -299,7 +299,7 @@ MooseTaskBrowser class >> example4 [
 			v input asInteger + 2 ]
 		description: '+2'
 		length: 0.
-	taskRepo addTask: task.
+	taskRepo add: task.
 	task := MooseCustomTask new
 		with: [ :v | 
 			Transcript
@@ -308,7 +308,7 @@ MooseTaskBrowser class >> example4 [
 			v input asInteger + 3 ]
 		description: '+3'
 		length: 0.
-	taskRepo addTask: task.
+	taskRepo add: task.
 	task := MooseCustomTask new
 		with: [ :v | 
 			Transcript
@@ -317,7 +317,7 @@ MooseTaskBrowser class >> example4 [
 			v input asInteger + 4 ]
 		description: '+4'
 		length: 0.
-	taskRepo addTask: task.
+	taskRepo add: task.
 	task := MooseCustomTask new
 		with: [ :v | 
 			| total |
@@ -329,9 +329,9 @@ MooseTaskBrowser class >> example4 [
 			total ]
 		description: 'count'
 		length: 0.
-	taskRepo addTask: task.
+	taskRepo add: task.
 	test := MooseTaskBrowser on: MooseJob new.
-	test repositoryView setList: taskRepo tasks.
+	test repositoryView setList: taskRepo.
 	test openWithSpec
 ]
 

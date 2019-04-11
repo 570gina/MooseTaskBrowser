@@ -6,7 +6,7 @@ Class {
 		'hasRun',
 		'forceToRun'
 	],
-	#category : #'Tools-MooseTaskBrowser-core'
+	#category : #'Tools-MooseTaskBrowser-Core'
 }
 
 { #category : #running }
