@@ -5,7 +5,7 @@ Class {
 		'job',
 		'steps'
 	],
-	#category : #'Tools-MooseTaskBrowser-tests'
+	#category : #'Tools-MooseTaskBrowser-Tests'
 }
 
 { #category : #addMooseTasks }
@@ -42,7 +42,7 @@ MooseTaskJobTest >> testAJobAllowsToReceiveInput [
 		add:
 			self plusTwenty.
 	(job
-		steps: steps;
+		tasks: steps;
 		input: 10;
 		runWithUpdatingBlock: [  ])
 		addSuccessCallback: [ :result | self assert: result equals: 30 ]
@@ -55,7 +55,7 @@ MooseTaskJobTest >> testEachTaskOfAJobAllowsToReceiveTheOutputOfPreviousTaskAsIn
 		add: self minusTen;
 		add: self plusTwenty.
 	(job
-		steps: steps;
+		tasks: steps;
 		runWithUpdatingBlock: [  ])
 		addSuccessCallback: [ :result | 
 			self assert: result equals: 60.
@@ -79,11 +79,11 @@ MooseTaskJobTest >> testSeparatingAComposedTaskProducesSomeNewSingleTasks [
 	steps
 		add: self minusTen;
 		add: self plusTwenty.
-	job steps: steps.
-	self assert: (job steps first isKindOf: MooseTaskRuntime).
-	job combineSteps: steps asArray.
-	self assert: (job steps first isKindOf: MooseTaskComposedRuntime).
-	job separateStep:  job steps first.
-	self deny: (job steps first isKindOf: MooseTaskComposedRuntime).
-	self assert: (job steps first isKindOf: MooseTaskRuntime)
+	job tasks: steps.
+	self assert: (job tasks first isKindOf: MooseTaskRuntime).
+	job combineTasks: steps asArray.
+	self assert: (job tasks first isKindOf: MooseTaskComposedRuntime).
+	job separateTask:  job tasks first.
+	self deny: (job tasks first isKindOf: MooseTaskComposedRuntime).
+	self assert: (job tasks first isKindOf: MooseTaskRuntime)
 ]

@@ -6,7 +6,7 @@ Class {
 		'job',
 		'fileName'
 	],
-	#category : #'Tools-MooseTaskBrowser-core'
+	#category : #'Tools-MooseTaskBrowser-Core'
 }
 
 { #category : #accessing }

@@ -6,7 +6,7 @@ Class {
 		'repository',
 		'job'
 	],
-	#category : #'Tools-MooseTaskBrowser-tests'
+	#category : #'Tools-MooseTaskBrowser-Tests'
 }
 
 { #category : #action }
@@ -19,17 +19,17 @@ MooseTaskBrowserUITest >> addTasksFromRepository [
 { #category : #setup }
 MooseTaskBrowserUITest >> setUp [
 	| task |
-	repository := MooseTaskRepository new.
+	repository := OrderedCollection new.
 	(1 to: 2)
 		do: [ :i | 
 			task := MooseCustomTask new
 				with: [ :v | v input asInteger + 2 ]
 				description: '+2 Task'
 				length: 0.
-			repository addTask: task ].
+			repository add: task ].
 	job := MooseJob new.
 	browser := MooseTaskBrowser on: job.
-	browser repositoryView setList: repository tasks
+	browser repositoryView setList: repository
 ]
 
 { #category : #tests }
@@ -45,7 +45,7 @@ MooseTaskBrowserUITest >> testAddTasksFromRepository [
 MooseTaskBrowserUITest >> testDownButtonNotEnabledWhenLastTaskIsSelected [
 	self addTasksFromRepository.
 	browser stepsDatasource
-		setSelectedItems: (Array with: job steps last).
+		setSelectedItems: (Array with: job tasks last).
 	self assert: browser upButton enabled.
 	self deny: browser downButton enabled
 ]
@@ -63,10 +63,10 @@ MooseTaskBrowserUITest >> testSelectedTaskToMoveDownWhenDownButtonIsClicked [
 	| temp |
 	self addTasksFromRepository.
 	browser stepsDatasource
-		setSelectedItems: (Array with: job steps second).
+		setSelectedItems: (Array with: job tasks second).
 	temp := browser stepsDatasource selectedItems.
 	browser upButton performAction.
-	self assert: temp equals: (Array with: job steps first).
+	self assert: temp equals: (Array with: job tasks first).
 	self assert: temp equals: browser stepsDatasource selectedItems
 ]
 
@@ -75,17 +75,17 @@ MooseTaskBrowserUITest >> testSelectedTaskToMoveUpWhenUpButtonIsClicked [
 	| temp |
 	self addTasksFromRepository.
 	browser stepsDatasource
-		setSelectedItems: (Array with: job steps first).
+		setSelectedItems: (Array with: job tasks first).
 	temp := browser stepsDatasource selectedItems.
 	browser downButton performAction.
-	self assert: temp equals: (Array with: job steps second).
+	self assert: temp equals: (Array with: job tasks second).
 	self assert: temp equals: browser stepsDatasource selectedItems
 ]
 
 { #category : #tests }
 MooseTaskBrowserUITest >> testSomeWidgetsEnabledWhenTheJobIsNotEmpty [
 	self addTasksFromRepository.
-	self deny: job steps isEmpty.
+	self deny: job tasks isEmpty.
 	self assert: browser checkBox enabled.
 	self assert: browser newJobButton enabled.
 	self assert: browser saveButton enabled.
@@ -94,7 +94,7 @@ MooseTaskBrowserUITest >> testSomeWidgetsEnabledWhenTheJobIsNotEmpty [
 
 { #category : #tests }
 MooseTaskBrowserUITest >> testSomeWidgetsNotEnabledWhenTheJobIsEmpty [
-	self assert: job steps isEmpty.
+	self assert: job tasks isEmpty.
 	self deny: browser checkBox enabled.
 	self deny: browser newJobButton enabled.
 	self deny: browser saveButton enabled.
@@ -107,7 +107,7 @@ MooseTaskBrowserUITest >> testSomeWidgetsNotEnabledWhenTheJobIsEmpty [
 MooseTaskBrowserUITest >> testUpButtonNotEnabledWhenFirstTaskIsSelected [
 	self addTasksFromRepository.
 	browser stepsDatasource
-		setSelectedItems: (Array with: job steps first).
+		setSelectedItems: (Array with: job tasks first).
 	self assert: browser downButton enabled.
 	self deny: browser upButton enabled
 ]

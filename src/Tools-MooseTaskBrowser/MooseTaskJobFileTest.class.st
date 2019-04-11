@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'file'
 	],
-	#category : #'Tools-MooseTaskBrowser-tests'
+	#category : #'Tools-MooseTaskBrowser-Tests'
 }
 
 { #category : #setup }
@@ -19,14 +19,14 @@ MooseTaskJobFileTest >> setUp [
 MooseTaskJobFileTest >> testLoadingAJob [
 	| text loadedJob |
 	steps add: self returnFifty.
-	job steps: steps.
+	job tasks: steps.
 	file saveAs.
 	text := file reference readStreamDo: [ :stream | stream upToEnd ].
 	loadedJob := (STONReader on: text readStream) next.
-	self assert: job steps size equals: loadedJob steps size.
+	self assert: job tasks size equals: loadedJob tasks size.
 	self
-		assert: job steps first description
-		equals: loadedJob steps first description.
+		assert: job tasks first description
+		equals: loadedJob tasks first description.
 	"test finished."
 	file reference delete
 ]
@@ -34,7 +34,7 @@ MooseTaskJobFileTest >> testLoadingAJob [
 { #category : #tests }
 MooseTaskJobFileTest >> testSavingAJob [
 	steps add: self returnFifty.
-	job steps: steps.
+	job tasks: steps.
 	self assert: file reference exists equals: false.
 	file saveAs.
 	self assert: file reference exists equals: true.

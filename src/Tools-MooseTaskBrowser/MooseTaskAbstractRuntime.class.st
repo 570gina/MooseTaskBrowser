@@ -1,3 +1,12 @@
+"
+I'm a wrapper on MooseCustomTask.
+I offer a slightly different API so that I can get managed by a MooseJob and I can be edited by the MooseTaskBrowser.
+In particular 
+	- I offer input and output to pipe tasks. 
+	- my instances can be combined into MooseTaskComposedRuntime.
+
+In the future it may be worth to see if my functionalities should not be pushed to MooseCustomTask. 
+"
 Class {
 	#name : #MooseTaskAbstractRuntime,
 	#superclass : #Object,
@@ -6,7 +15,7 @@ Class {
 		'output',
 		'error'
 	],
-	#category : #'Tools-MooseTaskBrowser-core'
+	#category : #'Tools-MooseTaskBrowser-Core'
 }
 
 { #category : #running }
@@ -32,13 +41,6 @@ MooseTaskAbstractRuntime >> forceToRun [
 { #category : #accessing }
 MooseTaskAbstractRuntime >> hasRun [
 	^ self subclassResponsibility 
-]
-
-{ #category : #running }
-MooseTaskAbstractRuntime >> initialize [
-	super initialize.
-	input := nil.
-	output := nil
 ]
 
 { #category : #running }

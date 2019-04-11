@@ -1,10 +1,13 @@
+"
+I'm a composite of MooseTaskRuntime.
+"
 Class {
 	#name : #MooseTaskComposedRuntime,
 	#superclass : #MooseTaskAbstractRuntime,
 	#instVars : [
 		'tasks'
 	],
-	#category : #'Tools-MooseTaskBrowser-core'
+	#category : #'Tools-MooseTaskBrowser-Core'
 }
 
 { #category : #'adding tasks' }
