@@ -14,9 +14,18 @@ MooseTaskListPresenter class >> defaultSpec [
 		yourself
 ]
 
+{ #category : #specs }
+MooseTaskListPresenter class >> open [
+	<script>
+	MooseTaskListPresenter  new openWithSpec
+]
+
 { #category : #api }
 MooseTaskListPresenter >> extent [
-	^ 250 @ 400
+	| fontWidth rowHeight |
+	fontWidth := StandardFonts defaultFont widthOfString: 'M'.
+	rowHeight := self class inputTextHeight.
+	^ 30 @ 10 * (fontWidth @ rowHeight)
 ]
 
 { #category : #initialization }

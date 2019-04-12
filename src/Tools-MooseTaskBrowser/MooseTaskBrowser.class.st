@@ -213,7 +213,7 @@ MooseTaskBrowser class >> example1 [
 MooseTaskBrowser class >> example2 [
 	<example>
 	| task taskRepo test |
-	taskRepo := OrderedCollection  new.
+	taskRepo := OrderedCollection new.
 	task := MooseCustomTask new
 		with: [ :v | 
 			Transcript
@@ -418,7 +418,10 @@ MooseTaskBrowser >> ensureKeyBindingsFor: aWidget [
 
 { #category : #api }
 MooseTaskBrowser >> extent [
-	^ 650 @ 400
+	| fontWidth rowHeight |
+	fontWidth := StandardFonts defaultFont widthOfString: 'M'.
+	rowHeight := self class inputTextHeight.
+	^ 60 @ 16 * (fontWidth @ rowHeight)
 ]
 
 { #category : #accessing }
@@ -610,7 +613,7 @@ MooseTaskBrowser >> run [
 	isRunning := true.
 	self model
 		input:
-			(self uimanager
+			(self uiManager
 				request: 'Provide the input for first task: '
 				initialAnswer: self model input asString).
 	(self model runWithUpdatingBlock: [ self model: self model ])
@@ -618,7 +621,7 @@ MooseTaskBrowser >> run [
 			self inform: 'Tasks finished.'.
 			isRunning := false.
 			checkBox state: false.
-			self stepsDatasource setSelectedItems: #() ]
+			self stepsDatasource setSelectedItems: #() ].
 ]
 
 { #category : #'accessing widgets' }
@@ -635,7 +638,7 @@ MooseTaskBrowser >> saveButton [
 MooseTaskBrowser >> saveChangesDialog [
 	| select |
 	change
-		ifTrue: [ select := self uimanager
+		ifTrue: [ select := self uiManager
 				confirm: 'Save changes?'
 				label: 'Question'
 				trueChoice: 'Yes'
@@ -656,7 +659,7 @@ MooseTaskBrowser >> saveTheJob [
 	file ifNil: [ file := MooseJobFile new ].
 	file job: self model.
 	file saveAs
-		ifTrue: [ self uimanager inform: 'Saved'.
+		ifTrue: [ self uiManager inform: 'Saved'.
 			self title: 'Moose Tasks -> ' , file fileName , '.txt'.
 			change := false.
 			^ true ]
@@ -716,7 +719,7 @@ MooseTaskBrowser >> taskTable [
 ]
 
 { #category : #private }
-MooseTaskBrowser >> uimanager [ 
+MooseTaskBrowser >> uiManager [ 
 
 	^ UIManager default
 			
