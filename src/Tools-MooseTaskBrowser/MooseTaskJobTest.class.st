@@ -46,9 +46,7 @@ MooseTaskJobTest >> setUp [
 
 { #category : #tests }
 MooseTaskJobTest >> testAJobAllowsToReceiveInput [
-	steps
-		add:
-			self plusTwenty.
+	steps add: self plusTwenty.
 	(job
 		tasks: steps;
 		input: 10;

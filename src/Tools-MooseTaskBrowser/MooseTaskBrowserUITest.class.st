@@ -33,21 +33,12 @@ MooseTaskBrowserUITest >> setUp [
 ]
 
 { #category : #tests }
-MooseTaskBrowserUITest >> testAddTasksFromRepository [
-	self assert: browser stepsDatasource elements size equals: 0.
-	self addTasksFromRepository.
-	self
-		assert: browser stepsDatasource elements size
-		equals: browser repositoryView listPresenter listItems size.
-]
-
-{ #category : #tests }
 MooseTaskBrowserUITest >> testDownButtonNotEnabledWhenLastTaskIsSelected [
 	self addTasksFromRepository.
 	browser stepsDatasource
 		setSelectedItems: (Array with: job tasks last).
-	self assert: browser upButton enabled.
-	self deny: browser downButton enabled
+	self assert: browser upButton isEnabled.
+	self deny: browser downButton isEnabled
 ]
 
 { #category : #tests }
@@ -86,21 +77,21 @@ MooseTaskBrowserUITest >> testSelectedTaskToMoveUpWhenUpButtonIsClicked [
 MooseTaskBrowserUITest >> testSomeWidgetsEnabledWhenTheJobIsNotEmpty [
 	self addTasksFromRepository.
 	self deny: job tasks isEmpty.
-	self assert: browser checkBox enabled.
-	self assert: browser newJobButton enabled.
-	self assert: browser saveButton enabled.
-	self assert: browser runButton enabled
+	self assert: browser checkBox isEnabled.
+	self assert: browser newJobButton isEnabled.
+	self assert: browser saveButton isEnabled.
+	self assert: browser runButton isEnabled
 ]
 
 { #category : #tests }
 MooseTaskBrowserUITest >> testSomeWidgetsNotEnabledWhenTheJobIsEmpty [
 	self assert: job tasks isEmpty.
-	self deny: browser checkBox enabled.
-	self deny: browser newJobButton enabled.
-	self deny: browser saveButton enabled.
-	self deny: browser upButton enabled.
-	self deny: browser downButton enabled.
-	self deny: browser runButton enabled
+	self deny: browser checkBox isEnabled.
+	self deny: browser newJobButton isEnabled.
+	self deny: browser saveButton isEnabled.
+	self deny: browser upButton isEnabled.
+	self deny: browser downButton isEnabled.
+	self deny: browser runButton isEnabled
 ]
 
 { #category : #tests }
@@ -108,6 +99,6 @@ MooseTaskBrowserUITest >> testUpButtonNotEnabledWhenFirstTaskIsSelected [
 	self addTasksFromRepository.
 	browser stepsDatasource
 		setSelectedItems: (Array with: job tasks first).
-	self assert: browser downButton enabled.
-	self deny: browser upButton enabled
+	self assert: browser downButton isEnabled.
+	self deny: browser upButton isEnabled
 ]

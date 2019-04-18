@@ -391,7 +391,8 @@ MooseTaskBrowser >> checkedAllBox [
 { #category : #'list control' }
 MooseTaskBrowser >> combineSelected [
 	| index |
-	index := (taskTableMorph selectedRowIndexes sort: [ :a :b | a <= b ]) first.
+	index := (taskTableMorph selectedIndexes sort: [ :a :b | a <= b ])
+		first.
 	self model combineTasks: self stepsDatasource selectedItems.
 	self stepsDatasource setSelectedIndexes: index.
 	self model: self model
@@ -444,7 +445,7 @@ MooseTaskBrowser >> initializePresenter [
 	addButton action: [ self manageTaskAddDialog ].
 	saveButton action: [ self saveTheJob ].
 	loadButton action: [ self loadAJob ].
-	newJobButton action: [ self newAnEmptyJob ].
+	newJobButton action: [ self newAnEmptyJob ]
 ]
 
 { #category : #initialization }
@@ -524,10 +525,10 @@ MooseTaskBrowser >> loadButton [
 { #category : #actions }
 MooseTaskBrowser >> manageArrowButtons: aSelection [
 	| selectedItem |
-	(aSelection newSelectedRowIndexes isEmptyOrNil
-		or: aSelection newSelectedRowIndexes size > 1)
+	(aSelection newSelectedIndexes isEmptyOrNil
+		or: aSelection newSelectedIndexes size > 1)
 		ifFalse: [ selectedItem := self model tasks
-				at: aSelection newSelectedRowIndexes first.
+				at: aSelection newSelectedIndexes first.
 			selectedItem
 				ifNotNil: [ self model tasks first = selectedItem
 						ifTrue: [ upButton disable ]
@@ -546,13 +547,15 @@ MooseTaskBrowser >> manageTaskAddDialog [
 	self stepsDatasource setSelectedItems: #().
 	repositoryView openDialogWithSpec
 		okAction: [ | steps |
+			"self halt."
 			steps := repositoryView listPresenter selectedItems
 				asOrderedCollection
 				sort: [ :a :b | a description <= b description ].
 			self model addTasks: steps.
 			self model: self model.
 			self stepsDatasource setSelectedItems: items.
-			repositoryView listPresenter resetSelection ]
+			repositoryView listPresenter unselectAll.
+			repositoryView window close ]
 ]
 
 { #category : #accessing }
@@ -621,7 +624,7 @@ MooseTaskBrowser >> run [
 			self inform: 'Tasks finished.'.
 			isRunning := false.
 			checkBox state: false.
-			self stepsDatasource setSelectedItems: #() ].
+			self stepsDatasource setSelectedItems: #() ]
 ]
 
 { #category : #'accessing widgets' }

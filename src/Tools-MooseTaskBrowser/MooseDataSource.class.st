@@ -50,11 +50,10 @@ MooseDataSource >> selectedIndexes [
 
 { #category : #accessing }
 MooseDataSource >> selectedItems [
-"check with Cyril to move it up the hierarchy"
+	"check with Cyril to move it up the hierarchy"
 
 	self flag: #cyril.
-	^ table selectedRowIndexes
-		collect: [ :index | self elementAt: index ]
+	^ table selectedIndexes collect: [ :index | self elementAt: index ]
 ]
 
 { #category : #accessing }
@@ -62,7 +61,7 @@ MooseDataSource >> setSelectedIndexes: indexes [
 	"check with Cyril to move it up the hierarchy"
 
 	self flag: #cyril.
-	table selectRowIndexes: indexes
+	table selectIndexes: indexes
 ]
 
 { #category : #accessing }
@@ -70,5 +69,5 @@ MooseDataSource >> setSelectedItems: items [
 	"check with Cyril to move it up the hierarchy"
 
 	self flag: #cyril.
-	table selectRowIndexes: (items collect: [ :i | elements indexOf: i ])
+	table selectIndexes: (items collect: [ :i | elements indexOf: i ])
 ]
