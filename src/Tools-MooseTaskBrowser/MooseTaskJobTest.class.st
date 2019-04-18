@@ -9,6 +9,14 @@ Class {
 }
 
 { #category : #addMooseTasks }
+MooseTaskJobTest >> errorTask [
+	^ (MooseCustomTask new
+		with: [ :v | 1 / 0 ]
+		description: 'Zero Divide'
+		length: 0) asTaskRuntime
+]
+
+{ #category : #addMooseTasks }
 MooseTaskJobTest >> minusTen [
 	^ (MooseCustomTask new
 		with: [ :v | v input asInteger - 10 ]
@@ -49,6 +57,18 @@ MooseTaskJobTest >> testAJobAllowsToReceiveInput [
 ]
 
 { #category : #tests }
+MooseTaskJobTest >> testChooseToRunAnySuccessfulTask [
+	steps
+		add: self returnFifty;
+		add: self minusTen;
+		add: self plusTwenty.
+	(job
+		tasks: steps;
+		runWithUpdatingBlock: [  ])
+		addSuccessCallback: [ :result | steps do: [ :item | self deny: item forceToRun ] ]
+]
+
+{ #category : #tests }
 MooseTaskJobTest >> testEachTaskOfAJobAllowsToReceiveTheOutputOfPreviousTaskAsInput [
 	steps
 		add: self returnFifty;
@@ -57,9 +77,18 @@ MooseTaskJobTest >> testEachTaskOfAJobAllowsToReceiveTheOutputOfPreviousTaskAsIn
 	(job
 		tasks: steps;
 		runWithUpdatingBlock: [  ])
-		addSuccessCallback: [ :result | 
-			self assert: result equals: 60.
-			 ]
+		addSuccessCallback: [ :result | self assert: result equals: 60 ]
+]
+
+{ #category : #tests }
+MooseTaskJobTest >> testForceToRunAllUnexecutedTasks [
+	steps
+		add: self returnFifty;
+		add: self minusTen;
+		add: self plusTwenty.
+	steps
+		do: [ :item | 
+			self assert: item forceToRun ]
 ]
 
 { #category : #tests }
