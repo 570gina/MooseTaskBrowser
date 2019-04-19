@@ -619,6 +619,7 @@ MooseTaskBrowser >> run [
 		addSuccessCallback: [ :result | 
 			self inform: 'Tasks finished.'.
 			isRunning := false.
+			runButton enable.
 			checkBox state: false.
 			self stepsDatasource setSelectedItems: #() ]
 ]

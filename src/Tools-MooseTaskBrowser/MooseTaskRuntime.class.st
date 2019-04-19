@@ -17,7 +17,7 @@ Class {
 
 { #category : #running }
 MooseTaskRuntime >> basicRun [
-	hasRun := true.
+
 	^ task runWith: self
 ]
 
@@ -52,6 +52,11 @@ MooseTaskRuntime >> forceToRun: aValue [
 { #category : #accessing }
 MooseTaskRuntime >> hasRun [
 	^ hasRun
+]
+
+{ #category : #accessing }
+MooseTaskRuntime >> hasRun: aBoolean [
+	hasRun := aBoolean
 ]
 
 { #category : #accessing }

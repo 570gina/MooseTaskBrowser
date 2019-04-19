@@ -83,13 +83,14 @@ MooseJob >> removeTask: aStep [
 
 { #category : #action }
 MooseJob >> runWithUpdatingBlock: aBlock [
-
-	^ [tasks
+	^ [ tasks
 		inject: self input
 		into: [ :result :step | 
 			step run: result.
+			step forceToRun: false.
+			step hasRun: true.
 			aBlock value.
-			step output ]]future
+			step output ] ] future
 ]
 
 { #category : #action }
