@@ -6,8 +6,7 @@ Class {
 		'input',
 		'output',
 		'checkbox',
-		'test',
-		'emptyLabel'
+		'test'
 	],
 	#category : #'Tools-MooseTaskBrowser-Core-ui'
 }
@@ -15,23 +14,26 @@ Class {
 { #category : #specs }
 MooseTaskRuntimeItemPresenter class >> defaultSpec [
 	| h |
-	h := self defaultFont height.
-	^ SpecLayout composed
-		newRow: [ :row | 
-			row
-				newColumn: [ :col | 
-					col
-						add: #checkbox height: h;
-						add: #test height: h;
-						add: #emptyLabel ]
-					width: h;
-				newColumn: [ :col | 
-					col
-						add: #input height: h;
-						add: #description height: h;
-						add: #output height: h;
-						add: #emptyLabel ] ]
-			height: 3 * h;
+	h := self defaultFont height +2.
+	^ SpecBoxLayout newVertical
+		add:
+			(SpecBoxLayout newHorizontal
+				add:
+					(SpecBoxLayout newVertical
+						add: #checkbox
+							withConstraints: [ :constraints | constraints height: h ];
+						add: #test
+							withConstraints: [ :constraints | constraints height: h ])
+					withConstraints: [ :constraints | constraints width: h ];
+				add:
+					(SpecBoxLayout newVertical
+						add: #input
+							withConstraints: [ :constraints | constraints height: h ];
+						add: #description
+							withConstraints: [ :constraints | constraints height: h ];
+						add: #output
+							withConstraints: [ :constraints | constraints height: h ]))
+			withConstraints: [ :constraints | constraints height: 3 * h ];
 		yourself
 ]
 
@@ -71,11 +73,6 @@ MooseTaskRuntimeItemPresenter >> description: anObject [
 	description := anObject
 ]
 
-{ #category : #accessing }
-MooseTaskRuntimeItemPresenter >> emptyLabel [
-	^ emptyLabel
-]
-
 { #category : #initialization }
 MooseTaskRuntimeItemPresenter >> initializePresenter [
 	checkbox whenActivatedDo: [ self model forceToRun: true ].
@@ -91,7 +88,6 @@ MooseTaskRuntimeItemPresenter >> initializeWidgets [
 	output := self newLabel.
 	checkbox := self newCheckBox.
 	test := self newImage.
-	emptyLabel := self newLabel.
 	self focusOrder
 		add: test;
 		add: input;

@@ -2,15 +2,15 @@ Class {
 	#name : #MooseTaskListPresenter,
 	#superclass : #ComposablePresenter,
 	#instVars : [
-		'listPresenter'
+		'list'
 	],
 	#category : #'Tools-MooseTaskBrowser-Core-ui'
 }
 
 { #category : #specs }
 MooseTaskListPresenter class >> defaultSpec [
-	^ SpecColumnLayout composed
-		add: #listPresenter;
+	^ SpecBoxLayout newVertical
+		add: #list;
 		yourself
 ]
 
@@ -20,32 +20,25 @@ MooseTaskListPresenter class >> open [
 	MooseTaskListPresenter  new openWithSpec
 ]
 
-{ #category : #api }
-MooseTaskListPresenter >> extent [
-	| fontWidth rowHeight |
-	fontWidth := StandardFonts defaultFont widthOfString: 'M'.
-	rowHeight := self class inputTextHeight.
-	^ 30 @ 10 * (fontWidth @ rowHeight)
+{ #category : #initialization }
+MooseTaskListPresenter >> initializeWidgets [
+	list := self newList beMultipleSelection.
+	list displayBlock: [ :task | task description ].
+	self focusOrder add: list
 ]
 
 { #category : #initialization }
-MooseTaskListPresenter >> initializeWidgets [
-	listPresenter := self newList beMultipleSelection.
-	self focusOrder
-		add: listPresenter.
+MooseTaskListPresenter >> initializeWindow: aWindowPresenter [
+	| fontWidth rowHeight |
+	fontWidth := StandardFonts defaultFont widthOfString: 'M'.
+	rowHeight := self class inputTextHeight.
+	aWindowPresenter initialExtent: 30 @ 10 * (fontWidth @ rowHeight).
+	aWindowPresenter title: self title
 ]
 
 { #category : #accessing }
-MooseTaskListPresenter >> listPresenter [
-	^ listPresenter
-]
-
-{ #category : #action }
-MooseTaskListPresenter >> setList: aCollection [
-	aCollection
-		ifNotNil: [ listPresenter
-				items: aCollection;
-				displayBlock: [ :task | task description ] ]
+MooseTaskListPresenter >> list [
+	^ list
 ]
 
 { #category : #api }

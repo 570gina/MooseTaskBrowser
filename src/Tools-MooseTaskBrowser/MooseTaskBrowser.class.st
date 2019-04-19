@@ -40,7 +40,6 @@ Class {
 		'upButton',
 		'downButton',
 		'runButton',
-		'taskRepo',
 		'repositoryView',
 		'checkBox',
 		'taskTable',
@@ -62,27 +61,27 @@ items do:[:i| (i isKindOf: MooseTaskComposedRuntime) ifFalse:[^false]].^true
 
 { #category : #specs }
 MooseTaskBrowser class >> defaultSpec [
-	^ SpecColumnLayout composed
-		newRow: [ :row | 
-			row
-				add: #checkBox width: self defaultFont height;
-				newRow: [ :inRow | 
-					inRow
-						add: #newJobButton;
-						add: #loadButton;
-						add: #saveButton;
-						add: #addButton ] ]
-			height: self toolbarHeight;
-		newRow: [ :row | 
-			row
+	^ SpecBoxLayout newVertical
+		add:
+			(SpecBoxLayout newHorizontal
+				add: #checkBox
+					withConstraints: [ :constraints | constraints height: self toolbarHeight ];
+				add: #newJobButton;
+				add: #loadButton;
+				add: #saveButton;
+				add: #addButton)
+			withConstraints: [ :constraints | constraints height: self toolbarHeight ];
+		add:
+			(SpecBoxLayout newHorizontal
 				add: #taskTable;
-				newColumn: [ :col | 
-					col
+				add:
+					(SpecBoxLayout newVertical
 						add: #upButton;
-						add: #downButton ]
-					width: self defaultFont height + 6 ];
-		newRow: [ :row | row add: #runButton ] height: self toolbarHeight;
-		yourself
+						add: #downButton)
+					withConstraints: [ :constraints | constraints width: self defaultFont height + 6 ]);
+		add: #runButton withConstraints: [ :constraints | constraints height: self toolbarHeight ];
+	
+			yourself
 ]
 
 { #category : #examples }
@@ -203,10 +202,8 @@ MooseTaskBrowser class >> example1 [
 		length: 0.
 	taskRepo add: task.
 	test := MooseTaskBrowser on: MooseJob new.
-	test repositoryView setList: taskRepo.
+	test repositoryView list items: taskRepo.
 	test openWithSpec
-
-	
 ]
 
 { #category : #examples }
@@ -273,7 +270,7 @@ MooseTaskBrowser class >> example2 [
 		length: 0.
 	taskRepo add: task.
 	test := MooseTaskBrowser on: MooseJob new.
-	test repositoryView setList: taskRepo.
+	test repositoryView list items: taskRepo.
 	test openWithSpec
 ]
 
@@ -331,7 +328,7 @@ MooseTaskBrowser class >> example4 [
 		length: 0.
 	taskRepo add: task.
 	test := MooseTaskBrowser on: MooseJob new.
-	test repositoryView setList: taskRepo.
+	test repositoryView list items: taskRepo.
 	test openWithSpec
 ]
 
@@ -417,14 +414,6 @@ MooseTaskBrowser >> ensureKeyBindingsFor: aWidget [
 	self registerMooseTaskListShortcuts: taskTable
 ]
 
-{ #category : #api }
-MooseTaskBrowser >> extent [
-	| fontWidth rowHeight |
-	fontWidth := StandardFonts defaultFont widthOfString: 'M'.
-	rowHeight := self class inputTextHeight.
-	^ 60 @ 16 * (fontWidth @ rowHeight)
-]
-
 { #category : #accessing }
 MooseTaskBrowser >> file [
 	^ file
@@ -459,9 +448,8 @@ MooseTaskBrowser >> initializeTable [
 
 { #category : #initialization }
 MooseTaskBrowser >> initializeWidgets [
-	self title: 'Moose Tasks'.
 	change := false.
-	isRunning:= false.
+	isRunning := false.
 	taskTableMorph := self initializeTable.
 	taskTableMorph.
 	taskTable := taskTableMorph asSpecAdapter.
@@ -493,6 +481,15 @@ MooseTaskBrowser >> initializeWidgets [
 		add: taskTable;
 		add: runButton;
 		add: checkBox
+]
+
+{ #category : #initialization }
+MooseTaskBrowser >> initializeWindow: aWindowPresenter [
+	| fontWidth rowHeight |
+	fontWidth := StandardFonts defaultFont widthOfString: 'M'.
+	rowHeight := self class inputTextHeight.
+	aWindowPresenter initialExtent: 60 @ 16 * (fontWidth @ rowHeight).
+	aWindowPresenter title: 'Moose Tasks'
 ]
 
 { #category : #actions }
@@ -548,13 +545,12 @@ MooseTaskBrowser >> manageTaskAddDialog [
 	repositoryView openDialogWithSpec
 		okAction: [ | steps |
 			"self halt."
-			steps := repositoryView listPresenter selectedItems
-				asOrderedCollection
+			steps := repositoryView list selectedItems asOrderedCollection
 				sort: [ :a :b | a description <= b description ].
 			self model addTasks: steps.
 			self model: self model.
 			self stepsDatasource setSelectedItems: items.
-			repositoryView listPresenter unselectAll.
+			repositoryView list unselectAll.
 			repositoryView window close ]
 ]
 
@@ -709,11 +705,6 @@ MooseTaskBrowser >> swapItems: aNumber [
 	items do: [ :item | self model move: aNumber theTask: item ].
 	self stepsDatasource setSelectedItems: items.
 	self model: self model
-]
-
-{ #category : #accessing }
-MooseTaskBrowser >> taskRepo [
-	^ taskRepo
 ]
 
 { #category : #accessing }

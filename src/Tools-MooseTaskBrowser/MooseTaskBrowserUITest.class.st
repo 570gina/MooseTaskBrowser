@@ -12,7 +12,7 @@ Class {
 { #category : #action }
 MooseTaskBrowserUITest >> addTasksFromRepository [
 	browser addButton performAction.
-	browser repositoryView listPresenter selectAll.
+	browser repositoryView list selectAll.
 	browser repositoryView window triggerOkAction
 ]
 
@@ -29,7 +29,7 @@ MooseTaskBrowserUITest >> setUp [
 			repository add: task ].
 	job := MooseJob new.
 	browser := MooseTaskBrowser on: job.
-	browser repositoryView setList: repository
+	browser repositoryView list items: repository
 ]
 
 { #category : #tests }
