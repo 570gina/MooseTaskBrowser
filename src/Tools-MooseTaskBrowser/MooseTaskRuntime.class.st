@@ -17,7 +17,6 @@ Class {
 
 { #category : #running }
 MooseTaskRuntime >> basicRun [
-
 	^ task runWith: self
 ]
 
@@ -75,7 +74,7 @@ MooseTaskRuntime >> run [
 	output := self basicRun ]
 		on: Error
 		do: [ :err | 
-			error := 'Error:' , err messageText.
+			error := err asString.
 			err debug.
 			output := nil ]
 ]

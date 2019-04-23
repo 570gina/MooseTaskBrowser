@@ -670,12 +670,11 @@ MooseTaskBrowser >> saveTheJob [
 { #category : #'list control' }
 MooseTaskBrowser >> separateSelected [
 	| index |
-	index := (taskTableMorph selectedRowIndexes sort: [ :a :b | a <= b ])
+	index := (taskTableMorph selectedIndexes sort: [ :a :b | a <= b ])
 		first.
 	self model separateTasks: self stepsDatasource selectedItems.
 	self stepsDatasource setSelectedIndexes: index.
 	self model: self model
-	
 ]
 
 { #category : #menu }

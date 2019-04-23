@@ -52,6 +52,11 @@ MooseTaskComposedRuntime >> hasRun [
 ]
 
 { #category : #'adding tasks' }
+MooseTaskComposedRuntime >> hasRun: aBoolean [
+	tasks do: [ :t | t hasRun: aBoolean ]
+]
+
+{ #category : #'adding tasks' }
 MooseTaskComposedRuntime >> initialize [
 	super initialize.
 	tasks := OrderedCollection  new
