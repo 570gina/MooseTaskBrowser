@@ -520,6 +520,11 @@ MooseTaskBrowser >> loadButton [
 ]
 
 { #category : #actions }
+MooseTaskBrowser >> log: anError [
+	self inform: anError printString
+]
+
+{ #category : #actions }
 MooseTaskBrowser >> manageArrowButtons: aSelection [
 	| selectedItem |
 	(aSelection newSelectedIndexes isEmptyOrNil
@@ -621,7 +626,10 @@ MooseTaskBrowser >> run [
 			isRunning := false.
 			runButton enable.
 			checkBox state: false.
-			self stepsDatasource setSelectedItems: #() ]
+			self stepsDatasource setSelectedItems: #() ];
+		addFailureCallback: [ :error | 
+			self log: error.
+			error debug ]
 ]
 
 { #category : #'accessing widgets' }

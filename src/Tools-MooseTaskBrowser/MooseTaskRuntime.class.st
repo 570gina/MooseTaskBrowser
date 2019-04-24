@@ -70,13 +70,12 @@ MooseTaskRuntime >> printOn: aStream [
 
 { #category : #running }
 MooseTaskRuntime >> run [
-	^ [ error := nil.
-	output := self basicRun ]
-		on: Error
+	error := nil.
+	^output := self basicRun 
+	"	on: Error
 		do: [ :err | 
 			error := err asString.
-			err debug.
-			output := nil ]
+			output := nil ]"
 ]
 
 { #category : #accessing }
