@@ -321,7 +321,7 @@ MooseTaskBrowser class >> example4 [
 			Transcript
 				show: 'count';
 				cr.
-			v inject: 0 into: [ :x :sum | sum + x ] ]
+			v input inject: 0 into: [ :x :sum | sum + x ] ]
 		description: 'count'
 		length: 0.
 	job addTasks: {task}.

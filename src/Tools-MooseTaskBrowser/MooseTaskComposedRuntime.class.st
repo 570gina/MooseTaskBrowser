@@ -70,14 +70,15 @@ MooseTaskComposedRuntime >> output [
 { #category : #running }
 MooseTaskComposedRuntime >> run [
 	| tempOutput |
-	^ [ error := nil.
+	^[ error := nil.
 	tempOutput := self basicRun.
 	output := tempOutput
 		collect: [ :f | f synchronizeTimeout: 1 minutes ] ]
-"		on: Error
+		on: Error
 		do: [ :err | 
-			error := err asString.
-			output := nil ]"
+			error := 'Error:' , err messageText.
+			err debug.
+			output := nil ]
 ]
 
 { #category : #accessing }
