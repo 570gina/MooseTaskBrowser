@@ -277,8 +277,8 @@ MooseTaskBrowser class >> example2 [
 { #category : #examples }
 MooseTaskBrowser class >> example4 [
 	<example>
-	| task taskRepo test |
-	taskRepo := OrderedCollection new.
+	| task test job |
+	job := MooseJob new.
 	task := MooseCustomTask new
 		with: [ :v | 
 			Transcript
@@ -287,7 +287,7 @@ MooseTaskBrowser class >> example4 [
 			v input asInteger + 1 ]
 		description: '+1'
 		length: 0.
-	taskRepo add: task.
+	job addTasks: {task}.
 	task := MooseCustomTask new
 		with: [ :v | 
 			Transcript
@@ -296,7 +296,7 @@ MooseTaskBrowser class >> example4 [
 			v input asInteger + 2 ]
 		description: '+2'
 		length: 0.
-	taskRepo add: task.
+	job addTasks: {task}.
 	task := MooseCustomTask new
 		with: [ :v | 
 			Transcript
@@ -305,7 +305,7 @@ MooseTaskBrowser class >> example4 [
 			v input asInteger + 3 ]
 		description: '+3'
 		length: 0.
-	taskRepo add: task.
+	job addTasks: {task}.
 	task := MooseCustomTask new
 		with: [ :v | 
 			Transcript
@@ -314,21 +314,18 @@ MooseTaskBrowser class >> example4 [
 			v input asInteger + 4 ]
 		description: '+4'
 		length: 0.
-	taskRepo add: task.
+	job addTasks: {task}.
+	job combineTasks: (job tasks copyFrom: 1 to: 4).
 	task := MooseCustomTask new
 		with: [ :v | 
-			| total |
 			Transcript
-				show: 'Task ++ running';
+				show: 'count';
 				cr.
-			total := 0.
-			v input do: [ :num | total := total + num asInteger ].
-			total ]
+			v inject: 0 into: [ :x :sum | sum + x ] ]
 		description: 'count'
 		length: 0.
-	taskRepo add: task.
-	test := MooseTaskBrowser on: MooseJob new.
-	test repositoryView list items: taskRepo.
+	job addTasks: {task}.
+	test := MooseTaskBrowser on: job.
 	test openWithSpec
 ]
 
