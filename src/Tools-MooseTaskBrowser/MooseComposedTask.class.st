@@ -2,7 +2,6 @@ Class {
 	#name : #MooseComposedTask,
 	#superclass : #Object,
 	#instVars : [
-		'description',
 		'tasks'
 	],
 	#category : #'Tools-MooseTaskBrowser-Core'
@@ -33,22 +32,16 @@ MooseComposedTask >> combineWith: aMooseTask [
 
 { #category : #accessing }
 MooseComposedTask >> description [
-	^ description
+	^ 'Group'
 ]
 
 { #category : #initialization }
 MooseComposedTask >> initialize [
 	super initialize.
 	tasks := OrderedCollection new.
-	description := 'Group'
 ]
 
 { #category : #accessing }
 MooseComposedTask >> tasks [
 	^ tasks
-]
-
-{ #category : #accessing }
-MooseComposedTask >> tasks: aCollection [
-	tasks := aCollection
 ]

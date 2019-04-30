@@ -17,12 +17,24 @@ MooseTaskComposedRuntime >> addTaskRuntime: aMooseTaskRuntime [
 
 { #category : #running }
 MooseTaskComposedRuntime >> basicRun [
-	^ tasks collect: [ :t | [ t run: input. t isError ifTrue:[ error := true]. ] future ]
+	^ tasks
+		collect: [ :t | 
+			.
+			[ t run: input ] future ]
 ]
 
 { #category : #'adding tasks' }
 MooseTaskComposedRuntime >> description [
 	^ 'Group'	" And ' join: (tasks collect: #description)"
+]
+
+{ #category : #accessing }
+MooseTaskComposedRuntime >> error [
+	tasks
+		do: [ :t | 
+			t isError
+				ifTrue: [^true ] ].
+			^nil
 ]
 
 { #category : #'adding tasks' }
@@ -73,7 +85,7 @@ MooseTaskComposedRuntime >> run [
 	output := tempOutput
 		collect: [ :f | f synchronizeTimeout: 2 minutes ] ]
 		on: Error
-		do: [ :err | error := err ]
+		do: [ :err | err debug ]
 ]
 
 { #category : #accessing }

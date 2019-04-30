@@ -1,5 +1,5 @@
 Class {
-	#name : #MooseTaskSettingPresenter,
+	#name : #RunSettingPresenter,
 	#superclass : #ComposablePresenter,
 	#instVars : [
 		'inputText'
@@ -8,7 +8,7 @@ Class {
 }
 
 { #category : #specs }
-MooseTaskSettingPresenter class >> defaultSpec [
+RunSettingPresenter class >> defaultSpec [
 	^ SpecBoxLayout newVertical
 		add: 'Provide the input for first task: '
 			withConstraints: [ :constraints | constraints height: self defaultFont height + 6 ];
@@ -23,20 +23,20 @@ MooseTaskSettingPresenter class >> defaultSpec [
 ]
 
 { #category : #'instance creation' }
-MooseTaskSettingPresenter class >> open [
+RunSettingPresenter class >> open [
 	<script>
 	self new openWithSpec
 ]
 
 { #category : #initialization }
-MooseTaskSettingPresenter >> initializeWidgets [
+RunSettingPresenter >> initializeWidgets [
 	inputText := self newText.
 	inputText autoAccept: true.
 	self focusOrder add: inputText
 ]
 
 { #category : #initialization }
-MooseTaskSettingPresenter >> initializeWindow: aWindowPresenter [
+RunSettingPresenter >> initializeWindow: aWindowPresenter [
 	| fontWidth rowHeight |
 	fontWidth := StandardFonts defaultFont widthOfString: 'M'.
 	rowHeight := self class inputTextHeight.
@@ -45,16 +45,16 @@ MooseTaskSettingPresenter >> initializeWindow: aWindowPresenter [
 ]
 
 { #category : #initialization }
-MooseTaskSettingPresenter >> inputText [
+RunSettingPresenter >> inputText [
 	^ inputText
 ]
 
 { #category : #initialization }
-MooseTaskSettingPresenter >> inputText: aString [
+RunSettingPresenter >> inputText: aString [
 	inputText text: aString
 ]
 
 { #category : #initialization }
-MooseTaskSettingPresenter >> title [
+RunSettingPresenter >> title [
 	^ 'Setting'
 ]

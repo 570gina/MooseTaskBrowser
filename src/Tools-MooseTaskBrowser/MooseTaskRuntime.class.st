@@ -56,7 +56,7 @@ MooseTaskRuntime >> run [
 	^ [ error := nil.
 	output := self basicRun ]
 		on: Error
-		do: [ :err | error := err ]
+		do: [ :err | error := err.output:= nil ]
 ]
 
 { #category : #accessing }

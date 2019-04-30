@@ -1,5 +1,5 @@
 Class {
-	#name : #MooseTaskListPresenter,
+	#name : #AddTasksPresenter,
 	#superclass : #ComposablePresenter,
 	#instVars : [
 		'list'
@@ -8,27 +8,27 @@ Class {
 }
 
 { #category : #specs }
-MooseTaskListPresenter class >> defaultSpec [
+AddTasksPresenter class >> defaultSpec [
 	^ SpecBoxLayout newVertical
 		add: #list;
 		yourself
 ]
 
 { #category : #specs }
-MooseTaskListPresenter class >> open [
+AddTasksPresenter class >> open [
 	<script>
-	MooseTaskListPresenter  new openWithSpec
+	AddTasksPresenter  new openWithSpec
 ]
 
 { #category : #initialization }
-MooseTaskListPresenter >> initializeWidgets [
+AddTasksPresenter >> initializeWidgets [
 	list := self newList beMultipleSelection.
 	list displayBlock: [ :task | task description ].
 	self focusOrder add: list
 ]
 
 { #category : #initialization }
-MooseTaskListPresenter >> initializeWindow: aWindowPresenter [
+AddTasksPresenter >> initializeWindow: aWindowPresenter [
 	| fontWidth rowHeight |
 	fontWidth := StandardFonts defaultFont widthOfString: 'M'.
 	rowHeight := self class inputTextHeight.
@@ -37,11 +37,11 @@ MooseTaskListPresenter >> initializeWindow: aWindowPresenter [
 ]
 
 { #category : #accessing }
-MooseTaskListPresenter >> list [
+AddTasksPresenter >> list [
 	^ list
 ]
 
 { #category : #api }
-MooseTaskListPresenter >> title [ 
+AddTasksPresenter >> title [ 
 	^'Repository'
 ]

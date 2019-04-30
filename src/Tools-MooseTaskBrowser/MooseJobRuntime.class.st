@@ -5,17 +5,16 @@ Class {
 		'input',
 		'tasks',
 		'output',
-		'description',
 		'errorState'
 	],
 	#category : #'Tools-MooseTaskBrowser-Core'
 }
 
 { #category : #adding }
-MooseJobRuntime >> addTasks: aCollection [
+MooseJobRuntime >> addTasks: aCollectionOfTasks [
 	"Add a collection of tasks instances of MooseCustomTask (or object with interfaces understanding asRuntimeTask and force"
 
-	tasks addAll: (aCollection collect: #asTaskRuntime)
+	tasks addAll: (aCollectionOfTasks collect: #asTaskRuntime)
 ]
 
 { #category : #accessing }
@@ -49,7 +48,8 @@ MooseJobRuntime >> icon [
 		do: [ :t | 
 			t hasRun
 				ifFalse: [ ^ self iconNamed: #testNotRun ]
-				ifTrue: [ t isError
+				ifTrue: [ 
+					t isError
 						ifTrue: [ ^ self iconNamed: #testRed ] ] ].
 	^ self iconNamed: #testGreen
 ]
@@ -61,18 +61,8 @@ MooseJobRuntime >> initialize [
 ]
 
 { #category : #accessing }
-MooseJobRuntime >> input [
-	^ input
-]
-
-{ #category : #accessing }
-MooseJobRuntime >> input: aValue [
-	input := aValue
-]
-
-{ #category : #accessing }
-MooseJobRuntime >> output [
-	^ output
+MooseJobRuntime >> input: aString [
+	input := aString
 ]
 
 { #category : #printing }
@@ -86,7 +76,7 @@ MooseJobRuntime >> printOn: aStream [
 { #category : #action }
 MooseJobRuntime >> runWithUpdatingBlock: aBlock [
 	^ tasks
-		inject: self input
+		inject: input
 		into: [ :result :step | 
 			step run: result.
 			self errorState: step.

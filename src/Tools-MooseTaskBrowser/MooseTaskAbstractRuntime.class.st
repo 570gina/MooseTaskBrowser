@@ -45,7 +45,7 @@ MooseTaskAbstractRuntime >> input [
 
 { #category : #accessing }
 MooseTaskAbstractRuntime >> isError [
-	^ error isNotNil 
+	^ self error isNotNil
 ]
 
 { #category : #running }
@@ -69,7 +69,7 @@ MooseTaskAbstractRuntime >> run: anInput [
 
 { #category : #running }
 MooseTaskAbstractRuntime >> shouldRunFor: anInput [
-	^ (self class = MooseTaskComposedRuntime)
+	^ (self isKindOf: MooseTaskComposedRuntime)
 		or: [ (self hasRun
 				and: [ (anInput isNil or: [ input = anInput ]) and: [ output isNotNil ] ])
 				not ]

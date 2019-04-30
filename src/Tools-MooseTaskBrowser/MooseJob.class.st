@@ -18,20 +18,18 @@ Class {
 	#category : #'Tools-MooseTaskBrowser-Core'
 }
 
-{ #category : #action }
-MooseJob >> addTasks: aCollection [
-	"Add a collection of tasks instances of MooseCustomTask (or object with interfaces understanding asRuntimeTask and force"
-
-	tasks addAll: aCollection
+{ #category : #adding }
+MooseJob >> addTasks: aCollectionOfTasks [
+	tasks addAll: aCollectionOfTasks
 ]
 
 { #category : #action }
-MooseJob >> combineTasks: aCollection [
+MooseJob >> combineTasks: aCollectionOfTasks [
 	| firstTaskIndex combination |
-	firstTaskIndex := tasks indexOf: aCollection first.
-	aCollection do: [ :i | self removeTask: i ].
-	combination := aCollection allButFirst
-		inject: aCollection first
+	firstTaskIndex := tasks indexOf: aCollectionOfTasks first.
+	aCollectionOfTasks do: [ :t | self removeTask: t ].
+	combination := aCollectionOfTasks allButFirst
+		inject: aCollectionOfTasks first
 		into: [ :acc :each | acc combineWith: each ].
 	tasks add: combination beforeIndex: firstTaskIndex
 ]
@@ -48,23 +46,23 @@ MooseJob >> input [
 ]
 
 { #category : #accessing }
-MooseJob >> input: aValue [
-	input := aValue
+MooseJob >> input: aString [
+	input := aString
 ]
 
-{ #category : #'organizing steps' }
-MooseJob >> move: aModifier theTask: aTask [
+{ #category : #action }
+MooseJob >> move: aModifier theTask: aMooseTask [
 	| index |
-	index := tasks indexOf: aTask.
+	index := tasks indexOf: aMooseTask.
 	tasks swap: index with: index + aModifier
 ]
 
 { #category : #action }
-MooseJob >> removeTask: aStep [
-	tasks remove: aStep
+MooseJob >> removeTask: aMooseTask [
+	tasks remove: aMooseTask
 ]
 
-{ #category : #action }
+{ #category : #running }
 MooseJob >> runWithUpdatingBlock: aBlock [
 	runtimeJobs := (input
 		ifNil: [ {nil} ]
@@ -83,16 +81,19 @@ MooseJob >> runtimeJobs [
 ]
 
 { #category : #action }
-MooseJob >> separateTask: aStep [
+MooseJob >> separateTask: aMooseTask [
 	| index |
-	index := tasks indexOf: aStep.
-	self removeTask: aStep.
-	aStep tasks do: [ :i | tasks add: i beforeIndex: index. index := index + 1 ]
+	index := tasks indexOf: aMooseTask.
+	self removeTask: aMooseTask.
+	aMooseTask tasks
+		do: [ :i | 
+			tasks add: i beforeIndex: index.
+			index := index + 1 ]
 ]
 
 { #category : #action }
-MooseJob >> separateTasks: aCollection [
-	aCollection do: [ :i | self separateTask: i ]
+MooseJob >> separateTasks: aCollectionOfTasks [
+	aCollectionOfTasks do: [ :i | self separateTask: i ]
 ]
 
 { #category : #accessing }
@@ -101,6 +102,6 @@ MooseJob >> tasks [
 ]
 
 { #category : #accessing }
-MooseJob >> tasks: aCollection [
-	tasks := aCollection
+MooseJob >> tasks: aCollectionOfTasks [
+	tasks := aCollectionOfTasks
 ]

@@ -15,18 +15,13 @@ MooseJobFile >> fileName [
 ]
 
 { #category : #accessing }
-MooseJobFile >> fileName: anObject [
-	fileName := anObject
-]
-
-{ #category : #accessing }
 MooseJobFile >> job [
 	^ job
 ]
 
 { #category : #accessing }
-MooseJobFile >> job: anObject [
-	job := anObject
+MooseJobFile >> job: aMooseJob [
+	job := aMooseJob
 ]
 
 { #category : #loading }
@@ -51,8 +46,8 @@ MooseJobFile >> reference [
 ]
 
 { #category : #accessing }
-MooseJobFile >> reference: anObject [
-	^ reference := anObject
+MooseJobFile >> reference: aFileReference [
+	^ reference := aFileReference
 ]
 
 { #category : #saving }
