@@ -4,7 +4,6 @@ Extension { #name : #MooseCustomTask }
 MooseCustomTask >> asTaskRuntime [
 	^ MooseTaskRuntime new
 		task: self;
-		forceToRun: true;
 		yourself
 ]
 
@@ -12,6 +11,19 @@ MooseCustomTask >> asTaskRuntime [
 MooseCustomTask >> basicRunWith: aParameter [
 
 	^ computation value: aParameter
+]
+
+{ #category : #'*Tools-MooseTaskBrowser' }
+MooseCustomTask >> combineWith: aMooseTask [
+	| combination |
+	combination := MooseComposedTask new.
+	aMooseTask class = MooseComposedTask
+		ifTrue: [ combination addTaskRuntime: self.
+			aMooseTask tasks do: [ :t | combination addTask: t ] ]
+		ifFalse: [ combination
+				addTask: self;
+				addTask: aMooseTask ].
+	^ combination
 ]
 
 { #category : #'*Tools-MooseTaskBrowser' }

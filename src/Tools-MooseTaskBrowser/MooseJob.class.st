@@ -12,7 +12,8 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'input',
-		'tasks'
+		'tasks',
+		'runtimeJobs'
 	],
 	#category : #'Tools-MooseTaskBrowser-Core'
 }
@@ -21,7 +22,7 @@ Class {
 MooseJob >> addTasks: aCollection [
 	"Add a collection of tasks instances of MooseCustomTask (or object with interfaces understanding asRuntimeTask and force"
 
-	tasks addAll: (aCollection  collect: #asTaskRuntime)
+	tasks addAll: aCollection
 ]
 
 { #category : #action }
@@ -33,24 +34,6 @@ MooseJob >> combineTasks: aCollection [
 		inject: aCollection first
 		into: [ :acc :each | acc combineWith: each ].
 	tasks add: combination beforeIndex: firstTaskIndex
-]
-
-{ #category : #action }
-MooseJob >> doNotForceAnyTask [
-	tasks
-		do: [ :v | 
-			v isArray
-				ifTrue: [ v do: [ :i | i forceToRun: false ] ]
-				ifFalse: [ v forceToRun: false ] ]
-]
-
-{ #category : #action }
-MooseJob >> forceRunAllTasks [
-	tasks
-		do: [ :v | 
-			v isArray
-				ifTrue: [ v do: [ :i | i forceToRun: true ] ]
-				ifFalse: [ v forceToRun: true ] ]
 ]
 
 { #category : #initialization }
@@ -83,14 +66,20 @@ MooseJob >> removeTask: aStep [
 
 { #category : #action }
 MooseJob >> runWithUpdatingBlock: aBlock [
-	^ [ tasks
-		inject: self input
-		into: [ :result :step | 
-			step run: result.
-			step forceToRun: false.
-			step hasRun: true.
-			aBlock value.
-			step output ] ] future
+	runtimeJobs := (input
+		ifNil: [ {nil} ]
+		ifNotNil: [ input splitOn: ' ' ])
+		collect: [ :i | 
+			MooseJobRuntime new
+				input: i;
+				addTasks: tasks ].
+	aBlock value.
+	runtimeJobs do: [ :job | job runWithUpdatingBlock: aBlock ]
+]
+
+{ #category : #accessing }
+MooseJob >> runtimeJobs [
+	^ runtimeJobs
 ]
 
 { #category : #action }
@@ -112,6 +101,6 @@ MooseJob >> tasks [
 ]
 
 { #category : #accessing }
-MooseJob >> tasks: aCollectionOfTasks [
-	tasks := aCollectionOfTasks 
+MooseJob >> tasks: aCollection [
+	tasks := aCollection
 ]

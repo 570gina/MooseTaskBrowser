@@ -23,19 +23,14 @@ MooseTaskAbstractRuntime >> basicRun [
 	self subclassResponsibility
 ]
 
-{ #category : #running }
-MooseTaskAbstractRuntime >> combineWith: anOtherTask [
-	self subclassResponsibility
-]
-
-{ #category : #running }
+{ #category : #accessing }
 MooseTaskAbstractRuntime >> description [
 	self subclassResponsibility
 ]
 
 { #category : #accessing }
-MooseTaskAbstractRuntime >> forceToRun [
-	self subclassResponsibility
+MooseTaskAbstractRuntime >> error [
+	^ error
 ]
 
 { #category : #accessing }
@@ -74,7 +69,7 @@ MooseTaskAbstractRuntime >> run: anInput [
 
 { #category : #running }
 MooseTaskAbstractRuntime >> shouldRunFor: anInput [
-	^ (self forceToRun or: [self isKindOf: MooseTaskComposedRuntime])
+	^ (self class = MooseTaskComposedRuntime)
 		or: [ (self hasRun
 				and: [ (anInput isNil or: [ input = anInput ]) and: [ output isNotNil ] ])
 				not ]

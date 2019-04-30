@@ -17,33 +17,12 @@ MooseTaskComposedRuntime >> addTaskRuntime: aMooseTaskRuntime [
 
 { #category : #running }
 MooseTaskComposedRuntime >> basicRun [
-	^ tasks collect: [ :t | [ t run: input ] future ]
-]
-
-{ #category : #running }
-MooseTaskComposedRuntime >> combineWith: aMooseTaskRuntime [
-	| combination |
-	combination := self class new.
-	tasks do: [ :t | combination addTaskRuntime: t ].
-	aMooseTaskRuntime class = MooseTaskComposedRuntime
-		ifTrue: [ aMooseTaskRuntime tasks do: [ :t | combination addTaskRuntime: t ] ]
-		ifFalse: [ combination addTaskRuntime: aMooseTaskRuntime ].
-	^ combination 
+	^ tasks collect: [ :t | [ t run: input. t isError ifTrue:[ error := true]. ] future ]
 ]
 
 { #category : #'adding tasks' }
 MooseTaskComposedRuntime >> description [
-	^ ' And ' join: (tasks collect: #description)
-]
-
-{ #category : #'adding tasks' }
-MooseTaskComposedRuntime >> forceToRun [
-	^ tasks allSatisfy: #forceToRun
-]
-
-{ #category : #forcing }
-MooseTaskComposedRuntime >> forceToRun: aBoolean [
-	tasks do: [ :t | t forceToRun: aBoolean ]
+	^ 'Group'	" And ' join: (tasks collect: #description)"
 ]
 
 { #category : #'adding tasks' }
@@ -56,10 +35,22 @@ MooseTaskComposedRuntime >> hasRun: aBoolean [
 	tasks do: [ :t | t hasRun: aBoolean ]
 ]
 
+{ #category : #accessing }
+MooseTaskComposedRuntime >> icon [
+	tasks
+		do: [ :t | 
+			t hasRun
+				ifFalse: [ ^ self iconNamed: #testNotRun ]
+				ifTrue: [ t isError
+						ifTrue: [ 
+							^ self iconNamed: #testRed ] ] ].
+	^ self iconNamed: #testGreen
+]
+
 { #category : #'adding tasks' }
 MooseTaskComposedRuntime >> initialize [
 	super initialize.
-	tasks := OrderedCollection  new
+	tasks := OrderedCollection new
 ]
 
 { #category : #running }
@@ -67,21 +58,30 @@ MooseTaskComposedRuntime >> output [
 	^ output
 ]
 
+{ #category : #printing }
+MooseTaskComposedRuntime >> printOn: aStream [
+	aStream
+		nextPutAll:
+			'[Composed Task]' , String lf , 'input: ' , input asString , String lf
+				, 'output: ' , output asString
+]
+
 { #category : #running }
 MooseTaskComposedRuntime >> run [
 	| tempOutput |
-	^[ error := nil.
-	tempOutput := self basicRun.
+	^ [ tempOutput := self basicRun.
 	output := tempOutput
-		collect: [ :f | f synchronizeTimeout: 1 minutes ] ]
+		collect: [ :f | f synchronizeTimeout: 2 minutes ] ]
 		on: Error
-		do: [ :err | 
-			error := 'Error:' , err messageText.
-			err debug.
-			output := nil ]
+		do: [ :err | error := err ]
 ]
 
 { #category : #accessing }
 MooseTaskComposedRuntime >> tasks [
 	^ tasks
+]
+
+{ #category : #accessing }
+MooseTaskComposedRuntime >> tasks: aCollection [
+	tasks := aCollection
 ]

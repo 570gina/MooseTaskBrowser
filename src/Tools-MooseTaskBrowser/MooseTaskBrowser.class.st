@@ -40,15 +40,17 @@ Class {
 		'upButton',
 		'downButton',
 		'runButton',
-		'repositoryView',
-		'checkBox',
-		'taskTable',
-		'taskTableMorph',
-		'stepsDatasource',
+		'settingButton',
+		'settingWindow',
 		'file',
 		'newJobButton',
 		'change',
-		'isRunning'
+		'isRunning',
+		'taskList',
+		'taskRuntimeList',
+		'repositoryWindow',
+		'logView',
+		'detailView'
 	],
 	#category : #'Tools-MooseTaskBrowser-Core-ui'
 }
@@ -61,27 +63,40 @@ items do:[:i| (i isKindOf: MooseTaskComposedRuntime) ifFalse:[^false]].^true
 
 { #category : #specs }
 MooseTaskBrowser class >> defaultSpec [
-	^ SpecBoxLayout newVertical
+	^ SpecPanedLayout newVertical
+		position: 75 percent;
 		add:
-			(SpecBoxLayout newHorizontal
-				add: #checkBox
-					withConstraints: [ :constraints | constraints height: self toolbarHeight ];
-				add: #newJobButton;
-				add: #loadButton;
-				add: #saveButton;
-				add: #addButton)
-			withConstraints: [ :constraints | constraints height: self toolbarHeight ];
-		add:
-			(SpecBoxLayout newHorizontal
-				add: #taskTable;
+			(SpecPanedLayout newHorizontal
 				add:
 					(SpecBoxLayout newVertical
-						add: #upButton;
-						add: #downButton)
-					withConstraints: [ :constraints | constraints width: self defaultFont height + 6 ]);
-		add: #runButton withConstraints: [ :constraints | constraints height: self toolbarHeight ];
-	
-			yourself
+						add:
+							(SpecBoxLayout newHorizontal
+								add: #newJobButton;
+								add: #loadButton;
+								add: #saveButton;
+								add: #addButton)
+							withConstraints: [ :constraints | constraints height: self toolbarHeight ];
+						add:
+							(SpecBoxLayout newHorizontal
+								add: #taskList;
+								add:
+									(SpecBoxLayout newVertical
+										add: #upButton;
+										add: #downButton)
+									withConstraints: [ :constraints | constraints width: self defaultFont height + 6 ]);
+						add:
+							(SpecBoxLayout newHorizontal
+								add: #settingButton
+									withConstraints: [ :constraints | constraints width: self toolbarHeight ];
+								add: #runButton)
+							withConstraints: [ :constraints | constraints height: self toolbarHeight ]);
+				add:
+					(SpecPanedLayout newVertical
+						position: 75 percent;
+						add: #taskRuntimeList;
+						add: #detailView));
+		add: (SpecBoxLayout newVertical add: #logView);
+		yourself
 ]
 
 { #category : #examples }
@@ -91,22 +106,13 @@ MooseTaskBrowser class >> example1 [
 	taskRepo := OrderedCollection new.
 	task := MooseCustomTask new
 		with: [ :v | 
-			| loc |
-			Transcript
-				show: 'Task 0 running';
-				cr.
-			loc := UIManager default
-				request: 'Please insert the url to clone, with argument: '
-				initialAnswer: 'https://github.com/fuhrmanator/FactoryVariants' ]
-		description: '0 prompt url'
-		length: 0.
-	taskRepo add: task.
-	task := MooseCustomTask new
-		with: [ :v | 
+			| url |
+			url := v input isEmptyOrNil
+				ifTrue: [ 'https://github.com/fuhrmanator/FactoryVariants' ].
 			Transcript
 				show: 'Task 1 running';
 				cr.
-			GMUtility cloneRepo: v input ]
+			GMUtility cloneRepo: url ]
 		description: '1 Clone Repository'
 		length: 0.
 	taskRepo add: task.
@@ -202,15 +208,15 @@ MooseTaskBrowser class >> example1 [
 		length: 0.
 	taskRepo add: task.
 	test := MooseTaskBrowser on: MooseJob new.
-	test repositoryView list items: taskRepo.
+	test repositoryWindow list items: taskRepo.
 	test openWithSpec
 ]
 
 { #category : #examples }
 MooseTaskBrowser class >> example2 [
 	<example>
-	| task taskRepo test |
-	taskRepo := OrderedCollection new.
+	| task test job |
+	job := MooseJob new.
 	task := MooseCustomTask new
 		with: [ :v | 
 			Transcript
@@ -222,7 +228,7 @@ MooseTaskBrowser class >> example2 [
 			true ]
 		description: 'a description 1'
 		length: 0.
-	taskRepo add: task.
+	job addTasks: {task}.
 	task := MooseCustomTask new
 		with: [ :v | 
 			Transcript
@@ -234,7 +240,7 @@ MooseTaskBrowser class >> example2 [
 			true ]
 		description: 'a description 2'
 		length: 0.
-	taskRepo add: task.
+	job addTasks: {task}.
 	task := MooseCustomTask new
 		with: [ :v | 
 			Transcript
@@ -246,7 +252,27 @@ MooseTaskBrowser class >> example2 [
 			true ]
 		description: 'a description 3'
 		length: 0.
-	taskRepo add: task.
+	job addTasks: {task}.
+	task := MooseCustomTask new
+		with: [ :v | 
+			Transcript
+				show: 'Task error running';
+				cr.
+			1 / 0.
+			true ]
+		description: 'a error task'
+		length: 0.
+	job addTasks: {task}.
+	task := MooseCustomTask new
+		with: [ :v | 
+			Transcript
+				show: 'Task error running';
+				cr.
+			1 / 0.
+			true ]
+		description: 'a error task'
+		length: 0.
+	job addTasks: {task}.
 	task := MooseCustomTask new
 		with: [ :v | 
 			Transcript
@@ -258,19 +284,68 @@ MooseTaskBrowser class >> example2 [
 			true ]
 		description: 'a description 4'
 		length: 0.
-	taskRepo add: task.
+	job addTasks: {task}.
+	test := MooseTaskBrowser on: job.
+	test openWithSpec
+]
+
+{ #category : #examples }
+MooseTaskBrowser class >> example3 [
+	<example>
+	| task test job |
+	job := MooseJob new.
 	task := MooseCustomTask new
 		with: [ :v | 
 			Transcript
-				show: 'Task error running';
+				show: 'Task 1 running';
 				cr.
-			1 / 0.
+			(1 to: 50000000)
+				do: [ :i | 
+					1 / 0.
+					true ]
+				displayingProgress: 'running task: 1'.
 			true ]
-		description: 'a error task'
+		description: 'a description 1'
 		length: 0.
-	taskRepo add: task.
-	test := MooseTaskBrowser on: MooseJob new.
-	test repositoryView list items: taskRepo.
+	job addTasks: {task}.
+	task := MooseCustomTask new
+		with: [ :v | 
+			Transcript
+				show: 'Task 2 running';
+				cr.
+			(1 to: 50000000)
+				do: [ :i | true ]
+				displayingProgress: 'running task: 2'.
+			true ]
+		description: 'a description 2'
+		length: 0.
+	job addTasks: {task}.
+	job combineTasks: (job tasks copyFrom: 1 to: 2).
+	task := MooseCustomTask new
+		with: [ :v | 
+			Transcript
+				show: 'Task 3 running';
+				cr.
+			(1 to: 50000000)
+				do: [ :i | true ]
+				displayingProgress: 'running task: 3'.
+			true ]
+		description: 'a description 3'
+		length: 0.
+	job addTasks: {task}.
+	task := MooseCustomTask new
+		with: [ :v | 
+			Transcript
+				show: 'Task 4 running';
+				cr.
+			(1 to: 50000000)
+				do: [ :i | true ]
+				displayingProgress: 'running task: 4'.
+			true ]
+		description: 'a description 4'
+		length: 0.
+	job addTasks: {task}.
+	test := MooseTaskBrowser on: job.
 	test openWithSpec
 ]
 
@@ -369,19 +444,6 @@ MooseTaskBrowser >> change [
 ^change
 ]
 
-{ #category : #'accessing widgets' }
-MooseTaskBrowser >> checkBox [
-	^ checkBox
-]
-
-{ #category : #'list control' }
-MooseTaskBrowser >> checkedAllBox [
-	self model forceRunAllTasks.
-	self model: self model
-
-	
-]
-
 { #category : #'list control' }
 MooseTaskBrowser >> combineSelected [
 	| index |
@@ -408,7 +470,7 @@ MooseTaskBrowser >> downButton [
 { #category : #shortcuts }
 MooseTaskBrowser >> ensureKeyBindingsFor: aWidget [
 	super ensureKeyBindingsFor: aWidget.
-	self registerMooseTaskListShortcuts: taskTable
+	self registerMooseTaskListShortcuts: taskList
 ]
 
 { #category : #accessing }
@@ -418,66 +480,82 @@ MooseTaskBrowser >> file [
 
 { #category : #initialization }
 MooseTaskBrowser >> initializePresenter [
-	taskTableMorph dataSource: self stepsDatasource.
-	taskTableMorph
-		onAnnouncement: FTSelectionChanged
-		do: [ :item | self manageArrowButtons: item ].
-	checkBox
-		whenActivatedDo: [ self checkedAllBox ];
-		whenDeactivatedDo: [ self uncheckedAllBox ].
+	taskList
+		whenMultiSelectionChangedDo: [ :items | self manageArrowButtons: items ].
 	upButton action: [ self swapItems: -1 ].
 	downButton action: [ self swapItems: 1 ].
-	runButton action: [ self run ].
-	addButton action: [ self manageTaskAddDialog ].
-	saveButton action: [ self saveTheJob ].
+	newJobButton action: [ self newAnEmptyJob ].
 	loadButton action: [ self loadAJob ].
-	newJobButton action: [ self newAnEmptyJob ]
-]
-
-{ #category : #initialization }
-MooseTaskBrowser >> initializeTable [
-	^ FTTableMorph new
-		hResizing: #spaceFill;
-		vResizing: #spaceFill;
-		beMultipleSelection;
-		rowHeight: 70
+	saveButton action: [ self saveTheJob ].
+	addButton action: [ self manageTaskAddDialog ].
+	settingButton action: [ self manageSettingDialog ].
+	runButton action: [ self run ].
+	taskRuntimeList
+		whenSelectionChangedDo: [ :selection | self printDetail: selection ]
 ]
 
 { #category : #initialization }
 MooseTaskBrowser >> initializeWidgets [
 	change := false.
 	isRunning := false.
-	taskTableMorph := self initializeTable.
-	taskTableMorph.
-	taskTable := taskTableMorph asSpecAdapter.
-	checkBox := self newCheckBox.
+	taskList := self newTreeTable beMultipleSelection.
+	taskList
+		addColumn:
+			(StringTableColumn new
+				title: 'Moose Job';
+				evaluated: #description;
+				yourself).
 	newJobButton := self newButton
-		label: 'New Job';
+		label: 'New';
 		icon: (self iconNamed: #page).
 	loadButton := self newButton
-		label: 'Load Job';
+		label: 'Load';
 		icon: (self iconNamed: #smallOpen).
 	saveButton := self newButton
-		label: 'Save Job';
+		label: 'Save';
 		icon: (self iconNamed: #glamorousSave).
 	addButton := self newButton
 		label: 'Add Tasks';
 		icon: (self iconNamed: #smallAdd).
 	upButton := self newButton icon: (self iconNamed: #up).
 	downButton := self newButton icon: (self iconNamed: #down).
+	settingButton := self newButton
+		icon: (self iconNamed: #smallConfiguration).
 	runButton := self newButton
 		label: 'Run';
 		icon: (self iconNamed: #smallDoIt).
-	repositoryView := MooseTaskListPresenter new.
+	taskRuntimeList := self newTreeTable.
+	taskRuntimeList
+		addColumn:
+			(CompositeTableColumn new
+				title: 'State';
+				addColumn:
+					(ImageTableColumn new
+						width: 20;
+						evaluated: #icon;
+						yourself);
+				addColumn:
+					(StringTableColumn new
+						evaluated: #description;
+						yourself)).
+	detailView := self newText disable.
+	detailView text: 'Detail Display'.
+	logView := self newText disable.
+	logView text: 'Error Log'.
+	repositoryWindow := MooseTaskListPresenter new.
+	settingWindow := MooseTaskSettingPresenter new.
 	self focusOrder
+		add: newJobButton;
 		add: loadButton;
 		add: saveButton;
 		add: addButton;
 		add: upButton;
 		add: downButton;
-		add: taskTable;
+		add: taskList;
+		add: settingButton;
 		add: runButton;
-		add: checkBox
+		add: logView;
+		add: detailView
 ]
 
 { #category : #initialization }
@@ -485,7 +563,7 @@ MooseTaskBrowser >> initializeWindow: aWindowPresenter [
 	| fontWidth rowHeight |
 	fontWidth := StandardFonts defaultFont widthOfString: 'M'.
 	rowHeight := self class inputTextHeight.
-	aWindowPresenter initialExtent: 60 @ 16 * (fontWidth @ rowHeight).
+	aWindowPresenter initialExtent: 60 @ 18 * (fontWidth @ rowHeight).
 	aWindowPresenter title: 'Moose Tasks'
 ]
 
@@ -517,14 +595,8 @@ MooseTaskBrowser >> loadButton [
 ]
 
 { #category : #actions }
-MooseTaskBrowser >> log: anError [
-	self inform: anError printString
-]
-
-{ #category : #actions }
 MooseTaskBrowser >> manageArrowButtons: aSelection [
-	| selectedItem |
-	(aSelection newSelectedIndexes isEmptyOrNil
+	"	(aSelection newSelectedIndexes isEmptyOrNil
 		or: aSelection newSelectedIndexes size > 1)
 		ifFalse: [ selectedItem := self model tasks
 				at: aSelection newSelectedIndexes first.
@@ -536,43 +608,59 @@ MooseTaskBrowser >> manageArrowButtons: aSelection [
 						ifTrue: [ downButton disable ]
 						ifFalse: [ downButton enable ] ] ]
 		ifTrue: [ upButton disable.
-			downButton disable ]
+			downButton disable ]"
+
+	
+]
+
+{ #category : #actions }
+MooseTaskBrowser >> manageSettingDialog [
+	self model input
+		ifNotNil: [ settingWindow inputText: self model input ].
+	settingWindow openDialogWithSpec
+		okAction: [ self model input: settingWindow inputText text asString.
+			settingWindow window close ]
 ]
 
 { #category : #actions }
 MooseTaskBrowser >> manageTaskAddDialog [
-	| items |
-	items := self stepsDatasource selectedItems.
-	self stepsDatasource setSelectedItems: #().
-	repositoryView openDialogWithSpec
+	"| items |
+	items := taskList selection selectedPaths.
+	self halt."
+
+	repositoryWindow openDialogWithSpec
 		okAction: [ | steps |
-			"self halt."
-			steps := repositoryView list selectedItems asOrderedCollection
+			steps := repositoryWindow list selectedItems asOrderedCollection
 				sort: [ :a :b | a description <= b description ].
 			self model addTasks: steps.
 			self model: self model.
-			self stepsDatasource setSelectedItems: items.
-			repositoryView list unselectAll.
-			repositoryView window close ]
+			"		taskList selectItems: items."
+			repositoryWindow list unselectAll.
+			repositoryWindow window close ]
 ]
 
 { #category : #accessing }
 MooseTaskBrowser >> modelChanged [
-	self stepsDatasource elements: self model tasks.
-	taskTableMorph refresh.
-	checkBox state: false.
+	taskList roots: self model tasks.
+	taskList
+		children: [ :aGroup | 
+			aGroup class = MooseComposedTask
+				ifTrue: [ aGroup tasks ]
+				ifFalse: [ {} ] ];
+		beResizable.
 	change := true.
+	self updateRuntimeList.
+	self updateLogText.
 	self model tasks
 		ifEmpty: [ upButton disable.
 			downButton disable.
-			checkBox disable.
 			runButton disable.
 			saveButton disable.
 			loadButton enable.
 			newJobButton disable ]
-		ifNotEmpty: [ checkBox enable.
-			saveButton enable.
-			newJobButton enable. isRunning
+		ifNotEmpty: [ saveButton enable.
+			newJobButton enable.
+			isRunning
 				ifFalse: [ runButton enable ] ].
 	file
 		ifNotNil: [ saveButton enable.
@@ -593,6 +681,12 @@ MooseTaskBrowser >> newJobButton [
 	^ newJobButton
 ]
 
+{ #category : #actions }
+MooseTaskBrowser >> printDetail: item [
+	item selectedItem ifNil: [ ^ self ].
+	detailView text: item selectedItem printString
+]
+
 { #category : #shortcuts }
 MooseTaskBrowser >> registerMooseTaskListShortcuts: aWidget [
 	aWidget
@@ -604,29 +698,18 @@ MooseTaskBrowser >> registerMooseTaskListShortcuts: aWidget [
 ]
 
 { #category : #accessing }
-MooseTaskBrowser >> repositoryView [
-^repositoryView
+MooseTaskBrowser >> repositoryWindow [
+^repositoryWindow
 ]
 
 { #category : #actions }
 MooseTaskBrowser >> run [
+	detailView text: ''.
 	runButton disable.
 	isRunning := true.
-	self model
-		input:
-			(self uiManager
-				request: 'Provide the input for first task: '
-				initialAnswer: self model input asString).
-	(self model runWithUpdatingBlock: [ self model: self model ])
-		addSuccessCallback: [ :result | 
-			self inform: 'Tasks finished.'.
-			isRunning := false.
-			runButton enable.
-			checkBox state: false.
-			self stepsDatasource setSelectedItems: #() ];
-		addFailureCallback: [ :error | 
-			self log: error.
-			error debug ]
+	self model runWithUpdatingBlock: [ self model: self model ].
+	runButton enable.
+	isRunning := false
 ]
 
 { #category : #'accessing widgets' }
@@ -682,25 +765,9 @@ MooseTaskBrowser >> separateSelected [
 	self model: self model
 ]
 
-{ #category : #menu }
-MooseTaskBrowser >> setMenu: aMenu [
-	self stepsDatasource selectedItems 
-		isEmptyOrNil ifTrue: [ ^ nil ].
-	aMenu
-		addAllFromPragma: 'mooseTaskBrowserMenu'
-		target: self.
-	^ aMenu
-]
-
 { #category : #accessing }
-MooseTaskBrowser >> stepsDatasource [
-	^ stepsDatasource
-		ifNil: [ stepsDatasource := MooseDataSource new
-						elements: self model tasks;
-						menu: [ :i | self setMenu: MenuMorph new ];
-						format: [ :c | 
-							(MooseTaskRuntimeItemPresenter owner: self on: c) buildWithSpec
-							asMorph ] ]
+MooseTaskBrowser >> settingButton [
+	^ settingButton
 ]
 
 { #category : #'list control' }
@@ -713,8 +780,13 @@ MooseTaskBrowser >> swapItems: aNumber [
 ]
 
 { #category : #accessing }
-MooseTaskBrowser >> taskTable [
-	^ taskTable
+MooseTaskBrowser >> taskList [
+	^ taskList
+]
+
+{ #category : #accessing }
+MooseTaskBrowser >> taskRuntimeList [
+	^ taskRuntimeList
 ]
 
 { #category : #private }
@@ -724,16 +796,32 @@ MooseTaskBrowser >> uiManager [
 			
 ]
 
-{ #category : #'list control' }
-MooseTaskBrowser >> uncheckedAllBox [
-	isRunning
-		ifFalse: [ self model doNotForceAnyTask.
-			self model: self model ]
-
-	
-]
-
 { #category : #'accessing widgets' }
 MooseTaskBrowser >> upButton [
 	^ upButton
+]
+
+{ #category : #actions }
+MooseTaskBrowser >> updateLogText [
+	| log |
+	self model runtimeJobs
+		ifNil: [ log := '' ]
+		ifNotNil: [ log := ''.
+			self model runtimeJobs
+				do: [ :job | 
+					job errorState
+						ifNotNil: [ log := log , job description asString , String lf
+								, job errorState asString ] ].
+			logView text: log ]
+]
+
+{ #category : #actions }
+MooseTaskBrowser >> updateRuntimeList [
+	taskRuntimeList roots: (self model runtimeJobs ifNil: [ {} ]).
+	taskRuntimeList
+		children: [ :aGroup | 
+			aGroup class = MooseTaskRuntime
+				ifTrue: [ {} ]
+				ifFalse: [ aGroup tasks ] ];
+		beResizable
 ]

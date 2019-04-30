@@ -9,8 +9,7 @@ Class {
 	#superclass : #MooseTaskAbstractRuntime,
 	#instVars : [
 		'task',
-		'hasRun',
-		'forceToRun'
+		'hasRun'
 	],
 	#category : #'Tools-MooseTaskBrowser-Core'
 }
@@ -20,32 +19,9 @@ MooseTaskRuntime >> basicRun [
 	^ task runWith: self
 ]
 
-{ #category : #running }
-MooseTaskRuntime >> combineWith: aMooseTaskRuntime [
-	| combination |
-	combination := MooseTaskComposedRuntime new.
-	aMooseTaskRuntime class = MooseTaskComposedRuntime
-		ifTrue: [ combination addTaskRuntime: self.
-			aMooseTaskRuntime tasks do: [ :t | combination addTaskRuntime: t ] ]
-		ifFalse: [ combination
-				addTaskRuntime: self;
-				addTaskRuntime: aMooseTaskRuntime ].
-	^ combination 
-]
-
 { #category : #accessing }
 MooseTaskRuntime >> description [
 	^ task description
-]
-
-{ #category : #accessing }
-MooseTaskRuntime >> forceToRun [
-	^ forceToRun 
-]
-
-{ #category : #accessing }
-MooseTaskRuntime >> forceToRun: aValue [
-	forceToRun := aValue 
 ]
 
 { #category : #accessing }
@@ -60,12 +36,19 @@ MooseTaskRuntime >> hasRun: aBoolean [
 
 { #category : #accessing }
 MooseTaskRuntime >> icon [
-	^ self iconNamed: #play
+	^ self hasRun
+		ifFalse: [ self iconNamed: #testNotRun ]
+		ifTrue: [ error
+				ifNil: [ self iconNamed: #testGreen ]
+				ifNotNil: [ self iconNamed: #testRed ] ]
 ]
 
 { #category : #accessing }
 MooseTaskRuntime >> printOn: aStream [
-	task description printOn: aStream
+	aStream
+		nextPutAll:
+			'[Task: ' , self description , ']' , String lf , ' input: '
+				, input asString , String lf , 'output: ' , output asString
 ]
 
 { #category : #running }
@@ -73,10 +56,7 @@ MooseTaskRuntime >> run [
 	^ [ error := nil.
 	output := self basicRun ]
 		on: Error
-		do: [ :err | 
-			error := err asString.
-			err debug.
-			output := nil ]
+		do: [ :err | error := err ]
 ]
 
 { #category : #accessing }
@@ -90,9 +70,4 @@ MooseTaskRuntime >> task: aMooseCustomTask [
 	hasRun := false.
 	input := nil.
 	output := nil
-]
-
-{ #category : #accessing }
-MooseTaskRuntime >> tasks [
-	^ {self}
 ]
