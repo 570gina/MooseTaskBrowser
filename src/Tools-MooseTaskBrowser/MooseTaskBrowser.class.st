@@ -265,11 +265,8 @@ MooseTaskBrowser class >> example3 [
 			Transcript
 				show: 'Task 1 running';
 				cr.
-			(1 to: 50000000)
-				do: [ :i | 
-					1 / 0.
-					true ]
-				displayingProgress: 'running task: 1'.
+			1 / 0.
+				
 			true ]
 		description: 'a description 1'
 		length: 0.
@@ -279,20 +276,19 @@ MooseTaskBrowser class >> example3 [
 			Transcript
 				show: 'Task 2 running';
 				cr.
-			(1 to: 50000000)
+			(1 to: 5000000)
 				do: [ :i | true ]
 				displayingProgress: 'running task: 2'.
 			true ]
 		description: 'a description 2'
 		length: 0.
 	job addTasks: {task}.
-	job combineTasks: (job tasks copyFrom: 1 to: 2).
 	task := MooseCustomTask new
 		with: [ :v | 
 			Transcript
 				show: 'Task 3 running';
 				cr.
-			(1 to: 50000000)
+			(1 to: 5000000)
 				do: [ :i | true ]
 				displayingProgress: 'running task: 3'.
 			true ]
@@ -304,13 +300,14 @@ MooseTaskBrowser class >> example3 [
 			Transcript
 				show: 'Task 4 running';
 				cr.
-			(1 to: 50000000)
+			(1 to: 5000000)
 				do: [ :i | true ]
 				displayingProgress: 'running task: 4'.
 			true ]
 		description: 'a description 4'
 		length: 0.
 	job addTasks: {task}.
+	job combineTasks: (job tasks copyFrom: 3 to: 4).
 	test := MooseTaskBrowser on: job.
 	test openWithSpec
 ]

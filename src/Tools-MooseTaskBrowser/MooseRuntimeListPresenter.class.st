@@ -22,6 +22,12 @@ MooseRuntimeListPresenter class >> open [
 	self new openWithSpec
 ]
 
+{ #category : #action }
+MooseRuntimeListPresenter >> debugSelectedItem [
+	taskRuntimeList selection selectedItem
+		ifNotNil: [ taskRuntimeList selection selectedItem error debug ]
+]
+
 { #category : #accessing }
 MooseRuntimeListPresenter >> detailView [
 ^detailView
@@ -29,7 +35,7 @@ MooseRuntimeListPresenter >> detailView [
 
 { #category : #initialization }
 MooseRuntimeListPresenter >> initializeWidgets [
-	taskRuntimeList := self newTreeTable .
+	taskRuntimeList := self newTreeTable contextMenu: self menu.
 	taskRuntimeList
 		addColumn:
 			(CompositeTableColumn new
@@ -48,6 +54,35 @@ MooseRuntimeListPresenter >> initializeWidgets [
 	self focusOrder
 		add: taskRuntimeList;
 		add: detailView
+]
+
+{ #category : #action }
+MooseRuntimeListPresenter >> inspectSelectedItem [
+	taskRuntimeList selection selectedItem
+		ifNotNil: [ taskRuntimeList selection selectedItem inspect ]
+]
+
+{ #category : #action }
+MooseRuntimeListPresenter >> itemIsError [
+	| item |
+	item := taskRuntimeList selection selectedItem.
+	^ item isNotNil and:[item class = MooseTaskRuntime and: [ item isError ]]
+]
+
+{ #category : #initialization }
+MooseRuntimeListPresenter >> menu [
+	^ self newMenu
+		addItem: [ :anItem | 
+			anItem
+				name: 'Inspect';
+				shortcut: $i meta;
+				action: [ self inspectSelectedItem ] ];
+		addItem: [ :anItem | 
+			anItem
+				name: 'Debug';
+				shortcut: $d meta;
+				visibleIf: [ self itemIsError ];
+				action: [ self debugSelectedItem ] ]
 ]
 
 { #category : #accessing }
