@@ -29,7 +29,7 @@ MooseRuntimeListPresenter >> detailView [
 
 { #category : #initialization }
 MooseRuntimeListPresenter >> initializeWidgets [
-	taskRuntimeList := self newTreeTable.
+	taskRuntimeList := self newTreeTable .
 	taskRuntimeList
 		addColumn:
 			(CompositeTableColumn new

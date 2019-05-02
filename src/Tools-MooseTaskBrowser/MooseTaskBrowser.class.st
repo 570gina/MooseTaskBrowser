@@ -439,7 +439,7 @@ MooseTaskBrowser >> initializeWidgets [
 	isRunning := false.
 	mooseJob := self instantiate: MooseJobPresenter.
 	mooseRuntimeList := self instantiate: MooseRuntimeListPresenter.
-		logView := self newText disable.
+	logView := self newText disable.
 	logView text: 'Error Log'.
 	repositoryWindow := self instantiate: AddTasksPresenter.
 	settingWindow := self instantiate: RunSettingPresenter.
@@ -473,9 +473,8 @@ MooseTaskBrowser >> loadAJob [
 			file := MooseJobFile new.
 			file load
 				ifTrue: [ self model: file job.
-					self title: 'Moose Tasks -> ' , file fileName , '.txt'.
+					self window title: 'Moose Tasks -> ' , file fileName , '.txt'.
 					self inform: 'Loaded'.
-					self stepsDatasource setSelectedItems: #().
 					change := false ]
 				ifFalse: [ file := state ] ]
 ]
@@ -559,9 +558,8 @@ MooseTaskBrowser >> modelChanged [
 MooseTaskBrowser >> newAnEmptyJob [
 	self saveChangesDialog
 		ifTrue: [ file := nil.
-			self stepsDatasource setSelectedItems: #().
 			self model: MooseJob new.
-			self title: 'Moose Tasks' ] 
+			self window title: 'Moose Task Browser' ]
 ]
 
 { #category : #actions }
@@ -621,7 +619,7 @@ MooseTaskBrowser >> saveTheJob [
 	file job: self model.
 	file saveAs
 		ifTrue: [ self uiManager inform: 'Saved'.
-			self title: 'Moose Tasks -> ' , file fileName , '.txt'.
+			self window title: 'Moose Tasks -> ' , file fileName , '.txt'.
 			change := false.
 			^ true ]
 		ifFalse: [ file := state.
@@ -670,11 +668,14 @@ MooseTaskBrowser >> updateLogText [
 
 { #category : #actions }
 MooseTaskBrowser >> updateRuntimeList [
-	mooseRuntimeList taskRuntimeList roots: (self model runtimeJobs ifNil: [ {} ]).
+mooseRuntimeList taskRuntimeList
+		roots: (self model runtimeJobs ifNil: [ {} ]).
 	mooseRuntimeList taskRuntimeList
 		children: [ :aGroup | 
 			aGroup class = MooseTaskRuntime
 				ifTrue: [ {} ]
 				ifFalse: [ aGroup tasks ] ];
 		beResizable
+
+	
 ]
