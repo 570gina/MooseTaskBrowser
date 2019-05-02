@@ -4,16 +4,17 @@ Class {
 	#instVars : [
 		'browser',
 		'repository',
-		'job'
+		'job',
+		'mooseJobPresenter'
 	],
 	#category : #'Tools-MooseTaskBrowser-Tests'
 }
 
 { #category : #action }
 MooseTaskBrowserUITest >> addTasksFromRepository [
-	browser addButton performAction.
-	browser repositoryView list selectAll.
-	browser repositoryView window triggerOkAction
+	mooseJobPresenter addButton performAction.
+	browser repositoryWindow list selectAll.
+	browser repositoryWindow window triggerOkAction
 ]
 
 { #category : #setup }
@@ -29,7 +30,8 @@ MooseTaskBrowserUITest >> setUp [
 			repository add: task ].
 	job := MooseJob new.
 	browser := MooseTaskBrowser on: job.
-	browser repositoryView list items: repository
+	browser repositoryWindow list items: repository.
+	mooseJobPresenter := browser mooseJob
 ]
 
 { #category : #tests }
@@ -37,16 +39,16 @@ MooseTaskBrowserUITest >> testDownButtonNotEnabledWhenLastTaskIsSelected [
 	self addTasksFromRepository.
 	browser stepsDatasource
 		setSelectedItems: (Array with: job tasks last).
-	self assert: browser upButton isEnabled.
-	self deny: browser downButton isEnabled
+	self assert: mooseJobPresenter upButton isEnabled.
+	self deny: mooseJobPresenter downButton isEnabled
 ]
 
 { #category : #tests }
 MooseTaskBrowserUITest >> testRepositoryViewDisplayedWhenAddButtonIsClicked [
-	self deny: browser repositoryView isDisplayed.
-	browser addButton performAction.
-	self assert: browser repositoryView isDisplayed.
-	browser repositoryView window close
+	self deny: browser repositoryWindow isDisplayed.
+	mooseJobPresenter addButton performAction.
+	self assert: browser repositoryWindow isDisplayed.
+	browser repositoryWindow window close
 ]
 
 { #category : #tests }
@@ -56,7 +58,7 @@ MooseTaskBrowserUITest >> testSelectedTaskToMoveDownWhenDownButtonIsClicked [
 	browser stepsDatasource
 		setSelectedItems: (Array with: job tasks second).
 	temp := browser stepsDatasource selectedItems.
-	browser upButton performAction.
+	mooseJobPresenter upButton performAction.
 	self assert: temp equals: (Array with: job tasks first).
 	self assert: temp equals: browser stepsDatasource selectedItems
 ]
@@ -68,7 +70,7 @@ MooseTaskBrowserUITest >> testSelectedTaskToMoveUpWhenUpButtonIsClicked [
 	browser stepsDatasource
 		setSelectedItems: (Array with: job tasks first).
 	temp := browser stepsDatasource selectedItems.
-	browser downButton performAction.
+	mooseJobPresenter downButton performAction.
 	self assert: temp equals: (Array with: job tasks second).
 	self assert: temp equals: browser stepsDatasource selectedItems
 ]
@@ -77,21 +79,19 @@ MooseTaskBrowserUITest >> testSelectedTaskToMoveUpWhenUpButtonIsClicked [
 MooseTaskBrowserUITest >> testSomeWidgetsEnabledWhenTheJobIsNotEmpty [
 	self addTasksFromRepository.
 	self deny: job tasks isEmpty.
-	self assert: browser checkBox isEnabled.
-	self assert: browser newJobButton isEnabled.
-	self assert: browser saveButton isEnabled.
-	self assert: browser runButton isEnabled
+	self assert: mooseJobPresenter newJobButton isEnabled.
+	self assert: mooseJobPresenter saveButton isEnabled.
+	self assert: mooseJobPresenter runButton isEnabled
 ]
 
 { #category : #tests }
 MooseTaskBrowserUITest >> testSomeWidgetsNotEnabledWhenTheJobIsEmpty [
 	self assert: job tasks isEmpty.
-	self deny: browser checkBox isEnabled.
-	self deny: browser newJobButton isEnabled.
-	self deny: browser saveButton isEnabled.
-	self deny: browser upButton isEnabled.
-	self deny: browser downButton isEnabled.
-	self deny: browser runButton isEnabled
+	self deny: mooseJobPresenter newJobButton isEnabled.
+	self deny: mooseJobPresenter saveButton isEnabled.
+	self deny: mooseJobPresenter upButton isEnabled.
+	self deny: mooseJobPresenter downButton isEnabled.
+	self deny: mooseJobPresenter runButton isEnabled
 ]
 
 { #category : #tests }
@@ -99,6 +99,6 @@ MooseTaskBrowserUITest >> testUpButtonNotEnabledWhenFirstTaskIsSelected [
 	self addTasksFromRepository.
 	browser stepsDatasource
 		setSelectedItems: (Array with: job tasks first).
-	self assert: browser downButton isEnabled.
-	self deny: browser upButton isEnabled
+	self assert: mooseJobPresenter downButton isEnabled.
+	self deny: mooseJobPresenter upButton isEnabled
 ]

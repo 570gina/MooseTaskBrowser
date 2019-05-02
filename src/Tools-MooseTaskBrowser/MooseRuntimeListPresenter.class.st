@@ -75,12 +75,10 @@ MooseRuntimeListPresenter >> menu [
 		addItem: [ :anItem | 
 			anItem
 				name: 'Inspect';
-				shortcut: $i meta;
 				action: [ self inspectSelectedItem ] ];
 		addItem: [ :anItem | 
 			anItem
 				name: 'Debug';
-				shortcut: $d meta;
 				visibleIf: [ self itemIsError ];
 				action: [ self debugSelectedItem ] ]
 ]

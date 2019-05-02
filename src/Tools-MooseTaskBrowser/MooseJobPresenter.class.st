@@ -49,6 +49,11 @@ MooseJobPresenter class >> open [
 ]
 
 { #category : #accessing }
+MooseJobPresenter >> addButton [
+	^ addButton
+]
+
+{ #category : #accessing }
 MooseJobPresenter >> downButton [
 	^ downButton
 ]

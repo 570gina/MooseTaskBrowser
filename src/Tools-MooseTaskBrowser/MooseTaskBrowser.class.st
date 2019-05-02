@@ -186,9 +186,19 @@ MooseTaskBrowser class >> example2 [
 	task := MooseCustomTask new
 		with: [ :v | 
 			Transcript
+				show: 'Task error running';
+				cr.
+			1 / 0.
+			true ]
+		description: 'a error task'
+		length: 0.
+	job addTasks: {task}.
+	task := MooseCustomTask new
+		with: [ :v | 
+			Transcript
 				show: 'Task 1 running';
 				cr.
-			(1 to: 50000000)
+			(1 to: 10000000)
 				do: [ :i | true ]
 				displayingProgress: 'running task: 1'.
 			true ]
@@ -200,7 +210,7 @@ MooseTaskBrowser class >> example2 [
 			Transcript
 				show: 'Task 2 running';
 				cr.
-			(1 to: 50000000)
+			(1 to: 10000000)
 				do: [ :i | true ]
 				displayingProgress: 'running task: 2'.
 			true ]
@@ -212,7 +222,7 @@ MooseTaskBrowser class >> example2 [
 			Transcript
 				show: 'Task 3 running';
 				cr.
-			(1 to: 50000000)
+			(1 to: 10000000)
 				do: [ :i | true ]
 				displayingProgress: 'running task: 3'.
 			true ]
@@ -222,33 +232,23 @@ MooseTaskBrowser class >> example2 [
 	task := MooseCustomTask new
 		with: [ :v | 
 			Transcript
-				show: 'Task error running';
-				cr.
-			1 / 0.
-			true ]
-		description: 'a error task'
-		length: 0.
-	job addTasks: {task}.
-	task := MooseCustomTask new
-		with: [ :v | 
-			Transcript
-				show: 'Task error running';
-				cr.
-			1 / 0.
-			true ]
-		description: 'a error task'
-		length: 0.
-	job addTasks: {task}.
-	task := MooseCustomTask new
-		with: [ :v | 
-			Transcript
 				show: 'Task 4 running';
 				cr.
-			(1 to: 50000000)
+			(1 to: 10000000)
 				do: [ :i | true ]
 				displayingProgress: 'running task: 4'.
 			true ]
 		description: 'a description 4'
+		length: 0.
+	job addTasks: {task}.
+	task := MooseCustomTask new
+		with: [ :v | 
+			Transcript
+				show: 'Task error running';
+				cr.
+			1 / 0.
+			true ]
+		description: 'a error task'
 		length: 0.
 	job addTasks: {task}.
 	test := MooseTaskBrowser on: job.
@@ -471,7 +471,7 @@ MooseTaskBrowser >> loadAJob [
 			file load
 				ifTrue: [ self model: file job.
 					self window title: 'Moose Tasks -> ' , file fileName , '.txt'.
-					self inform: 'Loaded'.
+					self inform: 'Loaded'.mooseRuntimeList detailView text: 'Detail Display'.
 					change := false ]
 				ifFalse: [ file := state ] ]
 ]
@@ -547,8 +547,11 @@ MooseTaskBrowser >> modelChanged [
 	file
 		ifNotNil: [ mooseJob saveButton enable.
 			mooseJob newJobButton enable ]
+]
 
-	
+{ #category : #accessing }
+MooseTaskBrowser >> mooseJob [
+^mooseJob
 ]
 
 { #category : #actions }
@@ -556,7 +559,7 @@ MooseTaskBrowser >> newAnEmptyJob [
 	self saveChangesDialog
 		ifTrue: [ file := nil.
 			self model: MooseJob new.
-			self window title: 'Moose Task Browser' ]
+			self window title: 'Moose Task Browser' .mooseRuntimeList detailView text: 'Detail Display'.]
 ]
 
 { #category : #actions }
@@ -582,7 +585,7 @@ MooseTaskBrowser >> repositoryWindow [
 
 { #category : #actions }
 MooseTaskBrowser >> run [
-	mooseRuntimeList detailView text: ''.
+	mooseRuntimeList detailView text: 'Detail Display'.
 	mooseJob runButton disable.
 	isRunning := true.
 	self model runWithUpdatingBlock: [ self model: self model ].
@@ -653,26 +656,24 @@ MooseTaskBrowser >> uiManager [
 MooseTaskBrowser >> updateLogText [
 	| log |
 	self model runtimeJobs
-		ifNil: [ log := '' ]
+		ifNil: [ log := 'Error Log' ]
 		ifNotNil: [ log := ''.
 			self model runtimeJobs
 				do: [ :job | 
 					job errorState
 						ifNotNil: [ log := log , job description asString , String lf
-								, job errorState asString ] ].
-			logView text: log ]
+								, job errorState asString ] ] ].
+	logView text: log
 ]
 
 { #category : #actions }
 MooseTaskBrowser >> updateRuntimeList [
-mooseRuntimeList taskRuntimeList
+	mooseRuntimeList taskRuntimeList
 		roots: (self model runtimeJobs ifNil: [ {} ]).
 	mooseRuntimeList taskRuntimeList
 		children: [ :aGroup | 
 			aGroup class = MooseTaskRuntime
 				ifTrue: [ {} ]
 				ifFalse: [ aGroup tasks ] ];
-		beResizable
-
-	
+		beResizable.
 ]
