@@ -13,7 +13,8 @@ Class {
 	#instVars : [
 		'input',
 		'tasks',
-		'runtimeJobs'
+		'runtimeJobs',
+		'runner'
 	],
 	#category : #'Tools-MooseTaskBrowser-Core'
 }
@@ -37,7 +38,8 @@ MooseJob >> combineTasks: aCollectionOfTasks [
 { #category : #initialization }
 MooseJob >> initialize [
 	super initialize.
-	tasks := OrderedCollection new
+	tasks := OrderedCollection new.
+		runner := MooseJobRunnerRunAll new
 ]
 
 { #category : #accessing }
@@ -72,7 +74,17 @@ MooseJob >> runWithUpdatingBlock: aBlock [
 				input: i;
 				addTasks: tasks ].
 	aBlock value.
-	runtimeJobs do: [ :job | job runWithUpdatingBlock: aBlock ]
+	runtimeJobs do: [ :job | runner run: job withUpdatingBlock: aBlock ]
+]
+
+{ #category : #accessing }
+MooseJob >> runner [
+	^ runner
+]
+
+{ #category : #accessing }
+MooseJob >> runner: aRunner [
+	runner := aRunner
 ]
 
 { #category : #accessing }

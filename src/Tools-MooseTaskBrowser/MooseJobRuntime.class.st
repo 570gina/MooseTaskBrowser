@@ -61,28 +61,27 @@ MooseJobRuntime >> initialize [
 ]
 
 { #category : #accessing }
+MooseJobRuntime >> input [
+	^ input
+]
+
+{ #category : #accessing }
 MooseJobRuntime >> input: aString [
 	input := aString
 ]
 
+{ #category : #accessing }
+MooseJobRuntime >> output: theOutputOfLastTask [
+	output := theOutputOfLastTask
+]
+
 { #category : #printing }
 MooseJobRuntime >> printOn: aStream [
+	self haltOnce.
 	aStream
 		nextPutAll:
 			'[Job]' , String lf , 'Input: ' , input asString , String lf
 				, 'Output: ' , output asString
-]
-
-{ #category : #action }
-MooseJobRuntime >> runWithUpdatingBlock: aBlock [
-	^ tasks
-		inject: input
-		into: [ :result :step | 
-			step run: result.
-			self errorState: step.
-			step hasRun: true.
-			aBlock value.
-			output := step output ]
 ]
 
 { #category : #accessing }

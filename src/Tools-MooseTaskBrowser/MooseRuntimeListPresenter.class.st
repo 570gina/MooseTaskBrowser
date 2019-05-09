@@ -33,22 +33,24 @@ MooseRuntimeListPresenter >> detailView [
 ^detailView
 ]
 
+{ #category : #accessing }
+MooseRuntimeListPresenter >> icon: anItem [
+	^ IconicButton new
+		target: self model runner;
+		actionSelector: #run:withUpdatingBlock:;
+		arguments:
+			{anItem.
+			[ self model: self model ]};
+		labelGraphic: anItem icon;
+		color: Color transparent;
+		helpText: 'Run';
+		borderWidth: 0;
+		yourself
+]
+
 { #category : #initialization }
 MooseRuntimeListPresenter >> initializeWidgets [
 	taskRuntimeList := self newTreeTable contextMenu: self menu.
-	taskRuntimeList
-		addColumn:
-			(CompositeTableColumn new
-				title: 'State';
-				addColumn:
-					(ImageTableColumn new
-						width: 20;
-						evaluated: #icon;
-						yourself);
-				addColumn:
-					(StringTableColumn new
-						evaluated: #description;
-						yourself)).
 	detailView := self newText disable.
 	detailView text: 'Detail Display'.
 	self focusOrder
@@ -81,6 +83,34 @@ MooseRuntimeListPresenter >> menu [
 				name: 'Debug';
 				visibleIf: [ self itemIsError ];
 				action: [ self debugSelectedItem ] ]
+]
+
+{ #category : #initialization }
+MooseRuntimeListPresenter >> runner: aRunner runWithUpdatingBlock: aBlock [
+	taskRuntimeList
+		addColumn:
+			(CompositeTableColumn new
+				title: 'State';
+				addColumn:
+					(ImageTableColumn new
+						width: 20;
+						evaluated: [ :item | 
+							IconicButton new
+								target: aRunner;
+								actionSelector: #run:withUpdatingBlock:;
+								arguments:
+									{item.
+									aBlock};
+								labelGraphic: item icon;
+								color: Color transparent;
+								helpText: 'Run';
+								borderWidth: 0;
+								yourself ];
+						yourself);
+				addColumn:
+					(StringTableColumn new
+						evaluated: #description;
+						yourself))
 ]
 
 { #category : #accessing }

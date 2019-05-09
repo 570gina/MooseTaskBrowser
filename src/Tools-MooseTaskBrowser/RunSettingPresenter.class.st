@@ -2,7 +2,8 @@ Class {
 	#name : #RunSettingPresenter,
 	#superclass : #ComposablePresenter,
 	#instVars : [
-		'inputText'
+		'inputText',
+		'runnerList'
 	],
 	#category : #'Tools-MooseTaskBrowser-Core-ui'
 }
@@ -19,6 +20,12 @@ RunSettingPresenter class >> defaultSpec [
 			withConstraints: [ :constraints | constraints height: self defaultFont height ];
 		add: '(ex. input1 input2 input3 ...)'
 			withConstraints: [ :constraints | constraints height: self defaultFont height + 6 ];
+		add:
+			(SpecBoxLayout newHorizontal
+				add: 'Runner type: '
+					withConstraints: [ :constraints | constraints height: self defaultFont height ];
+				add: #runnerList)
+			withConstraints: [ :constraints | constraints height: self defaultFont height + 6 ];
 		yourself
 ]
 
@@ -32,6 +39,12 @@ RunSettingPresenter class >> open [
 RunSettingPresenter >> initializeWidgets [
 	inputText := self newText.
 	inputText autoAccept: true.
+	runnerList := self newDropList.
+	runnerList
+		items:
+			{MooseJobRunnerRunAll new.
+			MooseJobRunnerRunUpToFirstFailure new}.
+	runnerList displayBlock: [ :item | item printString ].
 	self focusOrder add: inputText
 ]
 
@@ -44,17 +57,22 @@ RunSettingPresenter >> initializeWindow: aWindowPresenter [
 	aWindowPresenter title: self title
 ]
 
-{ #category : #initialization }
+{ #category : #accessing }
 RunSettingPresenter >> inputText [
 	^ inputText
 ]
 
-{ #category : #initialization }
+{ #category : #accessing }
 RunSettingPresenter >> inputText: aString [
 	inputText text: aString
 ]
 
-{ #category : #initialization }
+{ #category : #accessing }
+RunSettingPresenter >> runnerList [
+	^ runnerList
+]
+
+{ #category : #api }
 RunSettingPresenter >> title [
 	^ 'Setting'
 ]

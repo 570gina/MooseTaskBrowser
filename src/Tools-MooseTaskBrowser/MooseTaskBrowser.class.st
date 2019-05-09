@@ -59,8 +59,7 @@ MooseTaskBrowser class >> defaultSpec [
 		add:
 			(SpecPanedLayout newHorizontal
 				add: #mooseJob;
-				add:#mooseRuntimeList
-					);
+				add: #mooseRuntimeList);
 		add: (SpecBoxLayout newVertical add: #logView);
 		yourself
 ]
@@ -251,7 +250,20 @@ MooseTaskBrowser class >> example2 [
 		description: 'a error task'
 		length: 0.
 	job addTasks: {task}.
+	task := MooseCustomTask new
+		with: [ :v | 
+			Transcript
+				show: 'Task 5 running';
+				cr.
+			(1 to: 10000000)
+				do: [ :i | true ]
+				displayingProgress: 'running task: 5'.
+			true ]
+		description: 'a description 4'
+		length: 0.
+	job addTasks: {task}.
 	test := MooseTaskBrowser on: job.
+	test repositoryWindow list items: job tasks.
 	test openWithSpec
 ]
 
@@ -266,7 +278,6 @@ MooseTaskBrowser class >> example3 [
 				show: 'Task 1 running';
 				cr.
 			1 / 0.
-				
 			true ]
 		description: 'a description 1'
 		length: 0.
@@ -427,7 +438,11 @@ MooseTaskBrowser >> initializePresenter [
 	mooseJob whenAddButtonIsClicked: [ self manageTaskAddDialog ].
 	mooseJob whenSettingButtonIsClicked: [ self manageSettingDialog ].
 	mooseJob whenRunButtonIsClicked: [ self run ].
-	mooseRuntimeList whenTaskRuntimeListSelectionChanged:[ :selection | self printDetail: selection ]
+	mooseRuntimeList
+		runner: self model runner
+		runWithUpdatingBlock: [ self model: self model ].
+	mooseRuntimeList
+		whenTaskRuntimeListSelectionChanged: [ :selection | self printDetail: selection ]
 ]
 
 { #category : #initialization }
@@ -471,7 +486,8 @@ MooseTaskBrowser >> loadAJob [
 			file load
 				ifTrue: [ self model: file job.
 					self window title: 'Moose Tasks -> ' , file fileName , '.txt'.
-					self inform: 'Loaded'.mooseRuntimeList detailView text: 'Detail Display'.
+					self inform: 'Loaded'.
+					mooseRuntimeList detailView text: 'Detail Display'.
 					change := false ]
 				ifFalse: [ file := state ] ]
 ]
@@ -501,6 +517,8 @@ MooseTaskBrowser >> manageSettingDialog [
 		ifNotNil: [ settingWindow inputText: self model input ].
 	settingWindow openDialogWithSpec
 		okAction: [ self model input: settingWindow inputText text asString.
+			self model
+				runner: settingWindow runnerList selection selectedItem model.
 			settingWindow window close ]
 ]
 
@@ -607,8 +625,8 @@ MooseTaskBrowser >> saveChangesDialog [
 			select
 				ifNil: [ ^ false ];
 				ifTrue: [ self saveTheJob
-							ifFalse: [ ^ false ] ] ]
-					.^true
+							ifFalse: [ ^ false ] ] ].
+	^ true
 ]
 
 { #category : #actions }
@@ -675,5 +693,5 @@ MooseTaskBrowser >> updateRuntimeList [
 			aGroup class = MooseTaskRuntime
 				ifTrue: [ {} ]
 				ifFalse: [ aGroup tasks ] ];
-		beResizable.
+		beResizable
 ]

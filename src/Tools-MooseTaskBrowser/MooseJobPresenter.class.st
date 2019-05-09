@@ -17,7 +17,7 @@ Class {
 
 { #category : #specs }
 MooseJobPresenter class >> defaultSpec [
-	^SpecBoxLayout newVertical
+	^ SpecBoxLayout newVertical
 		add:
 			(SpecBoxLayout newHorizontal
 				add: #newJobButton;

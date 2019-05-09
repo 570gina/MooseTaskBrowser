@@ -14,7 +14,7 @@ AddTasksPresenter class >> defaultSpec [
 		yourself
 ]
 
-{ #category : #specs }
+{ #category : #'instance creation' }
 AddTasksPresenter class >> open [
 	<script>
 	AddTasksPresenter  new openWithSpec
