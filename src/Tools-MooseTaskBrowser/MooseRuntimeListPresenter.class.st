@@ -96,11 +96,9 @@ MooseRuntimeListPresenter >> runner: aRunner runWithUpdatingBlock: aBlock [
 						width: 20;
 						evaluated: [ :item | 
 							IconicButton new
-								target: aRunner;
-								actionSelector: #run:withUpdatingBlock:;
-								arguments:
-									{item.
-									aBlock};
+								target: item;
+								actionSelector: #runWithUpdatingBlock:;
+								arguments:{aBlock};
 								labelGraphic: item icon;
 								color: Color transparent;
 								helpText: 'Run';

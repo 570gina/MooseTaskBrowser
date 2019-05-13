@@ -38,6 +38,11 @@ MooseTaskAbstractRuntime >> hasRun [
 	^ self subclassResponsibility 
 ]
 
+{ #category : #accessing }
+MooseTaskAbstractRuntime >> hasRun: aBoolean [
+	self subclassResponsibility
+]
+
 { #category : #running }
 MooseTaskAbstractRuntime >> input [
 	^ input
@@ -53,6 +58,11 @@ MooseTaskAbstractRuntime >> output [
 	^ output
 ]
 
+{ #category : #accessing }
+MooseTaskAbstractRuntime >> requiresInput [
+	^ self subclassResponsibility
+]
+
 { #category : #running }
 MooseTaskAbstractRuntime >> run [
 	self subclassResponsibility
@@ -62,4 +72,11 @@ MooseTaskAbstractRuntime >> run [
 MooseTaskAbstractRuntime >> run: anInput [
 	input := anInput.
 	^ self run
+]
+
+{ #category : #running }
+MooseTaskAbstractRuntime >> runWithUpdatingBlock: aBlock [
+	self run.
+	aBlock value.
+	self hasRun: true.
 ]

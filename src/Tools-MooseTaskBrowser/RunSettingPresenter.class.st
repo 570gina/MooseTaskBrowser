@@ -40,10 +40,8 @@ RunSettingPresenter >> initializeWidgets [
 	inputText := self newText.
 	inputText autoAccept: true.
 	runnerList := self newDropList.
-	runnerList
-		items:
-			{MooseJobRunnerRunAll new.
-			MooseJobRunnerRunUpToFirstFailure new}.
+	runnerList items: (MooseAbstractRunner allSubclasses collect: #new).
+	
 	runnerList displayBlock: [ :item | item printString ].
 	self focusOrder add: inputText
 ]

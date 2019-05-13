@@ -44,6 +44,13 @@ MooseTaskRuntime >> icon [
 ]
 
 { #category : #accessing }
+MooseTaskRuntime >> isTaskError [
+"	task computation numArgs ~= 0
+		ifTrue: [ ^ false ].
+	^ true"
+]
+
+{ #category : #accessing }
 MooseTaskRuntime >> printOn: aStream [
 	aStream
 		nextPutAll:
@@ -51,12 +58,20 @@ MooseTaskRuntime >> printOn: aStream [
 				, input asString , String lf , 'output: ' , output asString
 ]
 
+{ #category : #accessing }
+MooseTaskRuntime >> requiresInput [
+	^ task computation numArgs > 0
+]
+
 { #category : #running }
 MooseTaskRuntime >> run [
 	^ [ error := nil.
 	output := self basicRun ]
 		on: Error
-		do: [ :err | error := err.output:= nil ]
+		do: [ :err | 
+			error := err.
+			output := nil.
+			err signal ]
 ]
 
 { #category : #accessing }

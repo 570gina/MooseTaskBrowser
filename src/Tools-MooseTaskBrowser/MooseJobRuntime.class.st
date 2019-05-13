@@ -5,7 +5,8 @@ Class {
 		'input',
 		'tasks',
 		'output',
-		'errorState'
+		'errorState',
+		'runner'
 	],
 	#category : #'Tools-MooseTaskBrowser-Core'
 }
@@ -39,7 +40,7 @@ MooseJobRuntime >> errorState: aMooseTask [
 			task isError
 				ifTrue: [ errorState ifNil: [ errorState := '' ].
 					errorState := errorState , '-' , task description , ': '
-						, task error asString , String lf ] ]
+						, task error asString , String lf. ] ]
 ]
 
 { #category : #accessing }
@@ -77,11 +78,21 @@ MooseJobRuntime >> output: theOutputOfLastTask [
 
 { #category : #printing }
 MooseJobRuntime >> printOn: aStream [
-	self haltOnce.
 	aStream
 		nextPutAll:
 			'[Job]' , String lf , 'Input: ' , input asString , String lf
 				, 'Output: ' , output asString
+]
+
+{ #category : #runner }
+MooseJobRuntime >> runWithUpdatingBlock: aBlock [
+	[runner runJob: self withUpdatingBlock: aBlock]	on: Error
+		do: [ Error signal ]
+]
+
+{ #category : #runner }
+MooseJobRuntime >> runner: aRunner [
+ runner := aRunner
 ]
 
 { #category : #accessing }

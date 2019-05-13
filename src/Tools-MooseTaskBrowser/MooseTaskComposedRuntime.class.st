@@ -78,14 +78,18 @@ MooseTaskComposedRuntime >> printOn: aStream [
 				, 'output: ' , output asString
 ]
 
+{ #category : #accessing }
+MooseTaskComposedRuntime >> requiresInput [
+	^ tasks anySatisfy: [ :t | t requiresInput ]
+]
+
 { #category : #running }
 MooseTaskComposedRuntime >> run [
 	| tempOutput |
-	^ [ tempOutput := self basicRun.
+	tempOutput := self basicRun.
 	output := tempOutput
-		collect: [ :f | f synchronizeTimeout: 2 minutes ] ]
-		on: Error
-		do: [ :err | err debug ]
+		collect: [ :f | f synchronizeTimeout: 2 minutes ].
+	^ output
 ]
 
 { #category : #accessing }

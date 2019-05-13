@@ -65,7 +65,151 @@ MooseTaskBrowser class >> defaultSpec [
 ]
 
 { #category : #examples }
-MooseTaskBrowser class >> example1 [
+MooseTaskBrowser class >> exampleAdder [
+	<example>
+	| task test job |
+	job := MooseJob new.
+	task := MooseCustomTask new
+		with: [ :v | 
+			Transcript
+				show: 'Task +1 running';
+				cr.
+			v input asInteger + 1 ]
+		description: '+1'
+		length: 0.
+	job addTasks: {task}.
+	task := MooseCustomTask new
+		with: [ :v | 
+			Transcript
+				show: 'Task +2 running';
+				cr.
+			v input asInteger + 2 ]
+		description: '+2'
+		length: 0.
+	job addTasks: {task}.
+	task := MooseCustomTask new
+		with: [ :v | 
+			Transcript
+				show: 'Task +3 running';
+				cr.
+			v input asInteger + 3 ]
+		description: '+3'
+		length: 0.
+	job addTasks: {task}.
+	task := MooseCustomTask new
+		with: [ :v | 
+			Transcript
+				show: 'Task +4 running';
+				cr.
+			v input asInteger + 4 ]
+		description: '+4'
+		length: 0.
+	job addTasks: {task}.
+	job combineTasks: (job tasks copyFrom: 1 to: 4).
+	task := MooseCustomTask new
+		with: [ :v | 
+			Transcript
+				show: 'count';
+				cr.
+			v input inject: 0 into: [ :x :sum | sum + x ] ]
+		description: 'count'
+		length: 0.
+	job addTasks: {task}.
+	test := MooseTaskBrowser on: job.
+	task := MooseCustomTask new
+		with: [ 5 ]
+		description: 'Integer 5'
+		length: 0.
+	test repositoryWindow list items: {task}.
+	test openWithSpec
+]
+
+{ #category : #examples }
+MooseTaskBrowser class >> exampleError [
+	<example>
+	| task test job |
+	job := MooseJob new.
+		task := MooseCustomTask new
+		with: [ Transcript
+				show: 'Task 1 running';
+				cr.
+			(1 to: 10000000)
+				do: [ :i | true ]
+				displayingProgress: 'running task: 1'.
+			true ]
+		description: 'a description 1'
+		length: 0.
+	job addTasks: {task}.
+	task := MooseCustomTask new
+		with: [ Transcript
+				show: 'Task error running';
+				cr.
+			MooseTaskError signal: ' an error '.
+			true ]
+		description: 'a error task'
+		length: 0.
+	job addTasks: {task}.
+
+	task := MooseCustomTask new
+		with: [ Transcript
+				show: 'Task 2 running';
+				cr.
+			(1 to: 10000000)
+				do: [ :i | true ]
+				displayingProgress: 'running task: 2'.
+			true ]
+		description: 'a description 2'
+		length: 0.
+	job addTasks: {task}.
+	task := MooseCustomTask new
+		with: [ Transcript
+				show: 'Task 3 running';
+				cr.
+			(1 to: 10000000)
+				do: [ :i | true ]
+				displayingProgress: 'running task: 3'.
+			true ]
+		description: 'a description 3'
+		length: 0.
+	job addTasks: {task}.
+	task := MooseCustomTask new
+		with: [ Transcript
+				show: 'Task 4 running';
+				cr.
+			(1 to: 10000000)
+				do: [ :i | true ]
+				displayingProgress: 'running task: 4'.
+			true ]
+		description: 'a description 4'
+		length: 0.
+	job addTasks: {task}.
+	task := MooseCustomTask new
+		with: [ Transcript
+				show: 'Task error running';
+				cr.
+			1 / 0.
+			true ]
+		description: 'a error task'
+		length: 0.
+	job addTasks: {task}.
+	task := MooseCustomTask new
+		with: [ Transcript
+				show: 'Task 5 running';
+				cr.
+			(1 to: 10000000)
+				do: [ :i | true ]
+				displayingProgress: 'running task: 5'.
+			true ]
+		description: 'a description 4'
+		length: 0.
+	job addTasks: {task}.
+	test := MooseTaskBrowser on: job.
+	test repositoryWindow list items: job tasks.
+	test openWithSpec
+]
+
+{ #category : #examples }
+MooseTaskBrowser class >> exampleGMUtility [
 	<example>
 	| task taskRepo test |
 	taskRepo := OrderedCollection new.
@@ -178,30 +322,13 @@ MooseTaskBrowser class >> example1 [
 ]
 
 { #category : #examples }
-MooseTaskBrowser class >> example2 [
+MooseTaskBrowser class >> exampleGroupAndError [
 	<example>
 	| task test job |
 	job := MooseJob new.
 	task := MooseCustomTask new
-		with: [ :v | 
-			Transcript
-				show: 'Task error running';
-				cr.
-			1 / 0.
-			true ]
+		with: [ 1 / 0 ]
 		description: 'a error task'
-		length: 0.
-	job addTasks: {task}.
-	task := MooseCustomTask new
-		with: [ :v | 
-			Transcript
-				show: 'Task 1 running';
-				cr.
-			(1 to: 10000000)
-				do: [ :i | true ]
-				displayingProgress: 'running task: 1'.
-			true ]
-		description: 'a description 1'
 		length: 0.
 	job addTasks: {task}.
 	task := MooseCustomTask new
@@ -209,7 +336,7 @@ MooseTaskBrowser class >> example2 [
 			Transcript
 				show: 'Task 2 running';
 				cr.
-			(1 to: 10000000)
+			(1 to: 100000000)
 				do: [ :i | true ]
 				displayingProgress: 'running task: 2'.
 			true ]
@@ -234,84 +361,6 @@ MooseTaskBrowser class >> example2 [
 				show: 'Task 4 running';
 				cr.
 			(1 to: 10000000)
-				do: [ :i | true ]
-				displayingProgress: 'running task: 4'.
-			true ]
-		description: 'a description 4'
-		length: 0.
-	job addTasks: {task}.
-	task := MooseCustomTask new
-		with: [ :v | 
-			Transcript
-				show: 'Task error running';
-				cr.
-			1 / 0.
-			true ]
-		description: 'a error task'
-		length: 0.
-	job addTasks: {task}.
-	task := MooseCustomTask new
-		with: [ :v | 
-			Transcript
-				show: 'Task 5 running';
-				cr.
-			(1 to: 10000000)
-				do: [ :i | true ]
-				displayingProgress: 'running task: 5'.
-			true ]
-		description: 'a description 4'
-		length: 0.
-	job addTasks: {task}.
-	test := MooseTaskBrowser on: job.
-	test repositoryWindow list items: job tasks.
-	test openWithSpec
-]
-
-{ #category : #examples }
-MooseTaskBrowser class >> example3 [
-	<example>
-	| task test job |
-	job := MooseJob new.
-	task := MooseCustomTask new
-		with: [ :v | 
-			Transcript
-				show: 'Task 1 running';
-				cr.
-			1 / 0.
-			true ]
-		description: 'a description 1'
-		length: 0.
-	job addTasks: {task}.
-	task := MooseCustomTask new
-		with: [ :v | 
-			Transcript
-				show: 'Task 2 running';
-				cr.
-			(1 to: 5000000)
-				do: [ :i | true ]
-				displayingProgress: 'running task: 2'.
-			true ]
-		description: 'a description 2'
-		length: 0.
-	job addTasks: {task}.
-	task := MooseCustomTask new
-		with: [ :v | 
-			Transcript
-				show: 'Task 3 running';
-				cr.
-			(1 to: 5000000)
-				do: [ :i | true ]
-				displayingProgress: 'running task: 3'.
-			true ]
-		description: 'a description 3'
-		length: 0.
-	job addTasks: {task}.
-	task := MooseCustomTask new
-		with: [ :v | 
-			Transcript
-				show: 'Task 4 running';
-				cr.
-			(1 to: 5000000)
 				do: [ :i | true ]
 				displayingProgress: 'running task: 4'.
 			true ]
@@ -324,54 +373,33 @@ MooseTaskBrowser class >> example3 [
 ]
 
 { #category : #examples }
-MooseTaskBrowser class >> example4 [
+MooseTaskBrowser class >> exampleNewClass [
 	<example>
 	| task test job |
 	job := MooseJob new.
 	task := MooseCustomTask new
-		with: [ :v | 
-			Transcript
-				show: 'Task +1 running';
-				cr.
-			v input asInteger + 1 ]
-		description: '+1'
+		with: [ :v | HelloTest new ]
+		description: 'HelloTest new'
 		length: 0.
 	job addTasks: {task}.
 	task := MooseCustomTask new
-		with: [ :v | 
-			Transcript
-				show: 'Task +2 running';
-				cr.
-			v input asInteger + 2 ]
-		description: '+2'
+		with: [ Object subclass: #HelloTest ]
+		description: 'define class'
 		length: 0.
 	job addTasks: {task}.
 	task := MooseCustomTask new
-		with: [ :v | 
-			Transcript
-				show: 'Task +3 running';
-				cr.
-			v input asInteger + 3 ]
-		description: '+3'
+		with: [ :v | v input asString ]
+		description: 'print input'
 		length: 0.
 	job addTasks: {task}.
 	task := MooseCustomTask new
-		with: [ :v | 
-			Transcript
-				show: 'Task +4 running';
-				cr.
-			v input asInteger + 4 ]
-		description: '+4'
+		with: [ :v | HelloTest new ]
+		description: 'HelloTest new'
 		length: 0.
 	job addTasks: {task}.
-	job combineTasks: (job tasks copyFrom: 1 to: 4).
 	task := MooseCustomTask new
-		with: [ :v | 
-			Transcript
-				show: 'count';
-				cr.
-			v input inject: 0 into: [ :x :sum | sum + x ] ]
-		description: 'count'
+		with: [ :v | v input asString ]
+		description: 'print input'
 		length: 0.
 	job addTasks: {task}.
 	test := MooseTaskBrowser on: job.
@@ -606,7 +634,9 @@ MooseTaskBrowser >> run [
 	mooseRuntimeList detailView text: 'Detail Display'.
 	mooseJob runButton disable.
 	isRunning := true.
-	self model runWithUpdatingBlock: [ self model: self model ].
+	[ self model runWithUpdatingBlock: [ self model: self model ] ]
+		on: Error
+		do: [  ].
 	mooseJob runButton enable.
 	isRunning := false
 ]

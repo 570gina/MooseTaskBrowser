@@ -39,7 +39,7 @@ MooseJob >> combineTasks: aCollectionOfTasks [
 MooseJob >> initialize [
 	super initialize.
 	tasks := OrderedCollection new.
-		runner := MooseJobRunnerRunAll new
+		runner := MooseRunnerRunsAll new
 ]
 
 { #category : #accessing }
@@ -72,14 +72,17 @@ MooseJob >> runWithUpdatingBlock: aBlock [
 		collect: [ :i | 
 			MooseJobRuntime new
 				input: i;
+				runner: runner;
 				addTasks: tasks ].
 	aBlock value.
-	runtimeJobs do: [ :job | runner run: job withUpdatingBlock: aBlock ]
+	[ runtimeJobs do: [ :job | job runWithUpdatingBlock: aBlock ] ]
+		on: Error
+		do: [ Error signal ]
 ]
 
 { #category : #accessing }
-MooseJob >> runner [
-	^ runner
+MooseJob >> runner [ 
+	^runner 
 ]
 
 { #category : #accessing }
