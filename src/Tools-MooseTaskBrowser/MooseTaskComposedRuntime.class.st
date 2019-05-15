@@ -59,6 +59,11 @@ MooseTaskComposedRuntime >> initialize [
 	tasks := OrderedCollection new
 ]
 
+{ #category : #accessing }
+MooseTaskComposedRuntime >> isError [
+	^ self error
+]
+
 { #category : #running }
 MooseTaskComposedRuntime >> output [
 	^ output

@@ -61,7 +61,7 @@ MooseJob >> logger [ ^logger
 { #category : #action }
 MooseJob >> move: aModifier theTask: aMooseTask [
 	| index |
-	index := tasks indexOf: aMooseTask.
+	index := tasks indexOf: (aMooseTask).
 	tasks swap: index with: index + aModifier
 ]
 

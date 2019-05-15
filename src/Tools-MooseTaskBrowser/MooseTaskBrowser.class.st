@@ -520,7 +520,8 @@ MooseTaskBrowser >> loadAJob [
 
 { #category : #actions }
 MooseTaskBrowser >> manageArrowButtons: aSelection [
-	"	(aSelection newSelectedIndexes isEmptyOrNil
+Transcript crShow: aSelection asString.
+"	(aSelection newSelectedIndexes isEmptyOrNil
 		or: aSelection newSelectedIndexes size > 1)
 		ifFalse: [ selectedItem := self model tasks
 				at: aSelection newSelectedIndexes first.
@@ -678,11 +679,11 @@ MooseTaskBrowser >> separateSelected [
 
 { #category : #'list control' }
 MooseTaskBrowser >> swapItems: aNumber [
-	| items |
-	items := self stepsDatasource selectedItems.
-	items do: [ :item | self model move: aNumber theTask: item ].
-	self stepsDatasource setSelectedItems: items.
-	self model: self model
+	| item |
+	item := mooseJob taskList selection selectedItems at: 1.
+	self model move: aNumber theTask: item.
+	self model: self model.
+	self mooseJob taskList selectItem: item
 ]
 
 { #category : #private }
