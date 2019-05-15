@@ -10,16 +10,18 @@ MooseRunnerRunsUpToFirstFailure >> printOn: aStream [
 ]
 
 { #category : #running }
-MooseRunnerRunsUpToFirstFailure >> runJob: aJob withUpdatingBlock: aBlock [
+MooseRunnerRunsUpToFirstFailure >> runJob: aJob withUpdatingBlock: aBlock withErrorLogger: aLogger [
 	aJob tasks
 		inject: aJob input
 		into: [ :result :step | 
 			self runTask: step input: result.
 			step hasRun: true.
-			"aJob errorState: step."
+						aLogger addText: step printState.
+		
 			aBlock value.
-			step isError
-				ifTrue: [ ^ self ].
+				step isError
+				ifTrue: [
+					^ self ].
 			aJob output: step output.
 			step output ]
 ]

@@ -39,7 +39,6 @@ Class {
 		'settingWindow',
 		'file',
 		'change',
-		'isRunning',
 		'repositoryWindow',
 		'logView'
 	],
@@ -129,7 +128,7 @@ MooseTaskBrowser class >> exampleError [
 	<example>
 	| task test job |
 	job := MooseJob new.
-		task := MooseCustomTask new
+	task := MooseCustomTask new
 		with: [ Transcript
 				show: 'Task 1 running';
 				cr.
@@ -144,12 +143,12 @@ MooseTaskBrowser class >> exampleError [
 		with: [ Transcript
 				show: 'Task error running';
 				cr.
-			MooseTaskError signal: ' an error '.
+			MooseTaskError
+				signal: ' an error '.
 			true ]
 		description: 'a error task'
 		length: 0.
 	job addTasks: {task}.
-
 	task := MooseCustomTask new
 		with: [ Transcript
 				show: 'Task 2 running';
@@ -194,11 +193,11 @@ MooseTaskBrowser class >> exampleError [
 	job addTasks: {task}.
 	task := MooseCustomTask new
 		with: [ Transcript
-				show: 'Task 5 running';
+				show: 'Task 4 running';
 				cr.
-			(1 to: 10000000)
+			(1 to: 50000000)
 				do: [ :i | true ]
-				displayingProgress: 'running task: 5'.
+				displayingProgress: 'running task: 4'.
 			true ]
 		description: 'a description 4'
 		length: 0.
@@ -336,7 +335,7 @@ MooseTaskBrowser class >> exampleGroupAndError [
 			Transcript
 				show: 'Task 2 running';
 				cr.
-			(1 to: 100000000)
+			(1 to: 10000000)
 				do: [ :i | true ]
 				displayingProgress: 'running task: 2'.
 			true ]
@@ -476,13 +475,12 @@ MooseTaskBrowser >> initializePresenter [
 { #category : #initialization }
 MooseTaskBrowser >> initializeWidgets [
 	change := false.
-	isRunning := false.
 	mooseJob := self instantiate: MooseJobPresenter.
 	mooseRuntimeList := self instantiate: MooseRuntimeListPresenter.
 	logView := self newText disable.
-	logView text: 'Error Log'.
 	repositoryWindow := self instantiate: AddTasksPresenter.
 	settingWindow := self instantiate: RunSettingPresenter.
+	self model runner: settingWindow runnerList selectedItem.
 	self focusOrder
 		add: mooseJob;
 		add: mooseRuntimeList;
@@ -543,10 +541,10 @@ MooseTaskBrowser >> manageArrowButtons: aSelection [
 MooseTaskBrowser >> manageSettingDialog [
 	self model input
 		ifNotNil: [ settingWindow inputText: self model input ].
+	settingWindow runnerList selectedItem: self model runner.
 	settingWindow openDialogWithSpec
 		okAction: [ self model input: settingWindow inputText text asString.
-			self model
-				runner: settingWindow runnerList selection selectedItem model.
+			self model runner: settingWindow runnerList selectedItem.
 			settingWindow window close ]
 ]
 
@@ -588,8 +586,7 @@ MooseTaskBrowser >> modelChanged [
 			mooseJob newJobButton disable ]
 		ifNotEmpty: [ mooseJob saveButton enable.
 			mooseJob newJobButton enable.
-			isRunning
-				ifFalse: [ mooseJob runButton enable ] ].
+			mooseJob runButton enable  ].
 	file
 		ifNotNil: [ mooseJob saveButton enable.
 			mooseJob newJobButton enable ]
@@ -632,13 +629,8 @@ MooseTaskBrowser >> repositoryWindow [
 { #category : #actions }
 MooseTaskBrowser >> run [
 	mooseRuntimeList detailView text: 'Detail Display'.
-	mooseJob runButton disable.
-	isRunning := true.
-	[ self model runWithUpdatingBlock: [ self model: self model ] ]
-		on: Error
-		do: [  ].
-	mooseJob runButton enable.
-	isRunning := false
+	self model runWithUpdatingBlock: [ self model: self model ].
+
 ]
 
 { #category : #actions }
@@ -702,16 +694,7 @@ MooseTaskBrowser >> uiManager [
 
 { #category : #actions }
 MooseTaskBrowser >> updateLogText [
-	| log |
-	self model runtimeJobs
-		ifNil: [ log := 'Error Log' ]
-		ifNotNil: [ log := ''.
-			self model runtimeJobs
-				do: [ :job | 
-					job errorState
-						ifNotNil: [ log := log , job description asString , String lf
-								, job errorState asString ] ] ].
-	logView text: log
+	logView text: self model logger text
 ]
 
 { #category : #actions }

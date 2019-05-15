@@ -30,11 +30,7 @@ MooseTaskComposedRuntime >> description [
 
 { #category : #accessing }
 MooseTaskComposedRuntime >> error [
-	tasks
-		do: [ :t | 
-			t isError
-				ifTrue: [^true ] ].
-			^nil
+	^ tasks anySatisfy: [ :t | t isError ]
 ]
 
 { #category : #'adding tasks' }
@@ -49,14 +45,12 @@ MooseTaskComposedRuntime >> hasRun: aBoolean [
 
 { #category : #accessing }
 MooseTaskComposedRuntime >> icon [
-	tasks
-		do: [ :t | 
-			t hasRun
-				ifFalse: [ ^ self iconNamed: #testNotRun ]
-				ifTrue: [ t isError
-						ifTrue: [ 
-							^ self iconNamed: #testRed ] ] ].
-	^ self iconNamed: #testGreen
+
+	(tasks allSatisfy: #hasRun)
+		ifTrue: [ (tasks anySatisfy: #isError)
+				ifTrue: [ ^ self iconNamed: #testRed ]
+				ifFalse: [ ^ self iconNamed: #testGreen ] ]
+		ifFalse: [ ^ self iconNamed: #testNotRun ]
 ]
 
 { #category : #'adding tasks' }
@@ -76,6 +70,13 @@ MooseTaskComposedRuntime >> printOn: aStream [
 		nextPutAll:
 			'[Composed Task]' , String lf , 'input: ' , input asString , String lf
 				, 'output: ' , output asString
+]
+
+{ #category : #printing }
+MooseTaskComposedRuntime >> printState [
+	^tasks allButFirst
+		inject: tasks first printState
+		into: [ :string :t | string , String lf , t printState string ]
 ]
 
 { #category : #accessing }

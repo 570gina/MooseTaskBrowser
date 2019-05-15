@@ -13,7 +13,7 @@ MooseSerializableError class >> fromSton: aStream [
 ]
 
 { #category : #generated }
-MooseSerializableError >> error [ 
+MooseSerializableError >> error [
 	^ self class compiler evaluate: internalError
 ]
 

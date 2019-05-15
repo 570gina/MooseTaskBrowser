@@ -43,19 +43,19 @@ MooseTaskRuntime >> icon [
 				ifNotNil: [ self iconNamed: #testRed ] ]
 ]
 
-{ #category : #accessing }
-MooseTaskRuntime >> isTaskError [
-"	task computation numArgs ~= 0
-		ifTrue: [ ^ false ].
-	^ true"
-]
-
-{ #category : #accessing }
+{ #category : #printing }
 MooseTaskRuntime >> printOn: aStream [
 	aStream
 		nextPutAll:
 			'[Task: ' , self description , ']' , String lf , ' input: '
 				, input asString , String lf , 'output: ' , output asString
+]
+
+{ #category : #printing }
+MooseTaskRuntime >> printState [
+	^ self isError
+		ifTrue: [ '	Fail: [' , self description , '] - ' , error asString ]
+		ifFalse: [ '	Succeed: [' , self description , ']' ]
 ]
 
 { #category : #accessing }
@@ -70,6 +70,7 @@ MooseTaskRuntime >> run [
 		on: Error
 		do: [ :err | 
 			error := err.
+			
 			output := nil.
 			err signal ]
 ]

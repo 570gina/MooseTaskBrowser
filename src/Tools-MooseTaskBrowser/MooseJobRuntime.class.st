@@ -6,7 +6,8 @@ Class {
 		'tasks',
 		'output',
 		'errorState',
-		'runner'
+		'runner',
+		'logger'
 	],
 	#category : #'Tools-MooseTaskBrowser-Core'
 }
@@ -45,14 +46,11 @@ MooseJobRuntime >> errorState: aMooseTask [
 
 { #category : #accessing }
 MooseJobRuntime >> icon [
-	tasks
-		do: [ :t | 
-			t hasRun
-				ifFalse: [ ^ self iconNamed: #testNotRun ]
-				ifTrue: [ 
-					t isError
-						ifTrue: [ ^ self iconNamed: #testRed ] ] ].
-	^ self iconNamed: #testGreen
+	(tasks allSatisfy: #hasRun)
+		ifTrue: [ (tasks anySatisfy: #isError)
+				ifTrue: [ ^ self iconNamed: #testRed ]
+				ifFalse: [ ^ self iconNamed: #testGreen ] ]
+		ifFalse: [ ^ self iconNamed: #testNotRun ]
 ]
 
 { #category : #initialization }
@@ -72,6 +70,11 @@ MooseJobRuntime >> input: aString [
 ]
 
 { #category : #accessing }
+MooseJobRuntime >> logger: aLogger [
+logger:=aLogger
+]
+
+{ #category : #accessing }
 MooseJobRuntime >> output: theOutputOfLastTask [
 	output := theOutputOfLastTask
 ]
@@ -84,13 +87,16 @@ MooseJobRuntime >> printOn: aStream [
 				, 'Output: ' , output asString
 ]
 
-{ #category : #runner }
+{ #category : #running }
 MooseJobRuntime >> runWithUpdatingBlock: aBlock [
-	[runner runJob: self withUpdatingBlock: aBlock]	on: Error
-		do: [ Error signal ]
+	logger addText: 'Begin: ' , self description.
+	aBlock value.
+	runner runJob: self withUpdatingBlock: aBlock withErrorLogger: logger.
+	logger addText: 'End: ' , self description.
+	aBlock value
 ]
 
-{ #category : #runner }
+{ #category : #accessing }
 MooseJobRuntime >> runner: aRunner [
  runner := aRunner
 ]

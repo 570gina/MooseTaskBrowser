@@ -14,7 +14,9 @@ Class {
 		'input',
 		'tasks',
 		'runtimeJobs',
-		'runner'
+		'runner',
+		'stream',
+		'logger'
 	],
 	#category : #'Tools-MooseTaskBrowser-Core'
 }
@@ -39,7 +41,7 @@ MooseJob >> combineTasks: aCollectionOfTasks [
 MooseJob >> initialize [
 	super initialize.
 	tasks := OrderedCollection new.
-		runner := MooseRunnerRunsAll new
+	logger := MooseLogger new text: ''
 ]
 
 { #category : #accessing }
@@ -50,6 +52,10 @@ MooseJob >> input [
 { #category : #accessing }
 MooseJob >> input: aString [
 	input := aString
+]
+
+{ #category : #accessing }
+MooseJob >> logger [ ^logger
 ]
 
 { #category : #action }
@@ -66,6 +72,7 @@ MooseJob >> removeTask: aMooseTask [
 
 { #category : #running }
 MooseJob >> runWithUpdatingBlock: aBlock [
+		logger text: ''.
 	runtimeJobs := (input
 		ifNil: [ {nil} ]
 		ifNotNil: [ input splitOn: ' ' ])
@@ -73,11 +80,9 @@ MooseJob >> runWithUpdatingBlock: aBlock [
 			MooseJobRuntime new
 				input: i;
 				runner: runner;
+				logger: logger;
 				addTasks: tasks ].
-	aBlock value.
-	[ runtimeJobs do: [ :job | job runWithUpdatingBlock: aBlock ] ]
-		on: Error
-		do: [ Error signal ]
+	runtimeJobs do: [ :job | job runWithUpdatingBlock: aBlock ]
 ]
 
 { #category : #accessing }

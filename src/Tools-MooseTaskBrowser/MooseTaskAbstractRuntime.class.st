@@ -58,6 +58,11 @@ MooseTaskAbstractRuntime >> output [
 	^ output
 ]
 
+{ #category : #printing }
+MooseTaskAbstractRuntime >> printState [
+		^ self subclassResponsibility
+]
+
 { #category : #accessing }
 MooseTaskAbstractRuntime >> requiresInput [
 	^ self subclassResponsibility
@@ -78,5 +83,5 @@ MooseTaskAbstractRuntime >> run: anInput [
 MooseTaskAbstractRuntime >> runWithUpdatingBlock: aBlock [
 	self run.
 	aBlock value.
-	self hasRun: true.
+	self hasRun: true
 ]

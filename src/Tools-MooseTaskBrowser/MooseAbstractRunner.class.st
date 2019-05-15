@@ -5,8 +5,16 @@ Class {
 }
 
 { #category : #running }
-MooseAbstractRunner >> runJob: aJob withUpdatingBlock: aBlock [
-	self subclassResponsibility
+MooseAbstractRunner >> runJob: aJob withUpdatingBlock: aBlock withErrorLogger: aLogger [
+	aJob tasks
+		inject: aJob input
+		into: [ :result :step | 
+			self runTask: step input: result.
+			step hasRun: true.
+			aLogger addText: step printState .
+			aBlock value.
+			aJob output: step output.
+			step output ]
 ]
 
 { #category : #running }
