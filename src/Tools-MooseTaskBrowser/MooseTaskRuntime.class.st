@@ -47,7 +47,7 @@ MooseTaskRuntime >> icon [
 MooseTaskRuntime >> printOn: aStream [
 	aStream
 		nextPutAll:
-			'[Task: ' , self description , ']' , String lf , ' input: '
+			'[Task: ' , self description , ']' , String lf , 'input: '
 				, input asString , String lf , 'output: ' , output asString
 ]
 

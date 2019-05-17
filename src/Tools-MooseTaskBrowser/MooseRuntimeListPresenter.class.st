@@ -86,7 +86,7 @@ MooseRuntimeListPresenter >> menu [
 ]
 
 { #category : #initialization }
-MooseRuntimeListPresenter >> runner: aRunner runWithUpdatingBlock: aBlock [
+MooseRuntimeListPresenter >> runner: aRunner withUpdatingBlock: aBlock [
 	taskRuntimeList
 		addColumn:
 			(CompositeTableColumn new

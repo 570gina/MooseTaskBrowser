@@ -456,7 +456,8 @@ MooseTaskBrowser >> deleteSelected [
 { #category : #initialization }
 MooseTaskBrowser >> initializePresenter [
 	mooseJob
-		whenTaskListSelectionChanged: [ :selection | self manageArrowButtons: selection ].
+		whenTaskListSelectionChanged:
+			[ :selection | "self manageArrowButtons: selection" ].
 	mooseJob whenUpButtonIsClicked: [ self swapItems: -1 ].
 	mooseJob whenDownButtonIsClicked: [ self swapItems: 1 ].
 	mooseJob whenNewJobButtonIsClicked: [ self newAnEmptyJob ].
@@ -467,7 +468,7 @@ MooseTaskBrowser >> initializePresenter [
 	mooseJob whenRunButtonIsClicked: [ self run ].
 	mooseRuntimeList
 		runner: self model runner
-		runWithUpdatingBlock: [ self model: self model ].
+		withUpdatingBlock: [ self model: self model ].
 	mooseRuntimeList
 		whenTaskRuntimeListSelectionChanged: [ :selection | self printDetail: selection ]
 ]
@@ -492,7 +493,7 @@ MooseTaskBrowser >> initializeWindow: aWindowPresenter [
 	| fontWidth rowHeight |
 	fontWidth := StandardFonts defaultFont widthOfString: 'M'.
 	rowHeight := self class inputTextHeight.
-	aWindowPresenter initialExtent: 60 @ 18 * (fontWidth @ rowHeight).
+	aWindowPresenter initialExtent: 60 @ 20 * (fontWidth @ rowHeight).
 	aWindowPresenter title: 'Moose Task Browser'
 ]
 
@@ -679,11 +680,12 @@ MooseTaskBrowser >> separateSelected [
 
 { #category : #'list control' }
 MooseTaskBrowser >> swapItems: aNumber [
-	| item |
-	item := mooseJob taskList selection selectedItems at: 1.
-	self model move: aNumber theTask: item.
+	| newSelectedPath |
+	newSelectedPath := self model
+		move: aNumber
+		theTask: mooseJob taskList selection selectedItem.
 	self model: self model.
-	self mooseJob taskList selectItem: item
+	mooseJob taskList selection selectPath: newSelectedPath asArray.
 ]
 
 { #category : #private }
