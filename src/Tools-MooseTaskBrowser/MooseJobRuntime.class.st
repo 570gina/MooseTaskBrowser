@@ -93,7 +93,6 @@ MooseJobRuntime >> runWithUpdatingBlock: aBlock [
 	aBlock value.
 	runner runJob: self withUpdatingBlock: aBlock withErrorLogger: logger.
 	logger addText: 'End: ' , self description.
-	aBlock value
 ]
 
 { #category : #accessing }

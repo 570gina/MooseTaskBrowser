@@ -37,5 +37,6 @@ MooseCustomTask >> runWith: aParameter [
 	[ self setUp.
 	result := self basicRunWith: aParameter ]
 		ensure: [ self tearDown ].
+		self flag: #tearDownMethodIsNil.
 	^ result
 ]

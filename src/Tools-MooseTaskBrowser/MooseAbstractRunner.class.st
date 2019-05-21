@@ -4,6 +4,12 @@ Class {
 	#category : #'Tools-MooseTaskBrowser-Core'
 }
 
+{ #category : #accessing }
+MooseAbstractRunner >> order [
+^self subclassResponsibility 
+	
+]
+
 { #category : #running }
 MooseAbstractRunner >> runJob: aJob withUpdatingBlock: aBlock withErrorLogger: aLogger [
 	aJob tasks

@@ -41,6 +41,7 @@ MooseJob >> combineTasks: aCollectionOfTasks [
 MooseJob >> initialize [
 	super initialize.
 	tasks := OrderedCollection new.
+	runner := MooseRunnerRunsAll new.
 	logger := MooseLogger new text: ''
 ]
 
@@ -64,6 +65,11 @@ MooseJob >> move: aModifier theTask: aMooseTask [
 	index := tasks indexOf: aMooseTask.
 	tasks swap: index with: index + aModifier.
 	^index + aModifier
+]
+
+{ #category : #action }
+MooseJob >> reloadRunState [
+	runtimeJobs := {}.
 ]
 
 { #category : #action }

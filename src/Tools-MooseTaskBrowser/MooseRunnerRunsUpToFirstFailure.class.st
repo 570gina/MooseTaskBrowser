@@ -4,6 +4,11 @@ Class {
 	#category : #'Tools-MooseTaskBrowser-Core'
 }
 
+{ #category : #accessing }
+MooseRunnerRunsUpToFirstFailure >> order [
+	^ 3
+]
+
 { #category : #printing }
 MooseRunnerRunsUpToFirstFailure >> printOn: aStream [
 	aStream nextPutAll: 'Run Up To First Failure'

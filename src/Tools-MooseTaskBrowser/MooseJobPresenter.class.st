@@ -10,7 +10,8 @@ Class {
 		'downButton',
 		'settingButton',
 		'runButton',
-		'taskList'
+		'taskList',
+		'reloadButton'
 	],
 	#category : #'Tools-MooseTaskBrowser-Core-ui'
 }
@@ -35,6 +36,8 @@ MooseJobPresenter class >> defaultSpec [
 					withConstraints: [ :constraints | constraints width: self defaultFont height + 6 ]);
 		add:
 			(SpecBoxLayout newHorizontal
+				add: #reloadButton
+					withConstraints: [ :constraints | constraints width: self toolbarHeight ];
 				add: #settingButton
 					withConstraints: [ :constraints | constraints width: self toolbarHeight ];
 				add: #runButton)
@@ -68,29 +71,43 @@ MooseJobPresenter >> initializeWidgets [
 				evaluated: #description;
 				yourself).
 	newJobButton := self newButton
-		label: 'New';
-		icon: (self iconNamed: #page).
+		label: 'Create';
+		icon: (self iconNamed: #page);
+		help: 'Create a new empty job.'.
 	loadButton := self newButton
 		label: 'Load';
-		icon: (self iconNamed: #smallOpen).
+		icon: (self iconNamed: #smallOpen);
+		help: 'Load an existing job.'.
 	saveButton := self newButton
-		label: 'Save';
-		icon: (self iconNamed: #glamorousSave).
+		label: 'Save ';
+		icon: (self iconNamed: #glamorousSave);
+		help: 'Save the current job.'.
 	addButton := self newButton
 		label: 'Add Tasks';
-		icon: (self iconNamed: #smallAdd).
-	upButton := self newButton icon: (self iconNamed: #up).
-	downButton := self newButton icon: (self iconNamed: #down).
+		icon: (self iconNamed: #smallAdd);
+		help: 'Add tasks to the current job.'.
+	reloadButton := self newButton
+		icon: (self iconNamed: #glamorousRefresh);
+		help: 'Clear the running state.'.
+	upButton := self newButton
+		icon: (self iconNamed: #up);
+		help: 'Move the selected task up.'.
+	downButton := self newButton
+		icon: (self iconNamed: #down);
+		help: 'Move the selected task down.'.
 	settingButton := self newButton
-		icon: (self iconNamed: #smallConfiguration).
+		icon: (self iconNamed: #smallConfiguration);
+		help: 'Set the input and select a runner.'.
 	runButton := self newButton
 		label: 'Run';
-		icon: (self iconNamed: #smallDoIt).
+		icon: (self iconNamed: #smallDoIt);
+		help: 'Run the current job.'.
 	self focusOrder
 		add: newJobButton;
 		add: loadButton;
 		add: saveButton;
 		add: addButton;
+		add: reloadButton;
 		add: upButton;
 		add: downButton;
 		add: taskList;
@@ -106,6 +123,11 @@ MooseJobPresenter >> loadButton [
 { #category : #accessing }
 MooseJobPresenter >> newJobButton [
 	^ newJobButton
+]
+
+{ #category : #accessing }
+MooseJobPresenter >> reloadButton [
+	^ reloadButton
 ]
 
 { #category : #accessing }
@@ -147,6 +169,11 @@ MooseJobPresenter >> whenLoadButtonIsClicked: aBlock [
 { #category : #event }
 MooseJobPresenter >> whenNewJobButtonIsClicked: aBlock [
 	newJobButton action: aBlock
+]
+
+{ #category : #event }
+MooseJobPresenter >> whenReloadButtonIsClicked: aBlock [
+	reloadButton action: aBlock
 ]
 
 { #category : #event }

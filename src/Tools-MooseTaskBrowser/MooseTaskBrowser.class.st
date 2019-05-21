@@ -40,7 +40,8 @@ Class {
 		'file',
 		'change',
 		'repositoryWindow',
-		'logView'
+		'logView',
+		'isRunning'
 	],
 	#category : #'Tools-MooseTaskBrowser-Core-ui'
 }
@@ -53,13 +54,13 @@ items do:[:i| (i isKindOf: MooseTaskComposedRuntime) ifFalse:[^false]].^true
 
 { #category : #specs }
 MooseTaskBrowser class >> defaultSpec [
-	^ SpecPanedLayout newVertical
-		position: 75 percent;
+	^ SpecPanedLayout newHorizontal
+		position: 67 percent;
 		add:
 			(SpecPanedLayout newHorizontal
 				add: #mooseJob;
 				add: #mooseRuntimeList);
-		add: (SpecBoxLayout newVertical add: #logView);
+		add: #logView;
 		yourself
 ]
 
@@ -457,13 +458,14 @@ MooseTaskBrowser >> deleteSelected [
 MooseTaskBrowser >> initializePresenter [
 	mooseJob
 		whenTaskListSelectionChanged:
-			[ :selection | "self manageArrowButtons: selection" ].
+			[ :selection | "self manageArrowButtons: selection" Transcript crShow: selection ].
 	mooseJob whenUpButtonIsClicked: [ self swapItems: -1 ].
 	mooseJob whenDownButtonIsClicked: [ self swapItems: 1 ].
 	mooseJob whenNewJobButtonIsClicked: [ self newAnEmptyJob ].
 	mooseJob whenLoadButtonIsClicked: [ self loadAJob ].
 	mooseJob whenSaveButtonIsClicked: [ self saveTheJob ].
 	mooseJob whenAddButtonIsClicked: [ self manageTaskAddDialog ].
+	mooseJob whenReloadButtonIsClicked: [ self reloadRunState ].
 	mooseJob whenSettingButtonIsClicked: [ self manageSettingDialog ].
 	mooseJob whenRunButtonIsClicked: [ self run ].
 	mooseRuntimeList
@@ -476,12 +478,12 @@ MooseTaskBrowser >> initializePresenter [
 { #category : #initialization }
 MooseTaskBrowser >> initializeWidgets [
 	change := false.
+	isRunning := false.
 	mooseJob := self instantiate: MooseJobPresenter.
 	mooseRuntimeList := self instantiate: MooseRuntimeListPresenter.
 	logView := self newText disable.
 	repositoryWindow := self instantiate: AddTasksPresenter.
 	settingWindow := self instantiate: RunSettingPresenter.
-	self model runner: settingWindow runnerList selectedItem.
 	self focusOrder
 		add: mooseJob;
 		add: mooseRuntimeList;
@@ -493,7 +495,7 @@ MooseTaskBrowser >> initializeWindow: aWindowPresenter [
 	| fontWidth rowHeight |
 	fontWidth := StandardFonts defaultFont widthOfString: 'M'.
 	rowHeight := self class inputTextHeight.
-	aWindowPresenter initialExtent: 60 @ 20 * (fontWidth @ rowHeight).
+	aWindowPresenter initialExtent: 75 @ 15 * (fontWidth @ rowHeight).
 	aWindowPresenter title: 'Moose Task Browser'
 ]
 
@@ -543,7 +545,7 @@ Transcript crShow: aSelection asString.
 MooseTaskBrowser >> manageSettingDialog [
 	self model input
 		ifNotNil: [ settingWindow inputText: self model input ].
-	settingWindow runnerList selectedItem: self model runner.
+	settingWindow runnerList selectedIndex: self model runner order.
 	settingWindow openDialogWithSpec
 		okAction: [ self model input: settingWindow inputText text asString.
 			self model runner: settingWindow runnerList selectedItem.
@@ -588,7 +590,9 @@ MooseTaskBrowser >> modelChanged [
 			mooseJob newJobButton disable ]
 		ifNotEmpty: [ mooseJob saveButton enable.
 			mooseJob newJobButton enable.
-			mooseJob runButton enable  ].
+			isRunning
+				ifTrue: [ mooseJob runButton disable ]
+				ifFalse: [ mooseJob runButton enable ] ].
 	file
 		ifNotNil: [ mooseJob saveButton enable.
 			mooseJob newJobButton enable ]
@@ -623,6 +627,14 @@ MooseTaskBrowser >> registerMooseTaskListShortcuts: aWidget [
 		toAction: [ self stepsDatasource selectedItems ifNotNil: [ self deleteSelected ] ]
 ]
 
+{ #category : #actions }
+MooseTaskBrowser >> reloadRunState [
+	self model reloadRunState.
+	isRunning := false.
+		mooseRuntimeList detailView text: 'Detail Display'.
+	self model: self model
+]
+
 { #category : #accessing }
 MooseTaskBrowser >> repositoryWindow [
 ^repositoryWindow
@@ -630,9 +642,11 @@ MooseTaskBrowser >> repositoryWindow [
 
 { #category : #actions }
 MooseTaskBrowser >> run [
+	isRunning := true.
 	mooseRuntimeList detailView text: 'Detail Display'.
 	self model runWithUpdatingBlock: [ self model: self model ].
-
+	isRunning := false.
+ self model: self model 
 ]
 
 { #category : #actions }
