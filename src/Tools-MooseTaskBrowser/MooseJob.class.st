@@ -70,6 +70,7 @@ MooseJob >> move: aModifier theTask: aMooseTask [
 { #category : #action }
 MooseJob >> reloadRunState [
 	runtimeJobs := {}.
+	logger text:''
 ]
 
 { #category : #action }
