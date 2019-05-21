@@ -1,46 +1,44 @@
 Class {
-	#name : #MooseTaskRuntimeTest,
+	#name : #MooseComposedTaskTest,
 	#superclass : #TestCase,
 	#instVars : [
 		'customTask',
 		'task1',
 		'task2',
 		'task3',
-		'task4',
-		'task1dash1'
+		'task4'
 	],
 	#category : #'Tools-MooseTaskBrowser-Tests'
 }
 
 { #category : #running }
-MooseTaskRuntimeTest >> setUp [
+MooseComposedTaskTest >> setUp [
 	customTask := MooseCustomTask new
 		with: [ :v |  ]
 		description: 'desc1'
 		length: 0.
-	task1 := customTask asTaskRuntime.
-	task1dash1 := customTask asTaskRuntime.
-	task2 := (MooseCustomTask new
+	task1 := customTask.
+	task2 := MooseCustomTask new
 		with: [ :v |  ]
 		description: 'desc2'
-		length: 0) asTaskRuntime.
-	task3 := (MooseCustomTask new
+		length: 0.
+	task3 := MooseCustomTask new
 		with: [ :v |  ]
 		description: 'desc3'
-		length: 0) asTaskRuntime.
-	task4 := (MooseCustomTask new
+		length: 0.
+	task4 := MooseCustomTask new
 		with: [ :v |  ]
 		description: 'desc4'
-		length: 0) asTaskRuntime
+		length: 0
 ]
 
 { #category : #running }
-MooseTaskRuntimeTest >> testCombiningComposedTaskAndSingleTaskProducesANewComposedTaskWithThreeTasks [
+MooseComposedTaskTest >> testCombiningComposedTaskAndSingleTaskProducesANewComposedTaskWithThreeTasks [
 	| combination combination2 |
 	combination := task1 combineWith: task2.
 	combination2 := combination combineWith: task3.
-	self assert: (combination isKindOf: MooseTaskComposedRuntime).
-	self assert: (combination2 isKindOf: MooseTaskComposedRuntime).
+	self assert: (combination isKindOf: MooseComposedTask).
+	self assert: (combination2 isKindOf: MooseComposedTask).
 	self deny: combination equals: combination2.
 	self assert: combination2 tasks size equals: 3.
 	self
@@ -52,12 +50,12 @@ MooseTaskRuntimeTest >> testCombiningComposedTaskAndSingleTaskProducesANewCompos
 ]
 
 { #category : #running }
-MooseTaskRuntimeTest >> testCombiningSingleTaskAndComposedTaskProducesANewComposedTaskWithThreeTasks [
+MooseComposedTaskTest >> testCombiningSingleTaskAndComposedTaskProducesANewComposedTaskWithThreeTasks [
 	| combination combination2 |
 	combination := task2 combineWith: task3.
 	combination2 := task1 combineWith: combination.
-	self assert: (combination isKindOf: MooseTaskComposedRuntime).
-	self assert: (combination2 isKindOf: MooseTaskComposedRuntime).
+	self assert: (combination isKindOf: MooseComposedTask).
+	self assert: (combination2 isKindOf: MooseComposedTask).
 	self deny: combination equals: combination2.
 	self assert: combination2 tasks size equals: 3.
 	self
@@ -69,14 +67,14 @@ MooseTaskRuntimeTest >> testCombiningSingleTaskAndComposedTaskProducesANewCompos
 ]
 
 { #category : #running }
-MooseTaskRuntimeTest >> testCombiningTwoComposedTasksProducesANewComposedTaskWithFourTasks [
+MooseComposedTaskTest >> testCombiningTwoComposedTasksProducesANewComposedTaskWithFourTasks [
 	| combination sub1 sub2 |
 	sub1 := task1 combineWith: task2.
 	sub2 := task3 combineWith: task4.
 	combination := sub1 combineWith: sub2.
-	self assert: (combination isKindOf: MooseTaskComposedRuntime).
-	self assert: (sub1 isKindOf: MooseTaskComposedRuntime).
-	self assert: (sub2 isKindOf: MooseTaskComposedRuntime).
+	self assert: (combination isKindOf: MooseComposedTask).
+	self assert: (sub1 isKindOf: MooseComposedTask).
+	self assert: (sub2 isKindOf: MooseComposedTask).
 	self deny: sub1 equals: combination.
 	self deny: sub2 equals: combination.
 	self assert: combination tasks size equals: 4.
@@ -84,14 +82,8 @@ MooseTaskRuntimeTest >> testCombiningTwoComposedTasksProducesANewComposedTaskWit
 ]
 
 { #category : #running }
-MooseTaskRuntimeTest >> testCombiningTwoSingleTasksProducesANewComposedTask [
+MooseComposedTaskTest >> testCombiningTwoSingleTasksProducesANewComposedTask [
 	| combination |
 	combination := task1 combineWith: task2.
-	self assert: (combination isKindOf: MooseTaskComposedRuntime)
-]
-
-{ #category : #running }
-MooseTaskRuntimeTest >> testTaskRuntimeGivesAllwaysANewRuntime [
-	self deny: task1 equals: task1dash1.
-	self assert: task1 task equals: task1dash1 task
+	self assert: (combination isKindOf: MooseComposedTask)
 ]

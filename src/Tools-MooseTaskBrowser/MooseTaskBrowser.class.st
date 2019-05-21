@@ -344,14 +344,7 @@ MooseTaskBrowser class >> exampleGroupAndError [
 		length: 0.
 	job addTasks: {task}.
 	task := MooseCustomTask new
-		with: [ :v | 
-			Transcript
-				show: 'Task 3 running';
-				cr.
-			(1 to: 10000000)
-				do: [ :i | true ]
-				displayingProgress: 'running task: 3'.
-			true ]
+		with: [ :v | 1 / 0 ]
 		description: 'a description 3'
 		length: 0.
 	job addTasks: {task}.
@@ -360,7 +353,7 @@ MooseTaskBrowser class >> exampleGroupAndError [
 			Transcript
 				show: 'Task 4 running';
 				cr.
-			(1 to: 10000000)
+			(1 to: 100000000)
 				do: [ :i | true ]
 				displayingProgress: 'running task: 4'.
 			true ]
@@ -368,6 +361,30 @@ MooseTaskBrowser class >> exampleGroupAndError [
 		length: 0.
 	job addTasks: {task}.
 	job combineTasks: (job tasks copyFrom: 3 to: 4).
+	task := MooseCustomTask new
+		with: [ :v | 
+			Transcript
+				show: 'Task 5 running';
+				cr.
+			(1 to: 100000000)
+				do: [ :i | true ]
+				displayingProgress: 'running task: 5'.
+			true ]
+		description: 'a description 5'
+		length: 0.
+	job addTasks: {task}.
+	task := MooseCustomTask new
+		with: [ :v | 
+			Transcript
+				show: 'Task 6 running';
+				cr.
+			(1 to: 100000000)
+				do: [ :i | true ]
+				displayingProgress: 'running task: 6'.
+			true ]
+		description: 'a description 6'
+		length: 0.
+	job addTasks: {task}.
 	test := MooseTaskBrowser on: job.
 	test openWithSpec
 ]
@@ -402,6 +419,31 @@ MooseTaskBrowser class >> exampleNewClass [
 		description: 'print input'
 		length: 0.
 	job addTasks: {task}.
+	test := MooseTaskBrowser on: job.
+	test openWithSpec
+]
+
+{ #category : #examples }
+MooseTaskBrowser class >> exampleTest [
+	<example>
+	| task test job |
+	job := MooseJob new.
+	task := MooseCustomTask new
+		with: [ :v | 
+			Transcript
+				show: 'Task running';
+				cr.
+			(1 to: 50000000) do: [ :i | true ] displayingProgress: 'running'.
+			true ]
+		description: 'a description'
+		length: 0.
+	job addTasks: {task}.
+	task := MooseCustomTask new
+		with: [ :v | 1 / 0 ]
+		description: '+4'
+		length: 0.
+	job addTasks: {task}.
+	job combineTasks: (job tasks copyFrom: 1 to: 2).
 	test := MooseTaskBrowser on: job.
 	test openWithSpec
 ]

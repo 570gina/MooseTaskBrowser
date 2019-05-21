@@ -51,6 +51,8 @@ MooseJobRuntime >> icon [
 				ifTrue: [ ^ self iconNamed: #testRed ]
 				ifFalse: [ ^ self iconNamed: #testGreen ] ]
 		ifFalse: [ ^ self iconNamed: #testNotRun ]
+	
+		
 ]
 
 { #category : #initialization }
@@ -75,6 +77,11 @@ logger:=aLogger
 ]
 
 { #category : #accessing }
+MooseJobRuntime >> output [
+	^output
+]
+
+{ #category : #accessing }
 MooseJobRuntime >> output: theOutputOfLastTask [
 	output := theOutputOfLastTask
 ]
@@ -92,7 +99,7 @@ MooseJobRuntime >> runWithUpdatingBlock: aBlock [
 	logger addText: 'Begin: ' , self description.
 	aBlock value.
 	runner runJob: self withUpdatingBlock: aBlock withErrorLogger: logger.
-	logger addText: 'End: ' , self description.
+	logger addText: 'End: ' , self description
 ]
 
 { #category : #accessing }

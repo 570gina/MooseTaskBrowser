@@ -1,6 +1,6 @@
 Class {
-	#name : #MooseTaskJobFileTest,
-	#superclass : #MooseTaskJobTest,
+	#name : #MooseJobFileTest,
+	#superclass : #MooseJobTest,
 	#instVars : [
 		'file'
 	],
@@ -8,15 +8,15 @@ Class {
 }
 
 { #category : #setup }
-MooseTaskJobFileTest >> setUp [
+MooseJobFileTest >> setUp [
 	super setUp.
 	file := MooseJobFile new.
 	file job: job.
-		file reference: 'C:\Users\user\Desktop\test.txt' asFileReference.
+	file reference: 'C:\Users\user\Desktop\test.txt' asFileReference
 ]
 
 { #category : #tests }
-MooseTaskJobFileTest >> testLoadingAJob [
+MooseJobFileTest >> testLoadingAJob [
 	| text loadedJob |
 	steps add: self returnFifty.
 	job tasks: steps.
@@ -32,7 +32,7 @@ MooseTaskJobFileTest >> testLoadingAJob [
 ]
 
 { #category : #tests }
-MooseTaskJobFileTest >> testSavingAJob [
+MooseJobFileTest >> testSavingAJob [
 	steps add: self returnFifty.
 	job tasks: steps.
 	self assert: file reference exists equals: false.

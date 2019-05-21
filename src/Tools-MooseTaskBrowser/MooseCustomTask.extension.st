@@ -16,12 +16,12 @@ MooseCustomTask >> basicRunWith: aParameter [
 { #category : #'*Tools-MooseTaskBrowser' }
 MooseCustomTask >> combineWith: aMooseTask [
 	| combination |
-	combination := MooseComposedTask new.
+	combination := MooseComposedTask new addTask: self.
 	aMooseTask class = MooseComposedTask
-		ifTrue: [ combination addTaskRuntime: self.
+		ifTrue: [ 
 			aMooseTask tasks do: [ :t | combination addTask: t ] ]
 		ifFalse: [ combination
-				addTask: self;
+		
 				addTask: aMooseTask ].
 	^ combination
 ]
