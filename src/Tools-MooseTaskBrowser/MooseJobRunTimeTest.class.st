@@ -2,30 +2,40 @@ Class {
 	#name : #MooseJobRunTimeTest,
 	#superclass : #MooseJobTest,
 	#instVars : [
-		'file'
+		'jobRuntime'
 	],
 	#category : #'Tools-MooseTaskBrowser-Tests'
 }
 
-{ #category : #tests }
-MooseJobRunTimeTest >> testEachTaskOfAJobAllowsToReceiveTheOutputOfPreviousTaskAsInput [
-	steps
-		add: self returnFifty;
-		add: self minusTen;
-		add: self plusTwenty.
-	(job
-		tasks: steps;
-		runWithUpdatingBlock: [  ])
-		addSuccessCallback: [ :result | self assert: result equals: 60 ]
+{ #category : #setup }
+MooseJobRunTimeTest >> setUp [
+super setUp.
+	jobRuntime := MooseJobRuntime new.
 ]
 
 { #category : #tests }
-MooseJobRunTimeTest >> testInputAndOutputOfTheTasksAreNilIfTheTasksNeverRun [
-	steps
+MooseJobRunTimeTest >> testEachTaskAllowsToReceiveTheOutputOfPreviousTaskAsInput [
+	tasks
 		add: self returnFifty;
 		add: self minusTen;
 		add: self plusTwenty.
-	steps
+	jobRuntime
+		addTasks: tasks;
+		runner: job runner;
+		logger: job logger;
+		runWithUpdatingBlock: [  ].
+	self assert: jobRuntime output equals: 60
+]
+
+{ #category : #tests }
+MooseJobRunTimeTest >> testInputAndOutputOfAllTasksAreNilIfTheRunTimeNeverRun [
+	tasks
+		add: self returnFifty;
+		add: self minusTen;
+		add: self plusTwenty.
+	jobRuntime
+		addTasks: tasks.
+	jobRuntime tasks
 		do: [ :item | 
 			self assert: item input isNil.
 			self assert: item output isNil ]

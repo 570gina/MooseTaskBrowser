@@ -111,8 +111,3 @@ MooseJobRuntime >> runner: aRunner [
 MooseJobRuntime >> tasks [
 	^ tasks
 ]
-
-{ #category : #accessing }
-MooseJobRuntime >> tasks: aCollection [
-	tasks := aCollection
-]

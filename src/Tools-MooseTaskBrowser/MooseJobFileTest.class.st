@@ -18,8 +18,8 @@ MooseJobFileTest >> setUp [
 { #category : #tests }
 MooseJobFileTest >> testLoadingAJob [
 	| text loadedJob |
-	steps add: self returnFifty.
-	job tasks: steps.
+	tasks add: self returnFifty.
+	job tasks: tasks.
 	file saveAs.
 	text := file reference readStreamDo: [ :stream | stream upToEnd ].
 	loadedJob := (STONReader on: text readStream) next.
@@ -33,8 +33,8 @@ MooseJobFileTest >> testLoadingAJob [
 
 { #category : #tests }
 MooseJobFileTest >> testSavingAJob [
-	steps add: self returnFifty.
-	job tasks: steps.
+	tasks add: self returnFifty.
+	job tasks: tasks.
 	self assert: file reference exists equals: false.
 	file saveAs.
 	self assert: file reference exists equals: true.

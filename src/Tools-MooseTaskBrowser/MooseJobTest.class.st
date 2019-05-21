@@ -3,7 +3,7 @@ Class {
 	#superclass : #TestCase,
 	#instVars : [
 		'job',
-		'steps'
+		'tasks'
 	],
 	#category : #'Tools-MooseTaskBrowser-Tests'
 }
@@ -43,14 +43,14 @@ MooseJobTest >> returnFifty [
 { #category : #setup }
 MooseJobTest >> setUp [
 	job := MooseJob new.
-	steps := OrderedCollection new
+	tasks := OrderedCollection new
 ]
 
 { #category : #tests }
 MooseJobTest >> testAJobAllowsToReceiveMultipleInput [
-	steps add: self plusTwenty.
+	tasks add: self plusTwenty.
 	job
-		tasks: steps;
+		tasks: tasks;
 		input: '10 20 30';
 		runWithUpdatingBlock: [  ].
 	self assert: job runtimeJobs size equals: 3.
@@ -61,12 +61,12 @@ MooseJobTest >> testAJobAllowsToReceiveMultipleInput [
 
 { #category : #tests }
 MooseJobTest >> testSeparatingAComposedTaskProducesSomeNewSingleTasks [
-	steps
+	tasks
 		add: self minusTen;
 		add: self plusTwenty.
-	job tasks: steps.
+	job tasks: tasks.
 	self assert: (job tasks first isKindOf: MooseCustomTask).
-	job combineTasks: steps asArray.
+	job combineTasks: tasks asArray.
 	self assert: (job tasks first isKindOf: MooseComposedTask).
 	job separateTask: job tasks first.
 	self deny: (job tasks first isKindOf: MooseComposedTask).
