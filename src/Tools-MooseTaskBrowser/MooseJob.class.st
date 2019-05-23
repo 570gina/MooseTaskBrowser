@@ -27,11 +27,6 @@ MooseJob >> addTasks: aCollectionOfTasks [
 ]
 
 { #category : #action }
-MooseJob >> clearLogText [ 
-	logger text: ''
-]
-
-{ #category : #action }
 MooseJob >> combineTasks: aCollectionOfTasks [
 	| firstTaskIndex combination |
 	firstTaskIndex := tasks indexOf: aCollectionOfTasks first.

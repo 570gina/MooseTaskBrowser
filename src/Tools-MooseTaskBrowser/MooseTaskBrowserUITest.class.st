@@ -39,14 +39,6 @@ MooseTaskBrowserUITest >> setUp [
 ]
 
 { #category : #tests }
-MooseTaskBrowserUITest >> testClearLogButton [
-	self runCurrentJob.
-		self assert: presenter logView text isNotEmpty.
-	presenter clearLogButton performAction.
-	self assert: presenter logView text isEmpty.
-]
-
-{ #category : #tests }
 MooseTaskBrowserUITest >> testLogView [
 	presenter logView text isEmpty.
 	self runCurrentJob.

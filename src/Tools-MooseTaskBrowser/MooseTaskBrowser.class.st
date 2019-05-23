@@ -39,7 +39,6 @@ Class {
 		'logView',
 		'mooseJobPresenter',
 		'mooseJobRuntimePresenter',
-		'clearLogButton',
 		'taskAdditionPresenter',
 		'runSettingPresenter'
 	],
@@ -60,11 +59,8 @@ MooseTaskBrowser class >> defaultSpec [
 			(SpecPanedLayout newHorizontal
 				add: #mooseJobPresenter;
 				add: #mooseJobRuntimePresenter);
-		add:
-			(SpecBoxLayout newVertical
-				
-				add: #logView;add: #clearLogButton
-					withConstraints: [ :constraints | constraints height: self toolbarHeight ]);
+
+			add: #logView;
 		yourself
 ]
 
@@ -481,17 +477,6 @@ MooseTaskBrowser >> aboutText [
 	^ 'Moose Task Browser'
 ]
 
-{ #category : #accessing }
-MooseTaskBrowser >> clearLogButton [
-	^ clearLogButton
-]
-
-{ #category : #actions }
-MooseTaskBrowser >> clearLogText [
-	self model clearLogText.
-	self model: self model
-]
-
 { #category : #'list control' }
 MooseTaskBrowser >> combineSelected [
 	| index |
@@ -529,8 +514,7 @@ MooseTaskBrowser >> initializePresenter [
 		withUpdatingBlock: [ self model: self model ].
 	mooseJobRuntimePresenter
 		whenTaskRuntimeListSelectionChanged: [ :selection | self printDetail: selection ].
-		
-	clearLogButton action: [self clearLogText]
+
 ]
 
 { #category : #initialization }
@@ -540,16 +524,13 @@ MooseTaskBrowser >> initializeWidgets [
 	mooseJobRuntimePresenter := self
 		instantiate: MooseJobRuntimePresenter.
 	logView := self newText disable.
-	clearLogButton := self newButton
-		icon: (self iconNamed: #smallUpdate);
-		help: 'Clear the log text.'.
-			taskAdditionPresenter := self instantiate: TaskAdditionPresenter.
+
+	taskAdditionPresenter := self instantiate: TaskAdditionPresenter.
 	runSettingPresenter := self instantiate: RunSettingPresenter.
 	self focusOrder
 		add: mooseJobPresenter;
 		add: mooseJobRuntimePresenter;
-		add: logView;
-		add: clearLogButton
+		add: logView
 ]
 
 { #category : #initialization }
@@ -648,11 +629,11 @@ MooseTaskBrowser >> modelChanged [
 			mooseJobPresenter downButton disable.
 			mooseJobPresenter runButton disable.
 			mooseJobPresenter saveButton disable.
-			mooseJobPresenter loadButton enable.
 			mooseJobPresenter newJobButton disable ]
-		ifNotEmpty: [ mooseJobPresenter saveButton enable.
+		ifNotEmpty: [ 
+			mooseJobPresenter saveButton enable.
 			mooseJobPresenter newJobButton enable.
-			mooseJobPresenter runButton enable].
+			mooseJobPresenter runButton enable ].
 	file
 		ifNotNil: [ mooseJobPresenter saveButton enable.
 			mooseJobPresenter newJobButton enable ]
