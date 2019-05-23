@@ -146,7 +146,7 @@ MooseTaskBrowser class >> exampleError [
 				cr.
 			MooseTaskError signal: ' an error '.
 			true ]
-		description: 'a error task'
+		description: 'a MooseTaskError task'
 		length: 0.
 	job addTasks: {task}.
 	task := MooseCustomTask new
@@ -188,7 +188,7 @@ MooseTaskBrowser class >> exampleError [
 				cr.
 			1 / 0.
 			true ]
-		description: 'a error task'
+		description: 'an error task'
 		length: 0.
 	job addTasks: {task}.
 	task := MooseCustomTask new
@@ -327,7 +327,7 @@ MooseTaskBrowser class >> exampleGroupAndError [
 	job := MooseJob new.
 	task := MooseCustomTask new
 		with: [ 1 / 0 ]
-		description: 'a error task'
+		description: 'an error task'
 		length: 0.
 	job addTasks: {task}.
 	task := MooseCustomTask new

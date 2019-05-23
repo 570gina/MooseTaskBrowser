@@ -70,7 +70,6 @@ MooseTaskRuntime >> run [
 		on: Error
 		do: [ :err | 
 			error := err.
-			
 			output := nil.
 			err signal ]
 ]

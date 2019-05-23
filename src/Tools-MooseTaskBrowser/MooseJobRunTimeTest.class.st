@@ -9,8 +9,10 @@ Class {
 
 { #category : #setup }
 MooseJobRunTimeTest >> setUp [
-super setUp.
-	jobRuntime := MooseJobRuntime new.
+	super setUp.
+	jobRuntime := MooseJobRuntime new
+			runner: job runner;
+		logger: job logger
 ]
 
 { #category : #tests }
@@ -21,8 +23,7 @@ MooseJobRunTimeTest >> testEachTaskAllowsToReceiveTheOutputOfPreviousTaskAsInput
 		add: self plusTwenty.
 	jobRuntime
 		addTasks: tasks;
-		runner: job runner;
-		logger: job logger;
+
 		runWithUpdatingBlock: [  ].
 	self assert: jobRuntime output equals: 60
 ]

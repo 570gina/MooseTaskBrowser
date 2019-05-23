@@ -20,13 +20,11 @@ MooseRunnerRunsUpToFirstFailure >> runJob: aJob withUpdatingBlock: aBlock withEr
 		inject: aJob input
 		into: [ :result :step | 
 			self runTask: step input: result.
-			step hasRun: true.
-						aLogger addText: step printState.
-		
+						step hasRun: true.
+			aLogger addText: step printState.
 			aBlock value.
-				step isError
-				ifTrue: [
-					^ self ].
+			step isError
+				ifTrue: [ ^ self ].
 			aJob output: step output.
 			step output ]
 ]

@@ -17,7 +17,7 @@ MooseAbstractRunner >> runJob: aJob withUpdatingBlock: aBlock withErrorLogger: a
 		into: [ :result :step | 
 			self runTask: step input: result.
 			step hasRun: true.
-			aLogger addText: step printState .
+			aLogger addText: step printState.
 			aBlock value.
 			aJob output: step output.
 			step output ]

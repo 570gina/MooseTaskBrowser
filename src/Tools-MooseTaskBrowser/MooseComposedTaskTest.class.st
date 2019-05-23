@@ -14,20 +14,20 @@ Class {
 { #category : #running }
 MooseComposedTaskTest >> setUp [
 	customTask := MooseCustomTask new
-		with: [ :v |  ]
+		with: [   ]
 		description: 'desc1'
 		length: 0.
 	task1 := customTask.
 	task2 := MooseCustomTask new
-		with: [ :v |  ]
+		with: [   ]
 		description: 'desc2'
 		length: 0.
 	task3 := MooseCustomTask new
-		with: [ :v |  ]
+		with: [ ]
 		description: 'desc3'
 		length: 0.
 	task4 := MooseCustomTask new
-		with: [ :v |  ]
+		with: [ ]
 		description: 'desc4'
 		length: 0
 ]

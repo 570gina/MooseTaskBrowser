@@ -8,14 +8,14 @@ Class {
 	#category : #'Tools-MooseTaskBrowser-Tests'
 }
 
-{ #category : #action }
+{ #category : #adding }
 MooseTaskBrowserUITest >> addTasks [
 	presenter mooseJobPresenter addButton performAction.
 	presenter taskAdditionPresenter list selectAll.
 	presenter taskAdditionPresenter window triggerOkAction
 ]
 
-{ #category : #action }
+{ #category : #adding }
 MooseTaskBrowserUITest >> runCurrentJob [
 	self addTasks.
 	presenter run
