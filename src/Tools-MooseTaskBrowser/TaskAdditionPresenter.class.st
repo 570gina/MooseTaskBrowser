@@ -1,5 +1,5 @@
 Class {
-	#name : #AddTasksPresenter,
+	#name : #TaskAdditionPresenter,
 	#superclass : #ComposablePresenter,
 	#instVars : [
 		'list'
@@ -8,27 +8,27 @@ Class {
 }
 
 { #category : #specs }
-AddTasksPresenter class >> defaultSpec [
+TaskAdditionPresenter class >> defaultSpec [
 	^ SpecBoxLayout newVertical
 		add: #list;
 		yourself
 ]
 
 { #category : #'instance creation' }
-AddTasksPresenter class >> open [
+TaskAdditionPresenter class >> open [
 	<script>
-	AddTasksPresenter  new openWithSpec
+	TaskAdditionPresenter  new openWithSpec
 ]
 
 { #category : #initialization }
-AddTasksPresenter >> initializeWidgets [
+TaskAdditionPresenter >> initializeWidgets [
 	list := self newList beMultipleSelection.
 	list displayBlock: [ :task | task description ].
 	self focusOrder add: list
 ]
 
 { #category : #initialization }
-AddTasksPresenter >> initializeWindow: aWindowPresenter [
+TaskAdditionPresenter >> initializeWindow: aWindowPresenter [
 	| fontWidth rowHeight |
 	fontWidth := StandardFonts defaultFont widthOfString: 'M'.
 	rowHeight := self class inputTextHeight.
@@ -37,11 +37,11 @@ AddTasksPresenter >> initializeWindow: aWindowPresenter [
 ]
 
 { #category : #accessing }
-AddTasksPresenter >> list [
+TaskAdditionPresenter >> list [
 	^ list
 ]
 
 { #category : #api }
-AddTasksPresenter >> title [ 
+TaskAdditionPresenter >> title [ 
 	^'Repository'
 ]

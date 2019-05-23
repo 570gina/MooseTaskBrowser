@@ -10,8 +10,7 @@ Class {
 		'downButton',
 		'settingButton',
 		'runButton',
-		'taskList',
-		'reloadButton'
+		'taskList'
 	],
 	#category : #'Tools-MooseTaskBrowser-Core-ui'
 }
@@ -36,8 +35,6 @@ MooseJobPresenter class >> defaultSpec [
 					withConstraints: [ :constraints | constraints width: self defaultFont height + 6 ]);
 		add:
 			(SpecBoxLayout newHorizontal
-				add: #reloadButton
-					withConstraints: [ :constraints | constraints width: self toolbarHeight ];
 				add: #settingButton
 					withConstraints: [ :constraints | constraints width: self toolbarHeight ];
 				add: #runButton)
@@ -86,9 +83,6 @@ MooseJobPresenter >> initializeWidgets [
 		label: 'Add Tasks';
 		icon: (self iconNamed: #smallAdd);
 		help: 'Add tasks to the current job.'.
-	reloadButton := self newButton
-		icon: (self iconNamed: #glamorousRefresh);
-		help: 'Clear the running state.'.
 	upButton := self newButton
 		icon: (self iconNamed: #up);
 		help: 'Move the selected task up.'.
@@ -107,7 +101,6 @@ MooseJobPresenter >> initializeWidgets [
 		add: loadButton;
 		add: saveButton;
 		add: addButton;
-		add: reloadButton;
 		add: upButton;
 		add: downButton;
 		add: taskList;
@@ -126,11 +119,6 @@ MooseJobPresenter >> newJobButton [
 ]
 
 { #category : #accessing }
-MooseJobPresenter >> reloadButton [
-	^ reloadButton
-]
-
-{ #category : #accessing }
 MooseJobPresenter >> runButton [
 ^runButton
 
@@ -139,6 +127,11 @@ MooseJobPresenter >> runButton [
 { #category : #accessing }
 MooseJobPresenter >> saveButton [
 	^ saveButton
+]
+
+{ #category : #accessing }
+MooseJobPresenter >> settingButton [
+^settingButton
 ]
 
 { #category : #accessing }
@@ -169,11 +162,6 @@ MooseJobPresenter >> whenLoadButtonIsClicked: aBlock [
 { #category : #event }
 MooseJobPresenter >> whenNewJobButtonIsClicked: aBlock [
 	newJobButton action: aBlock
-]
-
-{ #category : #event }
-MooseJobPresenter >> whenReloadButtonIsClicked: aBlock [
-	reloadButton action: aBlock
 ]
 
 { #category : #event }

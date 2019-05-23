@@ -2,103 +2,57 @@ Class {
 	#name : #MooseTaskBrowserUITest,
 	#superclass : #TestCase,
 	#instVars : [
-		'browser',
-		'repository',
-		'job',
-		'mooseJobPresenter'
+		'presenter',
+		'job'
 	],
 	#category : #'Tools-MooseTaskBrowser-Tests'
 }
 
 { #category : #action }
-MooseTaskBrowserUITest >> addTasksFromRepository [
-	mooseJobPresenter addButton performAction.
-	browser repositoryWindow list selectAll.
-	browser repositoryWindow window triggerOkAction
+MooseTaskBrowserUITest >> addTasks [
+	presenter mooseJobPresenter addButton performAction.
+	presenter taskAdditionPresenter list selectAll.
+	presenter taskAdditionPresenter window triggerOkAction
+]
+
+{ #category : #action }
+MooseTaskBrowserUITest >> runCurrentJob [
+	self addTasks.
+	presenter run
 ]
 
 { #category : #setup }
 MooseTaskBrowserUITest >> setUp [
-	| task |
-	repository := OrderedCollection new.
-	(1 to: 2)
-		do: [ :i | 
-			task := MooseCustomTask new
-				with: [ :v | v input asInteger + 2 ]
-				description: '+2 Task'
-				length: 0.
-			repository add: task ].
+	| tasks |
 	job := MooseJob new.
-	browser := MooseTaskBrowser on: job.
-	browser repositoryWindow list items: repository.
-	mooseJobPresenter := browser mooseJob
+	presenter := MooseTaskBrowser on: job.
+	tasks := OrderedCollection new.
+	1 to: 2
+		do: [ :i | 
+			tasks
+				add:
+					(MooseCustomTask new
+						with: [ :v | v input asInteger + 2 ]
+						description: '+2 Task'
+						length: 0) ].
+	presenter taskAdditionPresenter list items: tasks
 ]
 
 { #category : #tests }
-MooseTaskBrowserUITest >> testDownButtonNotEnabledWhenLastTaskIsSelected [
-	self addTasksFromRepository.
-	browser stepsDatasource
-		setSelectedItems: (Array with: job tasks last).
-	self assert: mooseJobPresenter upButton isEnabled.
-	self deny: mooseJobPresenter downButton isEnabled
+MooseTaskBrowserUITest >> testClearLogButton [
+	self runCurrentJob.
+		self assert: presenter logView text isNotEmpty.
+	presenter clearLogButton performAction.
+	self assert: presenter logView text isEmpty.
 ]
 
 { #category : #tests }
-MooseTaskBrowserUITest >> testRepositoryViewDisplayedWhenAddButtonIsClicked [
-	self deny: browser repositoryWindow isDisplayed.
-	mooseJobPresenter addButton performAction.
-	self assert: browser repositoryWindow isDisplayed.
-	browser repositoryWindow window close
-]
-
-{ #category : #tests }
-MooseTaskBrowserUITest >> testSelectedTaskToMoveDownWhenDownButtonIsClicked [
-	| temp |
-	self addTasksFromRepository.
-	browser stepsDatasource
-		setSelectedItems: (Array with: job tasks second).
-	temp := browser stepsDatasource selectedItems.
-	mooseJobPresenter upButton performAction.
-	self assert: temp equals: (Array with: job tasks first).
-	self assert: temp equals: browser stepsDatasource selectedItems
-]
-
-{ #category : #tests }
-MooseTaskBrowserUITest >> testSelectedTaskToMoveUpWhenUpButtonIsClicked [
-	| temp |
-	self addTasksFromRepository.
-	browser stepsDatasource
-		setSelectedItems: (Array with: job tasks first).
-	temp := browser stepsDatasource selectedItems.
-	mooseJobPresenter downButton performAction.
-	self assert: temp equals: (Array with: job tasks second).
-	self assert: temp equals: browser stepsDatasource selectedItems
-]
-
-{ #category : #tests }
-MooseTaskBrowserUITest >> testSomeWidgetsEnabledWhenTheJobIsNotEmpty [
-	self addTasksFromRepository.
-	self deny: job tasks isEmpty.
-	self assert: mooseJobPresenter newJobButton isEnabled.
-	self assert: mooseJobPresenter saveButton isEnabled.
-	self assert: mooseJobPresenter runButton isEnabled
-]
-
-{ #category : #tests }
-MooseTaskBrowserUITest >> testSomeWidgetsNotEnabledWhenTheJobIsEmpty [
-	self assert: job tasks isEmpty.
-	self deny: mooseJobPresenter newJobButton isEnabled.
-	self deny: mooseJobPresenter saveButton isEnabled.
-	self deny: mooseJobPresenter upButton isEnabled.
-	self deny: mooseJobPresenter downButton isEnabled.
-	self deny: mooseJobPresenter runButton isEnabled
-]
-
-{ #category : #tests }
-MooseTaskBrowserUITest >> testUpButtonNotEnabledWhenFirstTaskIsSelected [
-	self addTasksFromRepository.
-	browser stepsDatasource
-		setSelectedItems: (Array with: job tasks first).
-	self assert: mooseJobPresenter downButton isEnabled.
-	self deny: mooseJobPresenter upButton isEnabled
+MooseTaskBrowserUITest >> testLogView [
+	presenter logView text isEmpty.
+	self runCurrentJob.
+	self assert: presenter logView text isNotEmpty.
+	self
+		assert: (presenter logView text includesSubstring: 'Begin: [Job]').
+			self
+		assert: (presenter logView text includesSubstring: 'End: [Job]')
 ]

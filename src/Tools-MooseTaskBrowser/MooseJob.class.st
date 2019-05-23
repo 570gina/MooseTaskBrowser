@@ -27,6 +27,11 @@ MooseJob >> addTasks: aCollectionOfTasks [
 ]
 
 { #category : #action }
+MooseJob >> clearLogText [ 
+	logger text: ''
+]
+
+{ #category : #action }
 MooseJob >> combineTasks: aCollectionOfTasks [
 	| firstTaskIndex combination |
 	firstTaskIndex := tasks indexOf: aCollectionOfTasks first.
@@ -65,12 +70,6 @@ MooseJob >> move: aModifier theTask: aMooseTask [
 	index := tasks indexOf: aMooseTask.
 	tasks swap: index with: index + aModifier.
 	^index + aModifier
-]
-
-{ #category : #action }
-MooseJob >> reloadRunState [
-	runtimeJobs := {}.
-	logger text:''
 ]
 
 { #category : #action }

@@ -1,5 +1,5 @@
 Class {
-	#name : #MooseRuntimeListPresenter,
+	#name : #MooseJobRuntimePresenter,
 	#superclass : #ComposablePresenter,
 	#instVars : [
 		'taskRuntimeList',
@@ -9,32 +9,36 @@ Class {
 }
 
 { #category : #specs }
-MooseRuntimeListPresenter class >> defaultSpec [
-	^ SpecPanedLayout newVertical
-		position: 75 percent;
-		add: #taskRuntimeList;
-		add: #detailView;yourself
+MooseJobRuntimePresenter class >> defaultSpec [
+	^ SpecBoxLayout newVertical
+	
+		add:
+			(SpecPanedLayout newVertical
+				position: 75 percent;
+				add: #taskRuntimeList;
+				add: #detailView);
+		yourself
 ]
 
 { #category : #'instance creation' }
-MooseRuntimeListPresenter class >> open [
+MooseJobRuntimePresenter class >> open [
 	<script>
 	self new openWithSpec
 ]
 
 { #category : #action }
-MooseRuntimeListPresenter >> debugSelectedItem [
+MooseJobRuntimePresenter >> debugSelectedItem [
 	taskRuntimeList selection selectedItem
 		ifNotNil: [ taskRuntimeList selection selectedItem error debug ]
 ]
 
 { #category : #accessing }
-MooseRuntimeListPresenter >> detailView [
+MooseJobRuntimePresenter >> detailView [
 ^detailView
 ]
 
 { #category : #accessing }
-MooseRuntimeListPresenter >> icon: anItem [
+MooseJobRuntimePresenter >> icon: anItem [
 	^ IconicButton new
 		target: self model runner;
 		actionSelector: #run:withUpdatingBlock:;
@@ -49,7 +53,7 @@ MooseRuntimeListPresenter >> icon: anItem [
 ]
 
 { #category : #initialization }
-MooseRuntimeListPresenter >> initializeWidgets [
+MooseJobRuntimePresenter >> initializeWidgets [
 	taskRuntimeList := self newTreeTable contextMenu: self menu.
 	detailView := self newText disable.
 	detailView text: 'Detail Display'.
@@ -59,20 +63,20 @@ MooseRuntimeListPresenter >> initializeWidgets [
 ]
 
 { #category : #action }
-MooseRuntimeListPresenter >> inspectSelectedItem [
+MooseJobRuntimePresenter >> inspectSelectedItem [
 	taskRuntimeList selection selectedItem
 		ifNotNil: [ taskRuntimeList selection selectedItem inspect ]
 ]
 
 { #category : #action }
-MooseRuntimeListPresenter >> itemIsError [
+MooseJobRuntimePresenter >> itemIsError [
 	| item |
 	item := taskRuntimeList selection selectedItem.
 	^ item isNotNil and:[item class = MooseTaskRuntime and: [ item isError ]]
 ]
 
 { #category : #initialization }
-MooseRuntimeListPresenter >> menu [
+MooseJobRuntimePresenter >> menu [
 	^ self newMenu
 		addItem: [ :anItem | 
 			anItem
@@ -86,7 +90,7 @@ MooseRuntimeListPresenter >> menu [
 ]
 
 { #category : #initialization }
-MooseRuntimeListPresenter >> runner: aRunner withUpdatingBlock: aBlock [
+MooseJobRuntimePresenter >> runner: aRunner withUpdatingBlock: aBlock [
 	taskRuntimeList
 		addColumn:
 			(CompositeTableColumn new
@@ -112,11 +116,11 @@ MooseRuntimeListPresenter >> runner: aRunner withUpdatingBlock: aBlock [
 ]
 
 { #category : #accessing }
-MooseRuntimeListPresenter >> taskRuntimeList [
+MooseJobRuntimePresenter >> taskRuntimeList [
 	^ taskRuntimeList
 ]
 
 { #category : #event }
-MooseRuntimeListPresenter >> whenTaskRuntimeListSelectionChanged: aBlock [
+MooseJobRuntimePresenter >> whenTaskRuntimeListSelectionChanged: aBlock [
 taskRuntimeList whenSelectionChangedDo: aBlock
 ]

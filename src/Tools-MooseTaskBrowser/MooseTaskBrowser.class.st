@@ -34,14 +34,14 @@ Class {
 	#name : #MooseTaskBrowser,
 	#superclass : #ComposablePresenterWithModel,
 	#instVars : [
-		'mooseJob',
-		'mooseRuntimeList',
-		'settingWindow',
 		'file',
 		'change',
-		'repositoryWindow',
 		'logView',
-		'isRunning'
+		'mooseJobPresenter',
+		'mooseJobRuntimePresenter',
+		'clearLogButton',
+		'taskAdditionPresenter',
+		'runSettingPresenter'
 	],
 	#category : #'Tools-MooseTaskBrowser-Core-ui'
 }
@@ -58,9 +58,13 @@ MooseTaskBrowser class >> defaultSpec [
 		position: 67 percent;
 		add:
 			(SpecPanedLayout newHorizontal
-				add: #mooseJob;
-				add: #mooseRuntimeList);
-		add: #logView;
+				add: #mooseJobPresenter;
+				add: #mooseJobRuntimePresenter);
+		add:
+			(SpecBoxLayout newVertical
+				
+				add: #logView;add: #clearLogButton
+					withConstraints: [ :constraints | constraints height: self toolbarHeight ]);
 		yourself
 ]
 
@@ -120,7 +124,7 @@ MooseTaskBrowser class >> exampleAdder [
 		with: [ 5 ]
 		description: 'Integer 5'
 		length: 0.
-	test repositoryWindow list items: {task}.
+	test taskAdditionPresenter list items: {task}.
 	test openWithSpec
 ]
 
@@ -144,8 +148,7 @@ MooseTaskBrowser class >> exampleError [
 		with: [ Transcript
 				show: 'Task error running';
 				cr.
-			MooseTaskError
-				signal: ' an error '.
+			MooseTaskError signal: ' an error '.
 			true ]
 		description: 'a error task'
 		length: 0.
@@ -204,7 +207,7 @@ MooseTaskBrowser class >> exampleError [
 		length: 0.
 	job addTasks: {task}.
 	test := MooseTaskBrowser on: job.
-	test repositoryWindow list items: job tasks.
+	test taskAdditionPresenter list items: job tasks.
 	test openWithSpec
 ]
 
@@ -317,7 +320,7 @@ MooseTaskBrowser class >> exampleGMUtility [
 		length: 0.
 	taskRepo add: task.
 	test := MooseTaskBrowser on: MooseJob new.
-	test repositoryWindow list items: taskRepo.
+	test taskAdditionPresenter list items: taskRepo.
 	test openWithSpec
 ]
 
@@ -478,6 +481,17 @@ MooseTaskBrowser >> aboutText [
 	^ 'Moose Task Browser'
 ]
 
+{ #category : #accessing }
+MooseTaskBrowser >> clearLogButton [
+	^ clearLogButton
+]
+
+{ #category : #actions }
+MooseTaskBrowser >> clearLogText [
+	self model clearLogText.
+	self model: self model
+]
+
 { #category : #'list control' }
 MooseTaskBrowser >> combineSelected [
 	| index |
@@ -498,38 +512,44 @@ MooseTaskBrowser >> deleteSelected [
 
 { #category : #initialization }
 MooseTaskBrowser >> initializePresenter [
-	mooseJob
-		whenTaskListSelectionChanged:
-			[ :selection | "self manageArrowButtons: selection" Transcript crShow: selection ].
-	mooseJob whenUpButtonIsClicked: [ self swapItems: -1 ].
-	mooseJob whenDownButtonIsClicked: [ self swapItems: 1 ].
-	mooseJob whenNewJobButtonIsClicked: [ self newAnEmptyJob ].
-	mooseJob whenLoadButtonIsClicked: [ self loadAJob ].
-	mooseJob whenSaveButtonIsClicked: [ self saveTheJob ].
-	mooseJob whenAddButtonIsClicked: [ self manageTaskAddDialog ].
-	mooseJob whenReloadButtonIsClicked: [ self reloadRunState ].
-	mooseJob whenSettingButtonIsClicked: [ self manageSettingDialog ].
-	mooseJob whenRunButtonIsClicked: [ self run ].
-	mooseRuntimeList
+	mooseJobPresenter
+		whenTaskListSelectionChanged: [ :selection | "self manageArrowButtons: selection" ].
+	mooseJobPresenter whenUpButtonIsClicked: [ self swapItems: -1 ].
+	mooseJobPresenter whenDownButtonIsClicked: [ self swapItems: 1 ].
+	mooseJobPresenter whenNewJobButtonIsClicked: [ self newAnEmptyJob ].
+	mooseJobPresenter whenLoadButtonIsClicked: [ self loadAJob ].
+	mooseJobPresenter whenSaveButtonIsClicked: [ self saveTheJob ].
+	mooseJobPresenter
+		whenAddButtonIsClicked: [ self manageTaskAddDialog ].
+	mooseJobPresenter
+		whenSettingButtonIsClicked: [ self manageSettingDialog ].
+	mooseJobPresenter whenRunButtonIsClicked: [ self run ].
+	mooseJobRuntimePresenter
 		runner: self model runner
 		withUpdatingBlock: [ self model: self model ].
-	mooseRuntimeList
-		whenTaskRuntimeListSelectionChanged: [ :selection | self printDetail: selection ]
+	mooseJobRuntimePresenter
+		whenTaskRuntimeListSelectionChanged: [ :selection | self printDetail: selection ].
+		
+	clearLogButton action: [self clearLogText]
 ]
 
 { #category : #initialization }
 MooseTaskBrowser >> initializeWidgets [
 	change := false.
-	isRunning := false.
-	mooseJob := self instantiate: MooseJobPresenter.
-	mooseRuntimeList := self instantiate: MooseRuntimeListPresenter.
+	mooseJobPresenter := self instantiate: MooseJobPresenter.
+	mooseJobRuntimePresenter := self
+		instantiate: MooseJobRuntimePresenter.
 	logView := self newText disable.
-	repositoryWindow := self instantiate: AddTasksPresenter.
-	settingWindow := self instantiate: RunSettingPresenter.
+	clearLogButton := self newButton
+		icon: (self iconNamed: #smallUpdate);
+		help: 'Clear the log text.'.
+			taskAdditionPresenter := self instantiate: TaskAdditionPresenter.
+	runSettingPresenter := self instantiate: RunSettingPresenter.
 	self focusOrder
-		add: mooseJob;
-		add: mooseRuntimeList;
-		add: logView
+		add: mooseJobPresenter;
+		add: mooseJobRuntimePresenter;
+		add: logView;
+		add: clearLogButton
 ]
 
 { #category : #initialization }
@@ -539,11 +559,6 @@ MooseTaskBrowser >> initializeWindow: aWindowPresenter [
 	rowHeight := self class inputTextHeight.
 	aWindowPresenter initialExtent: 75 @ 15 * (fontWidth @ rowHeight).
 	aWindowPresenter title: 'Moose Task Browser'
-]
-
-{ #category : #actions }
-MooseTaskBrowser >> inspectSelected [
-	^ self stepsDatasource selectedItems inspect
 ]
 
 { #category : #actions }
@@ -558,9 +573,14 @@ MooseTaskBrowser >> loadAJob [
 				ifTrue: [ self model: file job.
 					self window title: 'Moose Tasks -> ' , file fileName , '.txt'.
 					self inform: 'Loaded'.
-					mooseRuntimeList detailView text: 'Detail Display'.
+					mooseJobRuntimePresenter detailView text: 'Detail Display'.
 					change := false ]
 				ifFalse: [ file := state ] ]
+]
+
+{ #category : #accessing }
+MooseTaskBrowser >> logView [
+^logView
 ]
 
 { #category : #actions }
@@ -586,12 +606,12 @@ Transcript crShow: aSelection asString.
 { #category : #actions }
 MooseTaskBrowser >> manageSettingDialog [
 	self model input
-		ifNotNil: [ settingWindow inputText: self model input ].
-	settingWindow runnerList selectedIndex: self model runner order.
-	settingWindow openDialogWithSpec
-		okAction: [ self model input: settingWindow inputText text asString.
-			self model runner: settingWindow runnerList selectedItem.
-			settingWindow window close ]
+		ifNotNil: [ runSettingPresenter inputText: self model input ].
+	runSettingPresenter runnerList selectedIndex: self model runner order.
+	runSettingPresenter openDialogWithSpec
+		okAction: [ self model input: runSettingPresenter inputText text asString.
+			self model runner: runSettingPresenter runnerList selectedItem.
+			runSettingPresenter window close ]
 ]
 
 { #category : #actions }
@@ -600,21 +620,21 @@ MooseTaskBrowser >> manageTaskAddDialog [
 	items := taskList selection selectedPaths.
 	self halt."
 
-	repositoryWindow openDialogWithSpec
+	taskAdditionPresenter openDialogWithSpec
 		okAction: [ | steps |
-			steps := repositoryWindow list selectedItems asOrderedCollection
+			steps := taskAdditionPresenter list selectedItems asOrderedCollection
 				sort: [ :a :b | a description <= b description ].
 			self model addTasks: steps.
 			self model: self model.
 			"		taskList selectItems: items."
-			repositoryWindow list unselectAll.
-			repositoryWindow window close ]
+			taskAdditionPresenter list unselectAll.
+			taskAdditionPresenter window close ]
 ]
 
 { #category : #accessing }
 MooseTaskBrowser >> modelChanged [
-	mooseJob taskList roots: self model tasks.
-	mooseJob taskList
+	mooseJobPresenter taskList roots: self model tasks.
+	mooseJobPresenter taskList
 		children: [ :aGroup | 
 			aGroup class = MooseComposedTask
 				ifTrue: [ aGroup tasks ]
@@ -624,25 +644,28 @@ MooseTaskBrowser >> modelChanged [
 	self updateRuntimeList.
 	self updateLogText.
 	self model tasks
-		ifEmpty: [ mooseJob upButton disable.
-			mooseJob downButton disable.
-			mooseJob runButton disable.
-			mooseJob saveButton disable.
-			mooseJob loadButton enable.
-			mooseJob newJobButton disable ]
-		ifNotEmpty: [ mooseJob saveButton enable.
-			mooseJob newJobButton enable.
-			isRunning
-				ifTrue: [ mooseJob runButton disable ]
-				ifFalse: [ mooseJob runButton enable ] ].
+		ifEmpty: [ mooseJobPresenter upButton disable.
+			mooseJobPresenter downButton disable.
+			mooseJobPresenter runButton disable.
+			mooseJobPresenter saveButton disable.
+			mooseJobPresenter loadButton enable.
+			mooseJobPresenter newJobButton disable ]
+		ifNotEmpty: [ mooseJobPresenter saveButton enable.
+			mooseJobPresenter newJobButton enable.
+			mooseJobPresenter runButton enable].
 	file
-		ifNotNil: [ mooseJob saveButton enable.
-			mooseJob newJobButton enable ]
+		ifNotNil: [ mooseJobPresenter saveButton enable.
+			mooseJobPresenter newJobButton enable ]
 ]
 
 { #category : #accessing }
-MooseTaskBrowser >> mooseJob [
-^mooseJob
+MooseTaskBrowser >> mooseJobPresenter [
+	^ mooseJobPresenter
+]
+
+{ #category : #accessing }
+MooseTaskBrowser >> mooseJobRuntimePresenter [
+^mooseJobRuntimePresenter
 ]
 
 { #category : #actions }
@@ -650,13 +673,13 @@ MooseTaskBrowser >> newAnEmptyJob [
 	self saveChangesDialog
 		ifTrue: [ file := nil.
 			self model: MooseJob new.
-			self window title: 'Moose Task Browser' .mooseRuntimeList detailView text: 'Detail Display'.]
+			self window title: 'Moose Task Browser' .mooseJobRuntimePresenter detailView text: 'Detail Display'.]
 ]
 
 { #category : #actions }
 MooseTaskBrowser >> printDetail: item [
 	item selectedItem ifNil: [ ^ self ].
-	 mooseRuntimeList detailView text: item selectedItem printString
+	 mooseJobRuntimePresenter detailView text: item selectedItem printString
 ]
 
 { #category : #shortcuts }
@@ -670,25 +693,15 @@ MooseTaskBrowser >> registerMooseTaskListShortcuts: aWidget [
 ]
 
 { #category : #actions }
-MooseTaskBrowser >> reloadRunState [
-	self model reloadRunState.
-	isRunning := false.
-		mooseRuntimeList detailView text: 'Detail Display'.
-	self model: self model
+MooseTaskBrowser >> run [
+	mooseJobRuntimePresenter detailView text: 'Detail Display'.
+	self model runWithUpdatingBlock: [ self model: self model ].
+
 ]
 
 { #category : #accessing }
-MooseTaskBrowser >> repositoryWindow [
-^repositoryWindow
-]
-
-{ #category : #actions }
-MooseTaskBrowser >> run [
-	isRunning := true.
-	mooseRuntimeList detailView text: 'Detail Display'.
-	self model runWithUpdatingBlock: [ self model: self model ].
-	isRunning := false.
- self model: self model 
+MooseTaskBrowser >> runSettingPresenter [
+^runSettingPresenter
 ]
 
 { #category : #actions }
@@ -739,9 +752,14 @@ MooseTaskBrowser >> swapItems: aNumber [
 	| newSelectedPath |
 	newSelectedPath := self model
 		move: aNumber
-		theTask: mooseJob taskList selection selectedItem.
+		theTask: mooseJobPresenter taskList selection selectedItem.
 	self model: self model.
-	mooseJob taskList selection selectPath: newSelectedPath asArray.
+	mooseJobPresenter taskList selection selectPath: newSelectedPath asArray.
+]
+
+{ #category : #accessing }
+MooseTaskBrowser >> taskAdditionPresenter [
+	^ taskAdditionPresenter
 ]
 
 { #category : #private }
@@ -758,9 +776,9 @@ MooseTaskBrowser >> updateLogText [
 
 { #category : #actions }
 MooseTaskBrowser >> updateRuntimeList [
-	mooseRuntimeList taskRuntimeList
+	mooseJobRuntimePresenter taskRuntimeList
 		roots: (self model runtimeJobs ifNil: [ {} ]).
-	mooseRuntimeList taskRuntimeList
+	mooseJobRuntimePresenter taskRuntimeList
 		children: [ :aGroup | 
 			aGroup class = MooseTaskRuntime
 				ifTrue: [ {} ]
