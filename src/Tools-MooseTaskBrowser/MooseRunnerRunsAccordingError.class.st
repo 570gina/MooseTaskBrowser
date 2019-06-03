@@ -1,3 +1,14 @@
+"
+I'm a runner.
+When an error occurs
+-Stop running
+-Open the debugger (Choose the next action)
+
+(Important!)
+If the error is a custom MooseTaskError will be ignored.
+
+
+"
 Class {
 	#name : #MooseRunnerRunsAccordingError,
 	#superclass : #MooseAbstractRunner,

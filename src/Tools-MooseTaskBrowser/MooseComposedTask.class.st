@@ -1,3 +1,6 @@
+"
+I'm a composite of MooseCustomTask.
+"
 Class {
 	#name : #MooseComposedTask,
 	#superclass : #Object,

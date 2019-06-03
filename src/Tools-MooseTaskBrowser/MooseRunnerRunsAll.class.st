@@ -1,3 +1,9 @@
+"
+I'm a runner.
+When an error occurs
+-Record the error
+-Continue to run the next task
+"
 Class {
 	#name : #MooseRunnerRunsAll,
 	#superclass : #MooseAbstractRunner,

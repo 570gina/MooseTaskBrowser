@@ -1,35 +1,3 @@
-"
-Todo -
-	Allow to the job to receive arguments. [ to test ]
-	
-	Implement a task that responds to a composite (meaning, tasks that can be runned at the same time. cooking the sauce while working the dough).
-	Test test test
-
-	Nowadays, the result of the execution of a task is beign stored in the context variable (dictionary) on the method run of the class mooseJob. 
-	Change this behavior to store the result of the task into the related taskruntime object.  [ Done - To test. (test what happen if the new input is different. If the output is nil, if the output is not nil, etc ) ]
-	Modify the variable context of task runtime to be named ""input"". Context is to vague. [ done ]
-	After, ensure to cache the ""last used input"", 
-	Now we can do some improvements by executing the actual task, only when the given input differs with the last input. [ Done. Still needs testing!  ]
-	This last behaviours needs much testing. 
-	
-	modify the MooseTaskRuntime to be as a composite of many childs.
-	ensure to implement run: for multiple childs. 
-	test adn test and test again
-	and come to ask me if you need something anddd:
-	test and test and test and think in how to implement a MooseJobRunner that executes each taskruntime in a specific way. 
-	
-	
-	Modify the UI for: 
-		1 allowing the job to receive arguments. [ not yet interesting  ]
-		2 display the job's output. (or allow to inspect it)
-		3 reuse the job many times instead of using allways a new one (this will allow us to *really* use the cached result mechanism ) [ done, needs testing ]
-		4 allow from the ui to mark as "" to re-execute "" one or many tasks 
-		5 allow the user to specify if many tasks can run together (or they share input)
-	
-			
-
-		
-"
 Class {
 	#name : #MooseTaskBrowser,
 	#superclass : #ComposablePresenterWithModel,

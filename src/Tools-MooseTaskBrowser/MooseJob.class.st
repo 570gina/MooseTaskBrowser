@@ -1,9 +1,8 @@
 "
-I'm a job that manages the execution of tasks. 
-I'm managed of list of tasks, usually instances of MooseTaskRuntime.
-I'm a model of MooseTaskBrowser. 
+I'm a job that manages list of tasks.  
+I'm a model of MooseTaskBrowser.
 
-See MooseTaskbrowser >> #example2 for an example.
+
 
 
 "

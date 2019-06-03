@@ -1,3 +1,6 @@
+"
+The ruuner can decide how the job will run.
+"
 Class {
 	#name : #MooseAbstractRunner,
 	#superclass : #Object,

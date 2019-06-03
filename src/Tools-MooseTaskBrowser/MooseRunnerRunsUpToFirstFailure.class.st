@@ -1,3 +1,9 @@
+"
+I'm a runner.
+When the first error occurs
+-Record the error
+-Stop running
+"
 Class {
 	#name : #MooseRunnerRunsUpToFirstFailure,
 	#superclass : #MooseAbstractRunner,
