@@ -477,28 +477,61 @@ MooseTaskBrowser >> aboutText [
 	^ 'Moose Task Browser'
 ]
 
+{ #category : #actions }
+MooseTaskBrowser >> addJobMenuItems [
+
+	mooseJobPresenter menu
+		addItem: [ :anItem | 
+			anItem
+				name: 'Inspect';
+				visibleIf: [ mooseJobPresenter taskList selection selectedPaths size = 1 ];
+				action: [ mooseJobPresenter inspectSelectedItem ] ];
+		addItem: [ :anItem | 
+			anItem
+				name: 'Delete';
+				visibleIf: [ mooseJobPresenter taskList selection selectedPaths size = 1
+						and: [ mooseJobPresenter taskList selection selectedPaths
+		allSatisfy: [ :path | path size = 1 ] ] ];
+				action: [ self deleteSelected ] ];
+		addItem: [ :anItem | 
+			anItem
+				name: 'Combine';
+				visibleIf: [ mooseJobPresenter taskList selection selectedPaths size > 1
+						and: [ mooseJobPresenter taskList selection selectedPaths
+		allSatisfy: [ :path | path size = 1 ] ] ];
+				action: [ self combineSelected ] ];
+		addItem: [ :anItem | 
+			anItem
+				name: 'Separate';
+				visibleIf: [ (mooseJobPresenter taskList selection selectedItems
+						anySatisfy: [ :item | item class = MooseComposedTask ])
+						and: [ mooseJobPresenter taskList selection selectedPaths
+		allSatisfy: [ :path | path size = 1 ] ] ];
+				action: [ self separateSelected ] ]
+]
+
 { #category : #'list control' }
 MooseTaskBrowser >> combineSelected [
-	| index |
-	index := (taskTableMorph selectedIndexes sort: [ :a :b | a <= b ])
-		first.
-	self model combineTasks: self stepsDatasource selectedItems.
-	self stepsDatasource setSelectedIndexes: index.
-	self model: self model
+	| index selection |
+	selection := mooseJobPresenter taskList selection.
+	index := (selection selectedPaths
+		sort: [ :a :b | a first <= b first ]) first.
+	self model combineTasks: selection selectedItems.
+	self model: self model.
+		selection selectPaths: {index}.
 ]
 
 { #category : #'list control' }
 MooseTaskBrowser >> deleteSelected [
-	self stepsDatasource selectedItems
-		do: [ :i | self model removeTask: i ].
-	self stepsDatasource setSelectedItems: #().
+	self model removeTask:self mooseJobPresenter taskList selection selectedItems first.
+	self mooseJobPresenter taskList selectPaths: #().
 	self model: self model
 ]
 
 { #category : #initialization }
 MooseTaskBrowser >> initializePresenter [
 	mooseJobPresenter
-		whenTaskListSelectionChanged: [ :selection | "self manageArrowButtons: selection" ].
+		whenTaskListSelectionChanged: [ :selection | self manageArrowButtons: selection ].
 	mooseJobPresenter whenUpButtonIsClicked: [ self swapItems: -1 ].
 	mooseJobPresenter whenDownButtonIsClicked: [ self swapItems: 1 ].
 	mooseJobPresenter whenNewJobButtonIsClicked: [ self newAnEmptyJob ].
@@ -513,18 +546,17 @@ MooseTaskBrowser >> initializePresenter [
 		runner: self model runner
 		withUpdatingBlock: [ self model: self model ].
 	mooseJobRuntimePresenter
-		whenTaskRuntimeListSelectionChanged: [ :selection | self printDetail: selection ].
-
+		whenTaskRuntimeListSelectionChanged: [ :selection | self printDetail: selection ]
 ]
 
 { #category : #initialization }
 MooseTaskBrowser >> initializeWidgets [
 	change := false.
 	mooseJobPresenter := self instantiate: MooseJobPresenter.
+		self addJobMenuItems.
 	mooseJobRuntimePresenter := self
 		instantiate: MooseJobRuntimePresenter.
 	logView := self newText disable.
-
 	taskAdditionPresenter := self instantiate: TaskAdditionPresenter.
 	runSettingPresenter := self instantiate: RunSettingPresenter.
 	self focusOrder
@@ -566,22 +598,15 @@ MooseTaskBrowser >> logView [
 
 { #category : #actions }
 MooseTaskBrowser >> manageArrowButtons: aSelection [
-Transcript crShow: aSelection asString.
-"	(aSelection newSelectedIndexes isEmptyOrNil
-		or: aSelection newSelectedIndexes size > 1)
-		ifFalse: [ selectedItem := self model tasks
-				at: aSelection newSelectedIndexes first.
-			selectedItem
-				ifNotNil: [ self model tasks first = selectedItem
-						ifTrue: [ upButton disable ]
-						ifFalse: [ upButton enable ].
-					self model tasks last = selectedItem
-						ifTrue: [ downButton disable ]
-						ifFalse: [ downButton enable ] ] ]
-		ifTrue: [ upButton disable.
-			downButton disable ]"
-
-	
+	(aSelection size = 1 and: [ aSelection first size = 1 ])
+		ifTrue: [ aSelection first first = 1
+				ifTrue: [ mooseJobPresenter upButton disable ]
+				ifFalse: [ mooseJobPresenter upButton enable ].
+			aSelection first first = self model tasks size
+				ifTrue: [ mooseJobPresenter downButton disable ]
+				ifFalse: [ mooseJobPresenter downButton enable ] ]
+		ifFalse: [ mooseJobPresenter upButton disable.
+			mooseJobPresenter downButton disable ]
 ]
 
 { #category : #actions }
@@ -597,17 +622,16 @@ MooseTaskBrowser >> manageSettingDialog [
 
 { #category : #actions }
 MooseTaskBrowser >> manageTaskAddDialog [
-	"| items |
-	items := taskList selection selectedPaths.
-	self halt."
-
+	| items |
+	items := mooseJobPresenter taskList selection selectedPaths.
 	taskAdditionPresenter openDialogWithSpec
 		okAction: [ | steps |
-			steps := taskAdditionPresenter list selectedItems asOrderedCollection
+			steps := taskAdditionPresenter list selectedItems
+				asOrderedCollection
 				sort: [ :a :b | a description <= b description ].
 			self model addTasks: steps.
 			self model: self model.
-			"		taskList selectItems: items."
+			mooseJobPresenter taskList selection selectPaths: items.
 			taskAdditionPresenter list unselectAll.
 			taskAdditionPresenter window close ]
 ]
@@ -720,12 +744,13 @@ MooseTaskBrowser >> saveTheJob [
 
 { #category : #'list control' }
 MooseTaskBrowser >> separateSelected [
-	| index |
-	index := (taskTableMorph selectedIndexes sort: [ :a :b | a <= b ])
-		first.
-	self model separateTasks: self stepsDatasource selectedItems.
-	self stepsDatasource setSelectedIndexes: index.
-	self model: self model
+| index selection |
+	selection := mooseJobPresenter taskList selection.
+	index := (selection selectedPaths
+		sort: [ :a :b | a first <= b first ]) first.
+	self model separateTasks: selection selectedItems.
+	self model: self model.
+	selection selectPaths: {index}
 ]
 
 { #category : #'list control' }
@@ -733,9 +758,10 @@ MooseTaskBrowser >> swapItems: aNumber [
 	| newSelectedPath |
 	newSelectedPath := self model
 		move: aNumber
-		theTask: mooseJobPresenter taskList selection selectedItem.
+		theTask: mooseJobPresenter taskList selection selectedItems first.
 	self model: self model.
-	mooseJobPresenter taskList selection selectPath: newSelectedPath asArray.
+	mooseJobPresenter taskList selection
+		selectPath: newSelectedPath asArray
 ]
 
 { #category : #accessing }

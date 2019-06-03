@@ -10,7 +10,8 @@ Class {
 		'downButton',
 		'settingButton',
 		'runButton',
-		'taskList'
+		'taskList',
+		'menu'
 	],
 	#category : #'Tools-MooseTaskBrowser-Core-ui'
 }
@@ -59,8 +60,19 @@ MooseJobPresenter >> downButton [
 ]
 
 { #category : #initialization }
+MooseJobPresenter >> initialize [
+	self initializeMenu.
+	super initialize
+]
+
+{ #category : #initialization }
+MooseJobPresenter >> initializeMenu [
+	menu := self newMenu.
+]
+
+{ #category : #initialization }
 MooseJobPresenter >> initializeWidgets [
-	taskList := self newTreeTable beMultipleSelection.
+	taskList := self newTreeTable beMultipleSelection;contextMenu: self menu.
 	taskList
 		addColumn:
 			(StringTableColumn new
@@ -108,9 +120,27 @@ MooseJobPresenter >> initializeWidgets [
 		add: runButton
 ]
 
+{ #category : #action }
+MooseJobPresenter >> inspectSelectedItem [
+	taskList selection selectedItems size = 1
+		ifTrue: [ taskList selection selectedItems first inspect ].
+			taskList selection selectedItems size > 1
+		ifTrue: [ taskList selection selectedItems  inspect ]
+]
+
+{ #category : #action }
+MooseJobPresenter >> isRoot [
+	^ taskList selection selectedPaths first size = 1 
+]
+
 { #category : #accessing }
 MooseJobPresenter >> loadButton [
 	^ loadButton
+]
+
+{ #category : #accessing }
+MooseJobPresenter >> menu [
+	^menu
 ]
 
 { #category : #accessing }

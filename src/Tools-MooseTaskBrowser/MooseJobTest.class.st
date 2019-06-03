@@ -117,3 +117,14 @@ MooseJobTest >> testMoveTheTaskUp [
 	job move: -1 theTask: task.
 	self assert: job tasks first equals: task
 ]
+
+{ #category : #tests }
+MooseJobTest >> testRemoveTask [
+	| task |
+	self addTasksToTheJob.
+	self assert: job tasks size equals: 10.
+	task := job tasks first.
+	job removeTask: job tasks first.
+	self assert: job tasks size equals: 9.
+	self deny: (job tasks includes: task)
+]

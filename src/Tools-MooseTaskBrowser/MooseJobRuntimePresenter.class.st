@@ -3,7 +3,8 @@ Class {
 	#superclass : #ComposablePresenter,
 	#instVars : [
 		'taskRuntimeList',
-		'detailView'
+		'detailView',
+		'menu'
 	],
 	#category : #'Tools-MooseTaskBrowser-Core-ui'
 }
@@ -53,6 +54,25 @@ MooseJobRuntimePresenter >> icon: anItem [
 ]
 
 { #category : #initialization }
+MooseJobRuntimePresenter >> initialize [
+	self initializeMenu. super initialize
+]
+
+{ #category : #initialization }
+MooseJobRuntimePresenter >> initializeMenu [
+	menu :=self newMenu
+		addItem: [ :anItem | 
+			anItem
+				name: 'Inspect';
+				action: [ self inspectSelectedItem ] ];
+		addItem: [ :anItem | 
+			anItem
+				name: 'Debug';
+				visibleIf: [ self itemIsError ];
+				action: [ self debugSelectedItem ] ]
+]
+
+{ #category : #initialization }
 MooseJobRuntimePresenter >> initializeWidgets [
 	taskRuntimeList := self newTreeTable contextMenu: self menu.
 	detailView := self newText disable.
@@ -75,18 +95,9 @@ MooseJobRuntimePresenter >> itemIsError [
 	^ item isNotNil and:[item class = MooseTaskRuntime and: [ item isError ]]
 ]
 
-{ #category : #initialization }
+{ #category : #accessing }
 MooseJobRuntimePresenter >> menu [
-	^ self newMenu
-		addItem: [ :anItem | 
-			anItem
-				name: 'Inspect';
-				action: [ self inspectSelectedItem ] ];
-		addItem: [ :anItem | 
-			anItem
-				name: 'Debug';
-				visibleIf: [ self itemIsError ];
-				action: [ self debugSelectedItem ] ]
+	^ menu
 ]
 
 { #category : #initialization }

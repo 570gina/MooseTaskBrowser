@@ -5,7 +5,6 @@ Class {
 		'input',
 		'tasks',
 		'output',
-		'errorState',
 		'runner',
 		'logger'
 	],
@@ -22,26 +21,6 @@ MooseJobRuntime >> addTasks: aCollectionOfTasks [
 { #category : #accessing }
 MooseJobRuntime >> description [
 	^ '[Job] Input: ' , input asString
-]
-
-{ #category : #accessing }
-MooseJobRuntime >> errorState [
-	^ errorState
-]
-
-{ #category : #accessing }
-MooseJobRuntime >> errorState: aMooseTask [
-	| collection |
-	collection := OrderedCollection new.
-	(aMooseTask class = MooseTaskComposedRuntime)
-		ifFalse: [ collection add: aMooseTask ];
-		ifTrue: [ collection := aMooseTask tasks ].
-	collection
-		do: [ :task | 
-			task isError
-				ifTrue: [ errorState ifNil: [ errorState := '' ].
-					errorState := errorState , '-' , task description , ': '
-						, task error asString , String lf. ] ]
 ]
 
 { #category : #accessing }
