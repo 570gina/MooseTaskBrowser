@@ -1,6 +1,6 @@
 "
-I'm a simple task managed by a MooseJob. I'm displayed in a MooseTaskBrowser.
-My main API is forceToRun, hasRun, basicRun 
+I'm a simple task managed by a MooseJobRuntime. I'm displayed in a MooseTaskBrowser.
+My main API is hasRun, basicRun 
 
 
 "

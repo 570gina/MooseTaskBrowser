@@ -1,3 +1,7 @@
+"
+I'm a logger that records the running state of jobRuntimes of the job.
+The log is displayed on the logView of MooseTaskBrowser.
+"
 Class {
 	#name : #MooseLogger,
 	#superclass : #Object,

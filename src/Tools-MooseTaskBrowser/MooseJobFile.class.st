@@ -1,3 +1,7 @@
+"
+I am a file manager that can save jobs and load jobs.
+I use STON to read and write files.
+"
 Class {
 	#name : #MooseJobFile,
 	#superclass : #Object,
@@ -8,6 +12,16 @@ Class {
 	],
 	#category : #'Tools-MooseTaskBrowser-Core'
 }
+
+{ #category : #serializing }
+MooseJobFile class >> defaultBlockSerializer [
+	^ MooseSerializerCleanBlock
+]
+
+{ #category : #serializing }
+MooseJobFile class >> defaultErrorSerializer [
+	^ MooseSerializerErrorWithoutContext
+]
 
 { #category : #accessing }
 MooseJobFile >> fileName [
@@ -27,11 +41,14 @@ MooseJobFile >> job: aMooseJob [
 { #category : #loading }
 MooseJobFile >> load [
 	| text |
-	reference := UIManager default
-		chooseExistingFileReference: 'Select a Job'
-		extensions: #('txt')
-		path: FileLocator home.
-	reference ifNil: [ ^ false ].
+	reference
+		ifNil: [ reference := UIManager default
+				chooseExistingFileReference: 'Select a Job'
+				extensions: #('txt')
+				path: FileLocator image parent.
+			reference ifNil: [ ^ false ].
+			reference extension = 'txt'
+				ifFalse: [ ^ false ] ].
 	reference extension = 'txt'
 		ifFalse: [ ^ false ].
 	fileName := reference base.

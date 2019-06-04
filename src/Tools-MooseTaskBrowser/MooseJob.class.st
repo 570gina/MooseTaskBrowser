@@ -14,7 +14,6 @@ Class {
 		'tasks',
 		'runtimeJobs',
 		'runner',
-		'stream',
 		'logger'
 	],
 	#category : #'Tools-MooseTaskBrowser-Core'

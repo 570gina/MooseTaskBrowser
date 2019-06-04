@@ -1,8 +1,8 @@
 "
 I'm a runner.
-When an error occurs
--Record the error
--Continue to run the next task
+When an error occurs, I will
+-record the error
+-and continue to run the next task
 "
 Class {
 	#name : #MooseRunnerRunsAll,

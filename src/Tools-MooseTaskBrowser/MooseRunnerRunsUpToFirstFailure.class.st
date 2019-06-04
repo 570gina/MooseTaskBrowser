@@ -1,8 +1,8 @@
 "
 I'm a runner.
-When the first error occurs
--Record the error
--Stop running
+When the first error occurs, I will
+-record the error
+-stop running
 "
 Class {
 	#name : #MooseRunnerRunsUpToFirstFailure,

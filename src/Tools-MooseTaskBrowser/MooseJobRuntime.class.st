@@ -1,3 +1,6 @@
+"
+I generate when the job starts running.
+"
 Class {
 	#name : #MooseJobRuntime,
 	#superclass : #Object,

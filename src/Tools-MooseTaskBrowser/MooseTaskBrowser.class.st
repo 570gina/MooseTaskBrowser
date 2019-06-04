@@ -185,9 +185,6 @@ MooseTaskBrowser class >> exampleGMUtility [
 			| url |
 			url := v input isEmptyOrNil
 				ifTrue: [ 'https://github.com/fuhrmanator/FactoryVariants' ].
-			Transcript
-				show: 'Task 1 running';
-				cr.
 			GMUtility cloneRepo: url ]
 		description: '1 Clone Repository'
 		length: 0.
@@ -195,9 +192,6 @@ MooseTaskBrowser class >> exampleGMUtility [
 	task := MooseCustomTask new
 		with: [ :v | 
 			| commitMetadata |
-			Transcript
-				show: 'Task 2 running';
-				cr.
 			commitMetadata := GMUtility
 				filterCommitsOnRepoLeftBranchOnly: v input
 				from: 'HEAD'
@@ -413,31 +407,6 @@ MooseTaskBrowser class >> exampleTest [
 	job combineTasks: (job tasks copyFrom: 1 to: 2).
 	test := MooseTaskBrowser on: job.
 	test openWithSpec
-]
-
-{ #category : #menu }
-MooseTaskBrowser class >> menu: aBuilder [
-	<contextMenu>
-	<mooseTaskBrowserMenu>
-	| target items |
-	target := aBuilder model.
-	items := target stepsDatasource selectedItems.
-	items size > 1
-		ifTrue: [ (aBuilder item: #Combine)
-				icon: (self iconNamed: #collection);
-				selector: #combineSelected ].
-	(self allIsComposedRuntime: items)
-		ifTrue: [ (aBuilder item: #Separate)
-				icon: (self iconNamed: #windowMinimizeInactive);
-				selector: #separateSelected ].
-	(aBuilder item: #Inspect)
-		icon: (self iconNamed: #smallInspectIt);
-		keyText: 'i';
-		selector: #inspectSelected.
-	(aBuilder item: #Delete)
-		icon: (self iconNamed: #delete);
-		keyText: 'd';
-		selector: #deleteSelected
 ]
 
 { #category : #api }
