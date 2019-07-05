@@ -183,8 +183,9 @@ MooseTaskBrowser class >> exampleGMUtility [
 	task := MooseCustomTask new
 		with: [ :v | 
 			| url |
-			url := v input isEmptyOrNil
-				ifTrue: [ 'https://github.com/fuhrmanator/FactoryVariants' ].
+			url := v input  isEmptyOrNil
+				ifTrue: [ 'https://github.com/fuhrmanator/FactoryVariants' ]
+				ifFalse: [ v input ].
 			GMUtility cloneRepo: url ]
 		description: '1 Clone Repository'
 		length: 0.
